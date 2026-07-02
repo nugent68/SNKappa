@@ -46,10 +46,16 @@ class Taylor2011(StellarMassEstimator):
         dm = self.cosmo.distmod(np.clip(z, 1e-3, None)).value
         kcorr = -2.5 * np.log10(1.0 + z)  # flat-Fnu approximation
 
+        # clip colors to (a slightly padded version of) the Taylor+2011
+        # calibration range: extreme colors are photometric junk / heavy dust
+        # and would otherwise blow up the M*/L exponentially
+        col_gi = np.clip(g - i, 0.0, 2.2)
+        col_gz = np.clip(g - zb, 0.0, 3.0)
+
         # south: Taylor+2011 as published
-        logm_south = 1.15 + 0.70 * (g - i) - 0.4 * (i - dm - kcorr)
+        logm_south = 1.15 + 0.70 * col_gi - 0.4 * (i - dm - kcorr)
         # north: g-z color, coefficient rescaled; z-band luminosity
-        logm_north = 1.15 + 0.55 * (g - zb) - 0.4 * (zb - dm - kcorr)
+        logm_north = 1.15 + 0.55 * col_gz - 0.4 * (zb - dm - kcorr)
 
         logm = np.where(np.isfinite(logm_south), logm_south, logm_north)
         bad = ~np.isfinite(logm)

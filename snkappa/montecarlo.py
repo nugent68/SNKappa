@@ -91,12 +91,35 @@ def mc_kappa_raw(cfg, engine, rng, exclude_mask):
 
 def build_pkappa(cfg, kappa_raw_draws, randoms, rng):
     """Final P(kappa_ext) samples: zero-point subtraction + empirical LOS
-    scatter convolution."""
-    mu_rand = randoms["kappa_mean"]
-    sig_rand = randoms["kappa_std"]
+    scatter convolution.
+
+    zero_point: 'mean' (mass-sheet zero point = cosmic mean of the visible
+    halo field; spec default) or 'median' (robust to rare cluster hits).
+    variance_mode:
+      'robust'    Gaussian with sigma = half the 16-84 range of the randoms
+                  (default; the raw std is inflated by rare real clusters)
+      'std'       Gaussian with the raw standard deviation (conservative)
+      'bootstrap' resample the empirical (kappa_random - zero) deviations,
+                  preserving the asymmetric cosmic-variance tail
+      'none'      no convolution (halo-model MC uncertainty only)
+    NOTE: this convolution intentionally double-counts visible-structure
+    variance as a systematic floor for LOS structure the catalog cannot see
+    (faint galaxies, filaments/voids); see README.
+    """
+    zp = (randoms["kappa_median"]
+          if cfg.randoms.zero_point == "median" else randoms["kappa_mean"])
     n = kappa_raw_draws.size
-    return (kappa_raw_draws - mu_rand
-            + rng.normal(0.0, sig_rand, n))
+    mode = cfg.randoms.variance_mode
+    if mode == "none":
+        extra = 0.0
+    elif mode == "std":
+        extra = rng.normal(0.0, randoms["kappa_std"], n)
+    elif mode == "bootstrap":
+        dev = randoms["kappa_raw"][randoms["ok"]] - zp
+        extra = rng.choice(dev, size=n, replace=True)
+    else:  # robust
+        extra = rng.normal(0.0, randoms["kappa_sigma_robust"], n)
+    return kappa_raw_draws - zp + extra
 
 
 def percentiles(samples, levels=(2.5, 16, 50, 84, 97.5)):

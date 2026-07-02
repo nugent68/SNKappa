@@ -77,3 +77,12 @@ def test_reproducibility_same_seed(cfg, halo_model):
     d2 = montecarlo.mc_kappa_raw(cfg, eng, np.random.default_rng(42), excl)
     np.testing.assert_array_equal(d1, d2)
     assert d1.std() > 0
+
+
+def test_monster_mstar_capped_halo(cfg, halo_model):
+    """A photometric-junk galaxy (clipped logM*=12.2) must not become a
+    cluster: halo mass capped at logmh_max."""
+    rhos, rs, tau = halo_model.halo_params(np.array([12.2]), np.array([10]))
+    rhoc = halo_model.rhoc[10]
+    m200 = 4.0 / 3.0 * np.pi * 200.0 * rhoc * (rs * tau) ** 3
+    assert np.log10(m200[0]) <= cfg.halo_model.logmh_max + 1e-6

@@ -55,11 +55,15 @@ def run_randoms(cfg, engine, rng, progress=None):
             progress(f"  randoms: {i + 1}/{len(ras)}")
 
     ok = ngal > 0.5 * np.median(ngal)
+    k_ok = kappa[ok]
+    p16, p50, p84 = np.percentile(k_ok, [16, 50, 84])
     out = {
         "ra": ras, "dec": decs, "kappa_raw": kappa, "ngal": ngal, "ok": ok,
         "n_flagged": int((~ok).sum()),
-        "kappa_mean": float(kappa[ok].mean()),
-        "kappa_std": float(kappa[ok].std(ddof=1)),
+        "kappa_mean": float(k_ok.mean()),
+        "kappa_median": float(p50),
+        "kappa_std": float(k_ok.std(ddof=1)),
+        "kappa_sigma_robust": float(0.5 * (p84 - p16)),
         "counts": zeta_counts,
     }
     return out

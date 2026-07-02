@@ -204,12 +204,13 @@ class HaloModel:
         logmh = np.empty_like(logmstar)
         conc = np.empty_like(logmstar)
 
+        logmh_max = getattr(self.cfg, "logmh_max", 13.8)
         for b in np.unique(ibin):
             m = ibin == b
             lmh = self._inv[b](logmstar[m])
             if dlogm is not None:
                 lmh = lmh + np.asarray(dlogm)[m]
-            logmh[m] = lmh
+            logmh[m] = np.minimum(lmh, logmh_max)
             c = concentration.concentration(
                 10.0 ** lmh * self._h, "200c", float(self.zbins[b]),
                 model=self.cfg.cmodel)

@@ -93,8 +93,10 @@ def run_pipeline(cfg, tap, report) -> int:
     # --- randoms --------------------------------------------------------------
     log(f"running {cfg.randoms.n_random_los} random sightlines ...")
     rand = randoms.run_randoms(cfg, engine, rng, progress=log)
-    log(f"  <kappa_random> = {rand['kappa_mean']:.4f} "
-        f"+- {rand['kappa_std']:.4f} ({rand['n_flagged']} flagged)")
+    log(f"  kappa_random: mean {rand['kappa_mean']:.4f}, "
+        f"median {rand['kappa_median']:.4f}, std {rand['kappa_std']:.4f}, "
+        f"robust sigma {rand['kappa_sigma_robust']:.4f} "
+        f"({rand['n_flagged']} flagged)")
 
     zeta = randoms.zeta_summary(cfg, engine, rand, excl_nogroup)
 
@@ -118,7 +120,11 @@ def run_pipeline(cfg, tap, report) -> int:
             "kappa_raw_sn_group_excluded": kappa_raw_sn,
             "kappa_raw_sn_group_included": kappa_raw_sn_group,
             "kappa_random_mean": rand["kappa_mean"],
+            "kappa_random_median": rand["kappa_median"],
             "kappa_random_std": rand["kappa_std"],
+            "kappa_random_sigma_robust": rand["kappa_sigma_robust"],
+            "sn_percentile_among_randoms": float(
+                100.0 * np.mean(rand["kappa_raw"][rand["ok"]] < kappa_raw_sn)),
             "kappa_ext_fiducial_group_excluded":
                 kappa_raw_sn - rand["kappa_mean"],
             "n_group_members_excluded": n_group_members,

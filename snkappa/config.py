@@ -53,6 +53,8 @@ class LosConfig:
 class RandomsConfig:
     n_random_los: int = 500
     annulus_deg: list = field(default_factory=lambda: [0.5, 2.0])
+    zero_point: str = "mean"       # 'mean' (spec default) or 'median'
+    variance_mode: str = "robust"  # 'robust' | 'std' | 'bootstrap' | 'none'
 
 
 @dataclass
@@ -79,6 +81,11 @@ class HaloModelConfig:
     c_scatter_dex: float = 0.16
     profile: str = "bmo"              # "bmo" (truncated NFW) or "nfw"
     mdef: str = "200c"
+    # cap for SINGLE-galaxy halos (log10 Msun). Above the SMHM knee the
+    # inversion is catastrophically steep: photometric outliers otherwise get
+    # assigned cluster-mass halos. Groups/clusters still enter kappa_ext
+    # through the summed halos of their member galaxies.
+    logmh_max: float = 13.8
 
 
 @dataclass

@@ -36,6 +36,20 @@ def region_radius_deg(cfg) -> float:
     return cfg.randoms.annulus_deg[1] + cfg.los.aperture_radius_arcmin / 60.0
 
 
+def dered_mag(flux, mw_transmission):
+    """Dereddened AB mag from nanomaggies, robust to Data Lab NULL sentinels.
+
+    Data Lab serves NULL as -9999.0; naively (-9999)/(-9999) = +1.0 would
+    fabricate mag=22.5 for bands a survey region never observed (e.g. i-band
+    in the LS north). Any nonpositive or sentinel flux/transmission -> NaN.
+    """
+    flux = flux.where((flux > 0) & (flux > -9000))
+    mw = mw_transmission.where((mw_transmission > 0) & (mw_transmission <= 1.0))
+    dered = flux / mw
+    with np.errstate(divide="ignore", invalid="ignore"):
+        return 22.5 - 2.5 * np.log10(dered.where(dered > 0))
+
+
 def fetch_regional(cfg, tap) -> tuple[pd.DataFrame, pd.DataFrame]:
     """Fetch (tractor master + photo-z coalesced, DESI zpix) for the region."""
     ra, dec = cfg.source.ra_src, cfg.source.dec_src
@@ -93,9 +107,7 @@ def clean_and_merge(cfg, df: pd.DataFrame, zpix: pd.DataFrame) -> pd.DataFrame:
 
     # -- dereddened AB mags (fluxes are nanomaggies; deredden = /transmission)
     for b in "griz":
-        flux = df[f"flux_{b}"] / df[f"mw_transmission_{b}"]
-        with np.errstate(divide="ignore", invalid="ignore"):
-            df[f"mag_{b}"] = 22.5 - 2.5 * np.log10(flux.where(flux > 0))
+        df[f"mag_{b}"] = dered_mag(df[f"flux_{b}"], df[f"mw_transmission_{b}"])
 
     band = cfg.los.mag_limit_band
     df = df[df[f"mag_{band}"] <= cfg.los.mag_limit].copy()

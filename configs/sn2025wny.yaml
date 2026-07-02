@@ -31,6 +31,8 @@ los:
 randoms:
   n_random_los: 500
   annulus_deg: [0.5, 2.0]    # control region around the SN for random sightlines
+  zero_point: mean           # mass-sheet zero point: mean|median of randoms
+  variance_mode: robust      # robust|std|bootstrap|none (see montecarlo.py)
 
 montecarlo:
   n_mc: 1000
@@ -51,6 +53,7 @@ halo_model:
   c_scatter_dex: 0.16
   profile: bmo               # truncated NFW (Baltz-Marshall-Oguri), tau = c_200c
   mdef: 200c
+  logmh_max: 13.8            # cap for single-galaxy halos (log10 Msun)
 
 cosmology:
   H0: 70.0

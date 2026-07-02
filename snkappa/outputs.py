@@ -27,9 +27,9 @@ def git_commit() -> str:
 
 def provenance(cfg, tap, report) -> dict:
     import astropy
-    import colossus
     import pyvo
     import scipy
+    from importlib.metadata import version as pkg_version
     return {
         "snkappa_version": __version__,
         "git_commit": git_commit(),
@@ -43,7 +43,7 @@ def provenance(cfg, tap, report) -> dict:
         "package_versions": {
             "numpy": np.__version__, "scipy": scipy.__version__,
             "astropy": astropy.__version__, "pyvo": pyvo.__version__,
-            "colossus": colossus.__version__, "pandas": pd.__version__,
+            "colossus": pkg_version("colossus"), "pandas": pd.__version__,
         },
         "acknowledgments": [
             "DESI DR1 (DESI Collaboration et al. 2025, CC BY 4.0)",
