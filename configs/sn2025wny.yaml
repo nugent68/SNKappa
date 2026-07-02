@@ -45,7 +45,7 @@ data:
   cache_dir: cache
 
 halo_model:
-  mstar_method: taylor2011   # color-based M*/L; swappable
+  mstar_method: nir1um       # rest-1um M* via z<->W1 interpolation; swappable
   mstar_scatter_dex: 0.15
   smhm: behroozi13           # or moster13
   smhm_scatter_dex: 0.18

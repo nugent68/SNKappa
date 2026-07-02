@@ -83,7 +83,7 @@ class KappaEngine:
         z = s["z_spec"].to_numpy(dtype=float)
         ibin = self.hm.zbin_index(z)
         mags = {b: s[f"mag_{b}"].to_numpy(dtype=float)
-                for b in "griz" if f"mag_{b}" in s}
+                for b in ("g", "r", "i", "z", "w1") if f"mag_{b}" in s}
         logms = self.stellar.logmstar(mags, self.hm.zbins[ibin])
         rhos, rs, tau = self.hm.halo_params(logms, ibin)
         self.spec_ibin = ibin
@@ -115,7 +115,7 @@ class KappaEngine:
         self.phot_theta_s = np.empty((n_p, n_z), dtype=np.float32)
         self.phot_tau = np.empty((n_p, n_z), dtype=np.float32)
         mags = {b: p[f"mag_{b}"].to_numpy(dtype=float)
-                for b in "griz" if f"mag_{b}" in p}
+                for b in ("g", "r", "i", "z", "w1") if f"mag_{b}" in p}
         for j, ib in enumerate(self.zc_ibins):
             zj = self.hm.zbins[ib]
             logms = self.stellar.logmstar(mags, np.full(n_p, zj))

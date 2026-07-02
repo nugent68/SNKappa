@@ -73,7 +73,7 @@ class DataConfig:
 
 @dataclass
 class HaloModelConfig:
-    mstar_method: str = "taylor2011"
+    mstar_method: str = "nir1um"      # rest-1um M* (z<->W1 interp) w/ fallback
     mstar_scatter_dex: float = 0.15   # M*/L (color-based estimator) scatter
     smhm: str = "behroozi13"          # or "moster13"
     smhm_scatter_dex: float = 0.18

@@ -46,3 +46,23 @@ def test_sis_pointmass_kappa_scalings():
     cum = np.cumsum(integrand[:-1] * np.diff(xg))
     i100 = np.searchsorted(xg, 100.0)
     assert cum[-1] / cum[i100] < 1.02
+
+
+def test_halo_amplitude_cylinder_mass():
+    """End-to-end amplitude check of the (M200,c)->(rho_s,r_s) chain: the
+    projected (cylinder) mass of the truncated halo within r200 must be
+    within ~30% of M200 -- catches any unit error in rho_s*r_s."""
+    from astropy.cosmology import FlatLambdaCDM
+    from snkappa.config import HaloModelConfig
+    from snkappa.halos import HaloModel
+
+    cosmo = FlatLambdaCDM(H0=70, Om0=0.3)
+    hm = HaloModel(HaloModelConfig(), cosmo, z_src=2.0, dz=0.05)
+    ib = hm.zbin_index([0.4])
+    # logM* chosen so the SMHM gives ~10^13 Msun (uncapped regime)
+    rhos, rs, tau = hm.halo_params(np.array([11.0]), ib)
+    m200 = 4.0 / 3.0 * np.pi * 200.0 * hm.rhoc[ib[0]] * (rs * tau) ** 3
+    x = np.linspace(1e-3, tau[0], 3000)
+    sigma = rhos[0] * rs[0] * hm.sigma_dimless(x, np.full_like(x, tau[0]))
+    m_cyl = np.trapezoid(sigma * 2 * np.pi * (x * rs[0]), x * rs[0])
+    assert 0.7 < m_cyl / m200[0] < 1.3

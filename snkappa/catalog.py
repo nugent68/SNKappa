@@ -23,9 +23,10 @@ MIN_DELTACHI2 = 25.0  # DESI recommended galaxy-redshift confidence cut
 
 _TRACTOR_COLS = (
     "ls_id, ra, dec, type, maskbits, "
-    "flux_g, flux_r, flux_i, flux_z, "
-    "flux_ivar_g, flux_ivar_r, flux_ivar_i, flux_ivar_z, "
-    "mw_transmission_g, mw_transmission_r, mw_transmission_i, mw_transmission_z, "
+    "flux_g, flux_r, flux_i, flux_z, flux_w1, "
+    "flux_ivar_g, flux_ivar_r, flux_ivar_i, flux_ivar_z, flux_ivar_w1, "
+    "mw_transmission_g, mw_transmission_r, mw_transmission_i, "
+    "mw_transmission_z, mw_transmission_w1, "
     "fracflux_r, fracflux_z, fracmasked_r, fracmasked_z, fracin_r, fracin_z"
 )
 
@@ -106,8 +107,12 @@ def clean_and_merge(cfg, df: pd.DataFrame, zpix: pd.DataFrame) -> pd.DataFrame:
     df = df[(df["maskbits"].astype(int) & BAD_MASKBITS) == 0].copy()
 
     # -- dereddened AB mags (fluxes are nanomaggies; deredden = /transmission)
-    for b in "griz":
+    for b in ("g", "r", "i", "z", "w1"):
         df[f"mag_{b}"] = dered_mag(df[f"flux_{b}"], df[f"mw_transmission_{b}"])
+    # require detected W1 (SNR>2) for the NIR mass estimator; else NaN -> the
+    # estimator falls back to the optical-color method
+    w1_snr = df["flux_w1"] * np.sqrt(df["flux_ivar_w1"].clip(lower=0))
+    df.loc[w1_snr < 2.0, "mag_w1"] = np.nan
 
     band = cfg.los.mag_limit_band
     df = df[df[f"mag_{band}"] <= cfg.los.mag_limit].copy()

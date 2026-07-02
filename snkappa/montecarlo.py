@@ -50,7 +50,7 @@ def mc_kappa_raw(cfg, engine, rng, exclude_mask):
     mags = {b: np.concatenate([
         engine.df[f"mag_{b}"].to_numpy()[gi_spec],
         engine.df[f"mag_{b}"].to_numpy()[gi_phot]])
-        for b in "griz" if f"mag_{b}" in engine.df}
+        for b in ("g", "r", "i", "z", "w1") if f"mag_{b}" in engine.df}
 
     # ---- scatter draws ------------------------------------------------------
     hcfg = cfg.halo_model
