@@ -67,12 +67,19 @@ string, row count, and retrieval timestamp.
    `fracflux < 0.5`, `fracmasked < 0.4`, `fracin > 0.3`, bright-star/bad `maskbits`
    rejected; fluxes dereddened with `mw_transmission_*`). DESI `zpix` left-joined
    within 1″; spec-z wins over photo-z. Deflector (and optionally group) removed.
-3. **Halos**: rest-frame color-based stellar mass (Taylor et al. 2011; g−i in the
-   DECam south, g−z in the north where i-band is absent) → M_200c via a
-   stellar-to-halo-mass relation (Behroozi et al. 2013 default, Moster et al. 2013
-   option, configurable lognormal scatter) → c(M, z) (Diemer & Joyce 2019 via
-   `colossus`) → truncated-NFW Σ(R) (Baltz, Marshall & Oguri 2009 profile with
-   τ = r_t/r_s = c_200c, i.e. truncation at r_200c; pure NFW available).
+3. **Halos**: stellar mass from **rest-frame 1 μm luminosity** obtained by
+   log-interpolating each galaxy's own z-band and WISE W1 fluxes to observed
+   (1+z) μm (M*/L_1μm = 0.6; the two-point slope IS the K-correction —
+   data-driven, no template). Validated against the SN 2025wny primary lens G1:
+   snkappa gives log M* = 11.15 vs the published Prospector fit 11.11 ± 0.12.
+   Optical color fallback (Taylor et al. 2011) when W1 is absent. Then M_200c
+   via a stellar-to-halo-mass relation (Behroozi et al. 2013 default, Moster
+   et al. 2013 option, configurable lognormal scatter), **capped at
+   `logmh_max` (default 10^13.8 M⊙) for single galaxies** — above the SMHM
+   knee the inversion is catastrophically steep and photometric outliers
+   would otherwise become 10^15.8 "clusters" → c(M, z) (Diemer & Joyce 2019
+   via `colossus`) → truncated-NFW Σ(R) (Baltz, Marshall & Oguri 2009 profile
+   with τ = r_t/r_s = c_200c, i.e. truncation at r_200c; pure NFW available).
 4. **κ_ext**: κ_i = Σ_i(b_i)/Σ_crit(z_i, z_src) summed over LOS galaxies; photo-z
    galaxies marginalized over p(z) (with the z < z_src lensing-efficiency weight
    arising naturally — background galaxies contribute zero).
@@ -83,6 +90,28 @@ string, row count, and retrieval timestamp.
 6. **Monte Carlo**: joint resampling of photo-z, SMHM scatter, M*/L scatter, and
    concentration scatter (`n_mc` draws) convolved with the random-LOS variance
    → P(κ_ext); percentiles 2.5/16/50/84/97.5 reported for both group branches.
+
+## Known limitations (quote κ_ext with these in mind)
+
+- **1-halo term only.** Truncating halos at r_200c means κ_ext captures the
+  halo (1-halo) contribution relative to the field mean; large-scale structure
+  beyond halo virial radii (2-halo term, filaments, voids) is only proxied by
+  the random-sightline variance convolution — which intentionally
+  double-counts visible-structure variance as a systematic floor. A definitive
+  treatment requires ray-traced simulation calibration of the ζ statistics
+  (H0LiCOW approach) or multi-plane ray tracing of the output catalog.
+- **Group-included branch double counts.** With `include_lens_group: true`,
+  a cluster is represented as the sum of its members' capped halos, which can
+  overcount a single massive halo; treat that branch as an upper-bound
+  diagnostic. Inserting the known cluster (e.g. Wen & Han mass) as a single
+  halo is future work.
+- **Overlapping randoms.** Random apertures within the control annulus
+  overlap; the effective number of independent patches is ~annulus area /
+  aperture area, so extreme tails of the empirical variance are mildly
+  underestimated.
+- **Data Lab sentinels.** NULL is served as −9999; all photometry passes
+  through `dered_mag`, which masks sentinels (a naive ratio turns two
+  sentinels into mag = 22.5 — this bit us in the LS north i-band).
 
 ## Reproducibility
 
@@ -113,5 +142,7 @@ string, row count, and retrieval timestamp.
 Taylor et al. 2011, MNRAS 418, 1587 · Behroozi et al. 2013, ApJ 770, 57 ·
 Moster et al. 2013, MNRAS 428, 3121 · Diemer & Joyce 2019, ApJ 871, 168 ·
 Wright & Brainerd 2000, ApJ 534, 34 · Baltz, Marshall & Oguri 2009, JCAP 1, 15 ·
+Meidt et al. 2014, ApJ 788, 144 & Kettlety et al. 2018, MNRAS 473, 776
+(NIR M*/L) · Hogg et al. 2002, arXiv:astro-ph/0210394 (K-corrections) ·
 Rusu et al. 2017, MNRAS 467, 4220 (weighted number counts) ·
 Falco, Gorenstein & Shapiro 1985, ApJ 289, L1 (mass-sheet degeneracy)
