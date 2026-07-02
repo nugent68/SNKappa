@@ -1,0 +1,17 @@
+name: snkappa
+channels:
+  - conda-forge
+dependencies:
+  - python=3.12
+  - numpy>=1.26
+  - scipy>=1.11
+  - astropy>=6.0
+  - pyvo>=1.5
+  - pyyaml>=6.0
+  - matplotlib-base>=3.8
+  - pandas>=2.1
+  - pyarrow>=14.0
+  - pytest>=7.4
+  - pip
+  - pip:
+      - colossus>=1.3

@@ -1,0 +1,60 @@
+# snkappa configuration for SN 2025wny (ZTF25abnjznp)
+# Coordinates: Goobar et al. 2026 (space follow-up paper), Table 2 reference image A
+# Lens: G1 (z from DESI DR1), theta_E from Mortsell et al. 2026 fiducial model
+
+source:
+  name: SN2025wny
+  ra_src: 109.143776        # deg (J2000) — image A reference position
+  dec_src: 38.352257        # deg
+  z_src: 2.010
+
+deflector:
+  ra_lens: 109.143346       # deg — G1 centroid (offset -1.2126", -1.3182" from image A)
+  dec_lens: 38.351891       # deg
+  z_lens: 0.3754
+  theta_E_arcsec: 1.6       # Einstein radius of G1 (Mortsell et al.)
+  # r_exclude_arcsec: null  -> defaults to 5 * theta_E = 8.0"
+  # NOTE: the 8" exclusion covers both G1 and G2 (G2 is 2.3" from image A),
+  # both of which are part of the strong-lens model.
+
+lens_group:
+  include_lens_group: false  # exclude deflector's group/cluster halo members
+  r_group_arcmin: 2.0        # spatial radius for group-member exclusion
+  dz_group: null             # -> defaults to 0.005 * (1 + z_lens)
+
+los:
+  aperture_radius_arcmin: 15.0
+  count_aperture_arcsec: [45, 120]
+  mag_limit: 21.0            # dereddened z-band AB limit for the halo catalog
+  mag_limit_band: z
+
+randoms:
+  n_random_los: 500
+  annulus_deg: [0.5, 2.0]    # control region around the SN for random sightlines
+
+montecarlo:
+  n_mc: 1000
+  seed: 20250903             # SN 2025wny TNS report date
+
+data:
+  desi_release: dr1          # upgrade to dr2 when served by Data Lab
+  ls_release: dr10
+  tap_url: https://datalab.noirlab.edu/tap
+  cache_dir: cache
+
+halo_model:
+  mstar_method: taylor2011   # color-based M*/L; swappable
+  mstar_scatter_dex: 0.15
+  smhm: behroozi13           # or moster13
+  smhm_scatter_dex: 0.18
+  cmodel: diemer19
+  c_scatter_dex: 0.16
+  profile: bmo               # truncated NFW (Baltz-Marshall-Oguri), tau = c_200c
+  mdef: 200c
+
+cosmology:
+  H0: 70.0
+  Om0: 0.3
+
+output:
+  dir: output/sn2025wny
