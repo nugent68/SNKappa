@@ -1,0 +1,63 @@
+# SN 1997ff (HDF-N, z~1.7 SN Ia; Gilliland, Nugent & Phillips 1999)
+# LOS-magnification test case vs Benitez et al. 2002 (ApJ 577, L1):
+# Delta_m = 0.34 +/- 0.12 mag from 6 foreground galaxies (multi-plane SIS).
+# No strong lens here: r_exclude is a minimal guard radius, and the
+# "lens group" branch is repurposed to isolate the dominant z~0.556
+# foreground plane (galaxies 709/720): group-INCLUDED = total LOS.
+
+source:
+  name: SN1997ff
+  ra_src: 189.201083
+  dec_src: 62.217219
+  z_src: 1.755
+
+deflector:
+  ra_lens: 189.201083     # SN position; no deflector to excise
+  dec_lens: 62.217219
+  z_lens: 0.556           # dominant foreground plane (Benitez 709/720)
+  r_exclude_arcsec: 1.0   # minimal central guard only
+
+lens_group:
+  include_lens_group: false
+  r_group_arcmin: 2.0
+  dz_group: null
+
+los:
+  aperture_radius_arcmin: 15.0
+  count_aperture_arcsec: [45, 120]
+  mag_limit: 21.0
+  mag_limit_band: z
+
+randoms:
+  n_random_los: 500
+  annulus_deg: [0.5, 2.0]
+  zero_point: mean
+  variance_mode: robust
+
+montecarlo:
+  n_mc: 1000
+  seed: 19970425          # SN 1997ff discovery epoch
+
+data:
+  desi_release: dr1
+  ls_release: dr10
+  tap_url: https://datalab.noirlab.edu/tap
+  cache_dir: cache
+
+halo_model:
+  mstar_method: nir1um
+  mstar_scatter_dex: 0.16
+  smhm: behroozi13
+  smhm_scatter_dex: 0.18
+  cmodel: diemer19
+  c_scatter_dex: 0.16
+  profile: bmo
+  mdef: 200c
+  logmh_max: 13.8
+
+cosmology:
+  H0: 70.0
+  Om0: 0.3
+
+output:
+  dir: output/sn1997ff
