@@ -66,3 +66,9 @@ frankenblast:
 
 output:
   dir: output/sn2025wny
+
+clusters:
+  enabled: true
+  source: wenhan2024         # Wen & Han 2024 via VizieR TAP, region-wide
+  mass_scatter_dex: 0.25
+  miscentering_arcmin: 0.5

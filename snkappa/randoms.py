@@ -29,8 +29,15 @@ def draw_random_centers(cfg, rng, n=None):
     return pts.ra.deg, pts.dec.deg
 
 
-def run_randoms(cfg, engine, rng, progress=None):
+def run_randoms(cfg, engine, rng, progress=None, base_exclude=None,
+                cluster_field=None):
     """kappa_raw and weighted counts for each random sightline.
+
+    base_exclude: galaxies removed from every sightline (e.g. cluster
+    members whose halos are replaced by injected cluster halos);
+    cluster_field: ClusterKappa of region-wide field clusters, added to
+    each random's kappa so the mass-sheet zero point stays consistent
+    with the science sightline.
 
     Returns dict with per-random arrays and summary stats. Randoms whose
     aperture counts fall below half the median (masking / survey edge) are
@@ -46,8 +53,11 @@ def run_randoms(cfg, engine, rng, progress=None):
                    cfg.los.count_aperture_arcsec}
 
     for i, (ra0, dec0) in enumerate(zip(ras, decs)):
-        _, _, k = engine.kappa_los(ra0, dec0, r_in, r_ap)
+        _, _, k = engine.kappa_los(ra0, dec0, r_in, r_ap,
+                                   exclude_mask=base_exclude)
         kappa[i] = k.sum()
+        if cluster_field is not None:
+            kappa[i] += cluster_field.kappa_sum(ra0, dec0)
         ngal[i] = k.size
         for r_c in cfg.los.count_aperture_arcsec:
             zeta_counts[r_c][i] = engine.weighted_counts(ra0, dec0, r_in, r_c)

@@ -95,6 +95,24 @@ class CosmologyConfig:
 
 
 @dataclass
+class ClustersConfig:
+    """Cluster-halo tier: inject detected clusters as single NFW halos
+    region-wide, replacing their member galaxies' halos. A cluster centered
+    inside the deflector exclusion radius is the lens HOST cluster: reported
+    as a separate conditional term (degenerate with the lens model / MSD),
+    never folded into the headline kappa_ext."""
+    enabled: bool = False
+    source: str = "wenhan2024"      # wenhan2024 | manual | both
+    vizier_tap: str = "https://tapvizier.cds.unistra.fr/TAPVizieR/tap"
+    m200_from_m500: float = 1.4     # NFW c~5 conversion
+    concentration: float = 5.0
+    mass_scatter_dex: float = 0.25  # richness-mass scatter
+    miscentering_arcmin: float = 0.5
+    member_dz: float = 0.0067       # x(1+z); ~2000 km/s for spec members
+    manual: list = field(default_factory=list)
+
+
+@dataclass
 class FrankenBlastConfig:
     """Hybrid stellar masses via FrankenBlast SBI++ (see scripts/fb_fit.py).
 
@@ -125,6 +143,7 @@ class Config:
     data: DataConfig = field(default_factory=DataConfig)
     halo_model: HaloModelConfig = field(default_factory=HaloModelConfig)
     cosmology: CosmologyConfig = field(default_factory=CosmologyConfig)
+    clusters: ClustersConfig = field(default_factory=ClustersConfig)
     frankenblast: FrankenBlastConfig = field(
         default_factory=FrankenBlastConfig)
     output: OutputConfig = field(default_factory=OutputConfig)
@@ -155,6 +174,7 @@ _SECTIONS = {
     "data": DataConfig,
     "halo_model": HaloModelConfig,
     "cosmology": CosmologyConfig,
+    "clusters": ClustersConfig,
     "frankenblast": FrankenBlastConfig,
     "output": OutputConfig,
 }

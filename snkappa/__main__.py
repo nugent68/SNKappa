@@ -143,39 +143,105 @@ def run_pipeline(cfg, tap, report) -> int:
 
     engine = KappaEngine(cfg, cosmo, hm, est, df, **engine_kwargs)
 
+    # --- cluster-halo tier ----------------------------------------------------
+    cluster_field = None
+    cluster_summary = None
+    drop_members = np.zeros(len(df), dtype=bool)
+    if cfg.clusters.enabled:
+        from . import clusters as clu
+        from .datalab import TapClient
+
+        log("fetching cluster catalog and building cluster tier ...")
+        cl_all = clu.fetch_clusters(
+            cfg, lambda url: TapClient(url, cfg.data.cache_dir))
+        hosts, field_cl = clu.split_host(cfg, cl_all)
+        drop_members = clu.assign_members(cfg, df, cl_all, hm)
+        cluster_field = clu.ClusterKappa(cfg, hm, cosmo, field_cl)
+        log(f"  {len(cl_all)} clusters in region ({len(hosts)} host, "
+            f"{len(field_cl)} field); {int(drop_members.sum())} member "
+            f"galaxies replaced by cluster halos")
+
+        cluster_summary = {"n_clusters_region": int(len(cl_all)),
+                           "n_members_replaced": int(drop_members.sum()),
+                           "hosts": []}
+        for _, h in hosts.iterrows():
+            hk = clu.ClusterKappa(cfg, hm, cosmo, h.to_frame().T)
+            k_cen = hk.kappa_sum(cfg.source.ra_src, cfg.source.dec_src)
+            k_mc = hk.mc_kappa_sum(cfg.source.ra_src, cfg.source.dec_src,
+                                   rng, cfg.montecarlo.n_mc)
+            dyn = clu.velocity_dispersion(cfg, df, float(h["ra"]),
+                                          float(h["dec"]), float(h["z"]))
+            cluster_summary["hosts"].append({
+                "name": str(h["name"]), "z": float(h["z"]),
+                "m200_catalog": float(h["m200"]),
+                "sigma_v_diagnostic": dyn,
+                "kappa_at_sn_catalog_center": k_cen,
+                "kappa_at_sn_marginalized": montecarlo.percentiles(k_mc),
+                "note": ("HOST cluster: degenerate with the strong-lens "
+                         "model / mass-sheet; NOT included in kappa_ext"),
+            })
+            log(f"  host {h['name']}: kappa(SN|centered)={k_cen:.3f}; "
+                f"marginalized p50={np.percentile(k_mc,50):.4f}; "
+                f"sigma_v={dyn['sigma_v_kms']} km/s "
+                f"(N={dyn['n_members']}) -> "
+                f"M200_dyn={dyn['m200_dyn']:.2e}")
+
     r_ap = cfg.los.aperture_radius_arcmin * 60.0
     r_in = cfg.deflector.r_exclude_arcsec
-    excl_nogroup = (df["excl_deflector"] | df["is_group"]).to_numpy()
-    excl_group = df["excl_deflector"].to_numpy()
+    excl_nogroup = (df["excl_deflector"] | df["is_group"]).to_numpy() \
+        | drop_members
+    excl_group = df["excl_deflector"].to_numpy() | drop_members
 
     idx, theta, kappa_i = engine.kappa_los(
         cfg.source.ra_src, cfg.source.dec_src, r_in, r_ap,
         exclude_mask=excl_nogroup)
-    kappa_raw_sn = float(kappa_i.sum())
+    kappa_cl_sn = (cluster_field.kappa_sum(cfg.source.ra_src,
+                                           cfg.source.dec_src)
+                   if cluster_field else 0.0)
+    kappa_raw_sn = float(kappa_i.sum()) + kappa_cl_sn
     idx_g, theta_g, kappa_i_g = engine.kappa_los(
         cfg.source.ra_src, cfg.source.dec_src, r_in, r_ap,
         exclude_mask=excl_group)
-    kappa_raw_sn_group = float(kappa_i_g.sum())
+    kappa_raw_sn_group = float(kappa_i_g.sum()) + kappa_cl_sn
     n_group_members = int(df["is_group"].sum())
     log(f"  fiducial kappa_raw(SN) = {kappa_raw_sn:.4f} (group excluded), "
         f"{kappa_raw_sn_group:.4f} (group included; "
-        f"{n_group_members} members)")
+        f"{n_group_members} members)"
+        + (f"; field-cluster term {kappa_cl_sn:.4f}" if cluster_field
+           else ""))
 
     # --- randoms --------------------------------------------------------------
     log(f"running {cfg.randoms.n_random_los} random sightlines ...")
-    rand = randoms.run_randoms(cfg, engine, rng, progress=log)
+    rand = randoms.run_randoms(cfg, engine, rng, progress=log,
+                               base_exclude=(drop_members
+                                             if cfg.clusters.enabled
+                                             else None),
+                               cluster_field=cluster_field)
     log(f"  kappa_random: mean {rand['kappa_mean']:.4f}, "
         f"median {rand['kappa_median']:.4f}, std {rand['kappa_std']:.4f}, "
         f"robust sigma {rand['kappa_sigma_robust']:.4f} "
         f"({rand['n_flagged']} flagged)")
 
-    zeta = randoms.zeta_summary(cfg, engine, rand, excl_nogroup)
+    # zeta is a halo-model-independent NUMBER-count diagnostic: cluster
+    # members remain real galaxies and must be counted (only their halos
+    # were replaced), so use the pre-replacement exclusion mask here
+    excl_counts = (df["excl_deflector"] | df["is_group"]).to_numpy()
+    zeta = randoms.zeta_summary(cfg, engine, rand, excl_counts)
 
     # --- Monte Carlo ----------------------------------------------------------
     log(f"Monte Carlo: {cfg.montecarlo.n_mc} joint draws (group excluded) ...")
     draws_nogroup = montecarlo.mc_kappa_raw(cfg, engine, rng, excl_nogroup)
     log("Monte Carlo: group-included branch ...")
     draws_group = montecarlo.mc_kappa_raw(cfg, engine, rng, excl_group)
+    if cluster_field is not None:
+        log("Monte Carlo: field-cluster term (mass scatter + miscentering) ...")
+        cl_draws = cluster_field.mc_kappa_sum(
+            cfg.source.ra_src, cfg.source.dec_src, rng, cfg.montecarlo.n_mc)
+        draws_nogroup = draws_nogroup + cl_draws
+        draws_group = draws_group + cl_draws
+        cluster_summary["field_kappa_at_sn"] = {
+            "fiducial": kappa_cl_sn,
+            "marginalized": montecarlo.percentiles(cl_draws)}
 
     k_ext_nogroup = montecarlo.build_pkappa(cfg, draws_nogroup, rand, rng)
     k_ext_group = montecarlo.build_pkappa(cfg, draws_group, rand, rng)
@@ -201,6 +267,7 @@ def run_pipeline(cfg, tap, report) -> int:
             "n_group_members_excluded": n_group_members,
         },
         "zeta_number_counts": zeta,
+        "cluster_term": cluster_summary,
         "frankenblast_calibration": fb_calib,
         "catalog": {
             "n_galaxies_region": len(df),
