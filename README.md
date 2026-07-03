@@ -124,6 +124,24 @@ are photometry-limited. Training covers z ≤ 1.5; higher-z LOS galaxies keep
 the rest-1μm estimator. LS grz is fed as DES_g/r/z (BASS/MzLS vs DECam
 differences are a few percent, within the SBI noise model).
 
+### Outcome for SN 2025wny (2026-07): FB masses NOT adopted, calibration kept
+
+We fitted 487 galaxies (all 200 dominant κ contributors, G1, and 286
+calibration galaxies; ~6 min/object, ~41 CPU-h across 10 workers). Result:
+with only 5 of the 17 training bands, the SBI++ missing-band path
+systematically **overestimates stellar masses at the massive end** —
+cheap−FB = −0.14 dex at logM* < 10 but −0.42 dex at logM* > 11, and on the
+one ground-truth anchor (G1: published deep-SED Prospector mass
+11.11 ± 0.12) FB reads 11.59 ± 0.09 (+0.48 dex) while the rest-1μm
+estimator reads 11.15 (+0.04 dex). Since κ_ext is dominated by exactly
+those massive galaxies, adopting FB masses would inflate κ_ext spuriously
+(see `configs/sn2025wny_fbhybrid.yaml` for the not-adopted comparison run).
+What we DID keep from the exercise: the measured cheap-estimator scatter,
+0.16 dex (`mstar_scatter_dex`), and the G1-anchored bias validation (~0).
+The hybrid machinery remains available and appropriate for fields with
+fuller band coverage (LS south + GALEX/2MASS coverage, or the LSST-trained
+SBI++ models when LSST photometry exists).
+
 ## Known limitations (quote κ_ext with these in mind)
 
 - **1-halo term only.** Truncating halos at r_200c means κ_ext captures the
