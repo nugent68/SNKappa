@@ -14,9 +14,10 @@ def main(argv=None):
     parser = argparse.ArgumentParser(
         prog="snkappa",
         description="External-convergence estimator for strongly lensed SNe")
-    parser.add_argument("command", choices=["check", "run"],
+    parser.add_argument("command", choices=["check", "run", "fb-export"],
                         help="check: STEP-0 availability report only; "
-                             "run: full pipeline")
+                             "run: full pipeline; fb-export: write the "
+                             "FrankenBlast target list (see scripts/fb_fit.py)")
     parser.add_argument("--config", required=True, help="YAML config path")
     args = parser.parse_args(argv)
 
@@ -32,7 +33,59 @@ def main(argv=None):
     if not report["ok"]:
         print("STEP 0 failed; aborting run.", file=sys.stderr)
         return 1
+    if args.command == "fb-export":
+        return fb_export(cfg, tap)
     return run_pipeline(cfg, tap, report)
+
+
+def _build_catalog_engine(cfg, tap, log, overrides=None):
+    """Shared by run and fb-export: fetch + clean + engine."""
+    from . import catalog
+    from .halos import HaloModel
+    from .kappa import KappaEngine
+    from .stellar import make_estimator
+
+    df_raw, zpix = catalog.fetch_regional(cfg, tap)
+    log(f"  tractor rows: {len(df_raw)}, zpix rows: {len(zpix)}")
+    df = catalog.clean_and_merge(cfg, df_raw, zpix)
+    cosmo = cfg.cosmo
+    hm = HaloModel(cfg.halo_model, cosmo, cfg.source.z_src)
+    est = make_estimator(cfg.halo_model.mstar_method, cosmo)
+    kw = overrides or {}
+    engine = KappaEngine(cfg, cosmo, hm, est, df, **kw)
+    return df, engine, est
+
+
+def fb_export(cfg, tap) -> int:
+    """Write fb_targets.csv: top kappa contributors + calibration sample."""
+    import time
+    from pathlib import Path
+
+    import numpy as np
+
+    from . import fbhybrid
+
+    t0 = time.time()
+
+    def log(msg):
+        print(f"[{time.time() - t0:7.1f}s] {msg}", flush=True)
+
+    rng = np.random.default_rng(cfg.montecarlo.seed)
+    outdir = Path(cfg.output.dir)
+    outdir.mkdir(parents=True, exist_ok=True)
+    log("building catalog and fiducial engine ...")
+    df, engine, _ = _build_catalog_engine(cfg, tap, log)
+    excl = (df["excl_deflector"] | df["is_group"]).to_numpy()
+    idx, _, kappa_i = engine.kappa_los(
+        cfg.source.ra_src, cfg.source.dec_src,
+        cfg.deflector.r_exclude_arcsec,
+        cfg.los.aperture_radius_arcmin * 60.0, exclude_mask=excl)
+    path = fbhybrid.export_targets(cfg, df, idx, kappa_i, outdir, rng)
+    log(f"wrote {path}")
+    log("next: run scripts/fb_fit.py in the frankenblast-host environment, "
+        "then set frankenblast.results_path in the config and rerun "
+        "`snkappa run`.")
+    return 0
 
 
 def run_pipeline(cfg, tap, report) -> int:
@@ -70,7 +123,25 @@ def run_pipeline(cfg, tap, report) -> int:
     cosmo = cfg.cosmo
     hm = HaloModel(cfg.halo_model, cosmo, cfg.source.z_src)
     est = make_estimator(cfg.halo_model.mstar_method, cosmo)
-    engine = KappaEngine(cfg, cosmo, hm, est, df)
+
+    # FrankenBlast hybrid masses (if results are available)
+    fb_calib = None
+    engine_kwargs = {}
+    fb_path = cfg.frankenblast.results_path
+    if fb_path and Path(fb_path).exists():
+        from . import fbhybrid
+        override, err, fb_calib = fbhybrid.load_and_calibrate(cfg, df, est)
+        engine_kwargs = dict(
+            logms_override=override, logms_err=err,
+            calib_offset=fb_calib["offset_cheap_minus_fb_dex"],
+            mstar_scatter=fb_calib["scatter_dex"])
+        log(f"  FrankenBlast hybrid: {fb_calib['n_fitted']} galaxies fitted; "
+            f"cheap-estimator offset {fb_calib['offset_cheap_minus_fb_dex']:+.3f} dex "
+            f"(subtracted everywhere), scatter {fb_calib['scatter_dex']:.3f} dex")
+    elif fb_path:
+        log(f"  WARNING: frankenblast.results_path set but not found: {fb_path}")
+
+    engine = KappaEngine(cfg, cosmo, hm, est, df, **engine_kwargs)
 
     r_ap = cfg.los.aperture_radius_arcmin * 60.0
     r_in = cfg.deflector.r_exclude_arcsec
@@ -130,6 +201,7 @@ def run_pipeline(cfg, tap, report) -> int:
             "n_group_members_excluded": n_group_members,
         },
         "zeta_number_counts": zeta,
+        "frankenblast_calibration": fb_calib,
         "catalog": {
             "n_galaxies_region": len(df),
             "n_spec": n_spec, "n_phot": n_phot,

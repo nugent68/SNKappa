@@ -53,8 +53,13 @@ def mc_kappa_raw(cfg, engine, rng, exclude_mask):
         for b in ("g", "r", "i", "z", "w1") if f"mag_{b}" in engine.df}
 
     # ---- scatter draws ------------------------------------------------------
+    # per-galaxy M* sigma: FB posterior width where fitted, calibrated
+    # estimator scatter elsewhere
     hcfg = cfg.halo_model
-    d_ml = rng.normal(0.0, hcfg.mstar_scatter_dex, (n_mc, n_gal))
+    gal_idx = np.concatenate([gi_spec, gi_phot])
+    sig_ml = np.where(np.isfinite(engine.logms_err[gal_idx]),
+                      engine.logms_err[gal_idx], engine.mstar_scatter)
+    d_ml = rng.standard_normal((n_mc, n_gal)) * sig_ml[None, :]
     d_smhm = rng.normal(0.0, hcfg.smhm_scatter_dex, (n_mc, n_gal))
     d_c = rng.normal(0.0, hcfg.c_scatter_dex, (n_mc, n_gal))
 
@@ -68,6 +73,7 @@ def mc_kappa_raw(cfg, engine, rng, exclude_mask):
     flat_smhm = d_smhm.ravel()
     flat_c = d_c.ravel()
     flat_theta = np.broadcast_to(theta, (n_mc, n_gal)).ravel()
+    flat_gidx = np.broadcast_to(gal_idx, (n_mc, n_gal)).ravel()
     draw_of = np.broadcast_to(np.arange(n_mc)[:, None], (n_mc, n_gal)).ravel()
     flat_mags = {b: np.broadcast_to(v, (n_mc, n_gal)).ravel()
                  for b, v in mags.items()}
@@ -76,7 +82,8 @@ def mc_kappa_raw(cfg, engine, rng, exclude_mask):
     for b in np.unique(flat_bin[flat_fg]):
         m = flat_fg & (flat_bin == b)
         zb = hm.zbins[b]
-        logms = engine.stellar.logmstar(
+        logms = engine.logmstar_at(
+            flat_gidx[m],
             {k: v[m] for k, v in flat_mags.items()},
             np.full(m.sum(), zb)) + flat_ml[m]
         rhos, rs, tau = hm.halo_params(

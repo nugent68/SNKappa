@@ -59,5 +59,10 @@ cosmology:
   H0: 70.0
   Om0: 0.3
 
+frankenblast:
+  # results_path: output/sn2025wny/fb_results.csv   # uncomment after fb_fit
+  n_top: 200
+  n_calib: 300
+
 output:
   dir: output/sn2025wny

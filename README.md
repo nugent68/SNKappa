@@ -91,6 +91,39 @@ string, row count, and retrieval timestamp.
    concentration scatter (`n_mc` draws) convolved with the random-LOS variance
    → P(κ_ext); percentiles 2.5/16/50/84/97.5 reported for both group branches.
 
+## Optional: FrankenBlast hybrid stellar masses
+
+The default rest-1μm masses can be upgraded with full Bayesian SED posteriors
+from FrankenBlast's SBI++ engine (Nugent et al. 2025, arXiv:2509.08874;
+github.com/anugent96/frankenblast-host) for the galaxies that dominate
+κ_ext, plus a calibration sample that measures the cheap estimator's bias
+and scatter (applied consistently to the random sightlines so the mass-sheet
+zero point stays coherent). Workflow:
+
+```bash
+# 1. write the target list (top kappa contributors + calibration sample + G1)
+python -m snkappa fb-export --config configs/sn2025wny.yaml
+# 2. one-time: clone frankenblast-host next to SNKappa, create its venv
+#    (python3.12 + requirements incl. sbi==0.22.0, astro-prospector, fsps),
+#    download sbipp_phot.zip + sbi_training_sets.zip from
+#    doi:10.5281/zenodo.16953205, clone github.com/cconroy20/fsps (SPS_HOME)
+# 3. fit (checkpointed; resumes if interrupted)
+cd ../frankenblast-host
+SPS_HOME=../fsps-data .venv-fb/bin/python ../SNKappa/scripts/fb_fit.py \
+  --targets ../SNKappa/output/sn2025wny/fb_targets.csv \
+  --out     ../SNKappa/output/sn2025wny/fb_results.csv \
+  --training-root sbi_models/sbi_training_sets
+# 4. enable in the config and rerun
+#    frankenblast: { results_path: output/sn2025wny/fb_results.csv }
+python -m snkappa run --config configs/sn2025wny.yaml
+```
+
+Caveats: the SBI++ GPD2W models are trained on 17 bands (GALEX→WISE); with
+LS grz+W1/W2 only, every object takes the missing-band path and posteriors
+are photometry-limited. Training covers z ≤ 1.5; higher-z LOS galaxies keep
+the rest-1μm estimator. LS grz is fed as DES_g/r/z (BASS/MzLS vs DECam
+differences are a few percent, within the SBI noise model).
+
 ## Known limitations (quote κ_ext with these in mind)
 
 - **1-halo term only.** Truncating halos at r_200c means κ_ext captures the

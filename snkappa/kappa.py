@@ -56,12 +56,26 @@ class KappaEngine:
 
     N_ZCOARSE = 30  # photo-z marginalization grid size
 
-    def __init__(self, cfg, cosmo, halo_model, stellar_est, df):
+    def __init__(self, cfg, cosmo, halo_model, stellar_est, df,
+                 logms_override=None, logms_err=None, calib_offset=0.0,
+                 mstar_scatter=None):
+        """logms_override/logms_err: per-df-row arrays (NaN = use estimator);
+        calib_offset is SUBTRACTED from the base estimator (measured
+        cheap-minus-FB bias); mstar_scatter overrides the config M* scatter
+        for non-overridden galaxies in the Monte Carlo."""
         self.cfg = cfg
         self.cosmo = cosmo
         self.hm = halo_model
         self.stellar = stellar_est
         self.df = df.reset_index(drop=True)
+        n = len(self.df)
+        self.logms_override = (np.full(n, np.nan) if logms_override is None
+                               else np.asarray(logms_override, dtype=float))
+        self.logms_err = (np.full(n, np.nan) if logms_err is None
+                          else np.asarray(logms_err, dtype=float))
+        self.calib_offset = float(calib_offset)
+        self.mstar_scatter = (cfg.halo_model.mstar_scatter_dex
+                              if mstar_scatter is None else float(mstar_scatter))
 
         z_src = cfg.source.z_src
         self.sigcr = sigma_crit_msun_mpc2(cosmo, self.hm.zbins, z_src)
@@ -75,6 +89,13 @@ class KappaEngine:
         self._prep_spec()
         self._prep_phot()
 
+    def logmstar_at(self, gal_idx, mags, z):
+        """Stellar mass for df rows gal_idx at redshift(s) z: FB override
+        where available, else calibrated base estimator."""
+        base = self.stellar.logmstar(mags, z) - self.calib_offset
+        ov = self.logms_override[gal_idx]
+        return np.where(np.isfinite(ov), ov, base)
+
     # -- fiducial tables ----------------------------------------------------
 
     def _prep_spec(self):
@@ -84,7 +105,7 @@ class KappaEngine:
         ibin = self.hm.zbin_index(z)
         mags = {b: s[f"mag_{b}"].to_numpy(dtype=float)
                 for b in ("g", "r", "i", "z", "w1") if f"mag_{b}" in s}
-        logms = self.stellar.logmstar(mags, self.hm.zbins[ibin])
+        logms = self.logmstar_at(self.spec_idx, mags, self.hm.zbins[ibin])
         rhos, rs, tau = self.hm.halo_params(logms, ibin)
         self.spec_ibin = ibin
         self.spec_logms = logms
@@ -118,7 +139,7 @@ class KappaEngine:
                 for b in ("g", "r", "i", "z", "w1") if f"mag_{b}" in p}
         for j, ib in enumerate(self.zc_ibins):
             zj = self.hm.zbins[ib]
-            logms = self.stellar.logmstar(mags, np.full(n_p, zj))
+            logms = self.logmstar_at(self.phot_idx, mags, np.full(n_p, zj))
             rhos, rs, tau = self.hm.halo_params(logms, np.full(n_p, ib))
             self.phot_amp[:, j] = rhos * rs / self.sigcr[ib]
             self.phot_theta_s[:, j] = rs / self.hm.da[ib] * 206264.806

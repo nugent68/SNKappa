@@ -95,6 +95,21 @@ class CosmologyConfig:
 
 
 @dataclass
+class FrankenBlastConfig:
+    """Hybrid stellar masses via FrankenBlast SBI++ (see scripts/fb_fit.py).
+
+    Workflow: `snkappa fb-export` writes fb_targets.csv (top kappa
+    contributors + calibration sample); scripts/fb_fit.py fits them in the
+    frankenblast-host environment; setting results_path makes `snkappa run`
+    use FB masses for fitted galaxies and a calibrated (bias-corrected)
+    cheap estimator for everything else, keeping the random-sightline zero
+    point consistent."""
+    results_path: str | None = None
+    n_top: int = 200      # top kappa_i contributors along the SN sightline
+    n_calib: int = 300    # calibration sample from the regional catalog
+
+
+@dataclass
 class OutputConfig:
     dir: str = "output/run"
 
@@ -110,6 +125,8 @@ class Config:
     data: DataConfig = field(default_factory=DataConfig)
     halo_model: HaloModelConfig = field(default_factory=HaloModelConfig)
     cosmology: CosmologyConfig = field(default_factory=CosmologyConfig)
+    frankenblast: FrankenBlastConfig = field(
+        default_factory=FrankenBlastConfig)
     output: OutputConfig = field(default_factory=OutputConfig)
 
     def __post_init__(self):
@@ -138,6 +155,7 @@ _SECTIONS = {
     "data": DataConfig,
     "halo_model": HaloModelConfig,
     "cosmology": CosmologyConfig,
+    "frankenblast": FrankenBlastConfig,
     "output": OutputConfig,
 }
 
