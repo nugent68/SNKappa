@@ -8,6 +8,7 @@ cached to parquet keyed by a hash of the ADQL string, and recorded in a manifest
 from __future__ import annotations
 
 import hashlib
+import time
 import warnings
 from datetime import datetime, timezone
 from pathlib import Path
@@ -48,17 +49,32 @@ class TapClient:
             self.manifest.append(entry)
             return df
 
+        result = None
         with warnings.catch_warnings():
             warnings.simplefilter("ignore")  # pyvo VOTable unit chatter
-            try:
-                result = self.service.search(adql, maxrec=maxrec)
-            except Exception:
-                # sync can time out on large regional queries; retry async
-                job = self.service.submit_job(adql, maxrec=maxrec)
-                job.run()
-                job.wait(phases=["COMPLETED", "ERROR", "ABORTED"], timeout=1800.0)
-                job.raise_if_error()
-                result = job.fetch_result()
+            last_exc = None
+            for attempt, pause in enumerate((0, 45, 120)):
+                if pause:
+                    time.sleep(pause)
+                try:
+                    result = self.service.search(adql, maxrec=maxrec)
+                    break
+                except Exception as exc:  # timeouts / transient 5xx
+                    last_exc = exc
+                try:
+                    # sync failed; try async (also retried with backoff)
+                    job = self.service.submit_job(adql, maxrec=maxrec)
+                    job.run()
+                    job.wait(phases=["COMPLETED", "ERROR", "ABORTED"],
+                             timeout=1800.0)
+                    job.raise_if_error()
+                    result = job.fetch_result()
+                    break
+                except Exception as exc:
+                    last_exc = exc
+            if result is None:
+                raise RuntimeError(
+                    f"TAP query failed after retries: {last_exc}")
         table = result.to_table()
         # object columns (e.g. masked strings) -> plain types for parquet
         df = table.to_pandas()
