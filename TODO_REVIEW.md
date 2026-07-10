@@ -32,7 +32,18 @@ A = 0.92 ± 0.23 (stat) ± 0.09 (sys); permutation null p < 1e-4 (3.8σ).
 - P4: all text items done; Data Availability now true (.gitignore
   exception for the catalog + `des_pilot/README.md` provenance).
   NOTE: new/changed files are NOT yet committed — review `git status`.
-- P5: not started (Perlmutter repo m2218 available for 5.1 mocks).
+- P5: 5.1 DONE on Perlmutter (repo m2218) with cosmoDC2 v1.1.4:
+  `scripts/mock_extract_dc2.py` + `scripts/mock_calibration.py` +
+  `scripts/mock_dc2.sbatch` (debug queue, 3 variants in parallel, ~5 min).
+  Results (1950 sightlines, 6 healpix regions, output/mock_dc2/):
+  noiseless A=0.45±0.04, fiducial (DES-like noise) A=0.31±0.03, naive
+  SMHM A=0.22±0.02 → λ_mock = 0.68±0.09 (independently confirms the
+  local attenuation MC's λ≈0.7) and the debiased SMHM inversion is
+  worth +39% in recovered amplitude. CAVEAT: absolute A_mock is not a
+  model test — cosmoDC2 convergence lives on 0.5' HEALPix shells and is
+  suppressed at the <~1 Mpc one-halo scales carrying the signal
+  (Korytov+2019; degraded at R<~1 Mpc per Kovacs+2022) — a MICE-type
+  lightcone is the follow-up. 5.2–5.5 not started.
 
 ---
 

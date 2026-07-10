@@ -11,6 +11,9 @@ output/des_full/*
 !output/des_full/des_all_kappa.csv
 !output/des_full/fit_summary*.json
 !output/des_full/photoz_validation.json
+!output/mock_dc2/
+output/mock_dc2/*
+!output/mock_dc2/mock_summary*.json
 .pytest_cache/
 build/
 dist/

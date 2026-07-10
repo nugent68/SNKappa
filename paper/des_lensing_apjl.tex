@@ -397,12 +397,24 @@ chain alone gives $\lambda = 0.97$; including the cluster tier ---
 whose 0.25~dex richness--mass scatter makes the prediction genuinely
 noisy for the $\sim$20\% of sight lines near clusters --- gives
 $\lambda \simeq 0.7$ for the population mean (0.99 median; the
-distribution is strongly skewed). The de-attenuated amplitude is
-therefore $A_{\rm true} = A_{\rm fit}/\lambda \simeq 0.9$--1.3,
-consistent with unity: the fitted $A$ should be read as a lower bound
-on the halo-model normalization at the $\sim$10\% level. A fully
-heteroscedastic latent-variable regression, calibrated end-to-end on a
-mock lightcone, is the natural next step.
+distribution is strongly skewed). An end-to-end rerun of the identical
+pipeline on the cosmoDC2 lightcone \citep{Korytov2019} --- 1950 mock
+sight lines across six independent regions, with the ray-traced true
+convergence as truth and DES-like noise (validated photo-$z$ and
+stellar-mass scatter, cluster richness--mass scatter) forward-modeled
+--- confirms this attenuation independently: switching the
+observational noise on reduces the recovered amplitude by
+$\lambda_{\rm mock} = 0.68 \pm 0.09$, and substituting the naive SMHM
+inversion for the debiased one costs a further 28\%. (The mock's
+\emph{absolute} amplitude is not a clean calibration of the model:
+cosmoDC2's convergence is computed on $0.5'$ HEALPix mass shells and is
+suppressed precisely at the $\lesssim 1$~Mpc one-halo scales that carry
+this signal; a lightcone with higher small-scale fidelity is the
+follow-up.) The de-attenuated amplitude is therefore
+$A_{\rm true} = A_{\rm fit}/\lambda \simeq 0.9$--1.3, consistent with
+unity: the fitted $A$ should be read as a lower bound on the halo-model
+normalization at the $\sim$10\% level. A fully heteroscedastic
+latent-variable regression remains the natural next upgrade.
 
 \emph{Relation to \citet{Shah2024}.} The two measurements are
 complementary rather than competing. Shah et al. optimize a fitted
@@ -461,8 +473,12 @@ This work used the public DES-SN5YR data release, data products of the
 DESI Legacy Imaging Surveys (DR10) and DESI DR1, the \citet{WenHan2024}
 cluster catalog via CDS/VizieR, and services provided by the Astro Data
 Lab, part of the Community Science and Data Center Program of NSF
-NOIRLab. P.E.N. acknowledges support from the DOE Office of Science,
-Office of High Energy Physics, under contract DE-AC02-05CH11231.
+NOIRLab. The mock calibration used the cosmoDC2 synthetic sky catalog
+produced by the LSST Dark Energy Science Collaboration
+\citep{Korytov2019} and resources of the National Energy Research
+Scientific Computing Center (NERSC). P.E.N. acknowledges support from
+the DOE Office of Science, Office of High Energy Physics, under
+contract DE-AC02-05CH11231.
 Anthropic's Claude was used to assist in the analysis and the drafting
 of this manuscript.
 \end{acknowledgments}
@@ -506,6 +522,8 @@ M\"ortsell, E., et al. 2026, ApJ, in press
 M., Hook, I., et al. 2010, MNRAS, 405, 535
 \bibitem[Kettlety et al.(2018)]{Kettlety2018} Kettlety, T., Hesling, J.,
 Phillipps, S., et al. 2018, MNRAS, 473, 776
+\bibitem[Korytov et al.(2019)]{Korytov2019} Korytov, D., Hearin, A.,
+Kovacs, E., et al. 2019, ApJS, 245, 26
 \bibitem[Meidt et al.(2014)]{Meidt2014} Meidt, S.~E., Schinnerer, E.,
 van de Ven, G., et al. 2014, ApJ, 788, 144
 \bibitem[Nugent et al.(2025)]{Nugent2025} Nugent, A.~E., Villar,
