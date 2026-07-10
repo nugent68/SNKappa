@@ -1,0 +1,39 @@
+{
+  "variant": "sm0.25",
+  "args": {
+    "pixels": [
+      10066,
+      10324,
+      8793,
+      9171,
+      9430,
+      9689
+    ],
+    "datadir": "mockdata",
+    "out": "output/mock_dc2",
+    "n_rand": 200,
+    "sigz0": 0.001,
+    "outlier_frac": 0.0,
+    "mstar_scatter": 0.001,
+    "clmass_scatter": 0.02,
+    "smhm_inverse": "posterior",
+    "logmh_max": 13.8,
+    "sn_noise": 0.15,
+    "smooth_arcmin": 0.25,
+    "seed": 31415,
+    "variant": "sm0.25"
+  },
+  "n_src": 1948,
+  "A_mock_kappa": [
+    0.5682049602551138,
+    0.04297583978924744
+  ],
+  "A_mock_desfit": [
+    0.5507844312375931,
+    0.15347503339646262
+  ],
+  "r2": 0.4181377028902256,
+  "var_pred": 0.0001524776758278624,
+  "var_true": 0.00011773266526351205,
+  "cov": 8.668307022957374e-05
+}

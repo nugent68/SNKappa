@@ -99,7 +99,8 @@ def bmo_sigma_direct(x, tau, n_quad=128):
 
 
 class BMOTable:
-    """2D log-log interpolation table for the BMO truncated-NFW Sigma."""
+    """2D log-log interpolation tables for the BMO truncated-NFW: Sigma and
+    the cumulative 2D mass integral needed for Delta Sigma."""
 
     def __init__(self, n_x=512, n_tau=48):
         self.logx_grid = np.linspace(-4.0, 3.0, n_x)
@@ -113,12 +114,35 @@ class BMOTable:
             (self.logtau_grid, self.logx_grid), table,
             bounds_error=False, fill_value=None)
 
+        # M2(x) = int_0^x sigma_tilde(x') x' dx'  (for Delta Sigma =
+        # 2 M2/x^2 - sigma). Trapezoid along the log grid + analytic seed
+        # for the (negligible) 0..x_min core.
+        sig = 10.0 ** table
+        integrand = sig * xg[None, :]
+        m2 = np.empty_like(sig)
+        m2[:, 0] = 0.5 * xg[0] ** 2 * sig[:, 0]
+        dm = 0.5 * (integrand[:, 1:] + integrand[:, :-1]) * np.diff(xg)[None]
+        m2[:, 1:] = m2[:, 0:1] + np.cumsum(dm, axis=1)
+        self._interp_m2 = RegularGridInterpolator(
+            (self.logtau_grid, self.logx_grid),
+            np.log10(np.clip(m2, 1e-300, None)),
+            bounds_error=False, fill_value=None)
+
     def sigma_dimless(self, x, tau):
         x = np.clip(np.asarray(x, dtype=float), 1e-4, 1e3)
         tau = np.clip(np.asarray(tau, dtype=float), 0.5, 300.0)
         pts = np.stack([np.log10(np.broadcast_to(tau, x.shape)),
                         np.log10(x)], axis=-1)
         return 10.0 ** self._interp(pts)
+
+    def delta_sigma_dimless(self, x, tau):
+        """DeltaSigma/(rho_s r_s) = mean Sigma inside x minus Sigma(x)."""
+        x = np.clip(np.asarray(x, dtype=float), 1e-4, 1e3)
+        tau = np.clip(np.asarray(tau, dtype=float), 0.5, 300.0)
+        pts = np.stack([np.log10(np.broadcast_to(tau, x.shape)),
+                        np.log10(x)], axis=-1)
+        m2 = 10.0 ** self._interp_m2(pts)
+        return 2.0 * m2 / x ** 2 - 10.0 ** self._interp(pts)
 
 
 _BMO_TABLE: BMOTable | None = None

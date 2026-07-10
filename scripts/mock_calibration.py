@@ -148,9 +148,26 @@ def main():
     ap.add_argument("--logmh-max", type=float, default=13.8)
     ap.add_argument("--sn-noise", type=float, default=0.15,
                     help="mag noise for the DES-like fit")
+    ap.add_argument("--smooth-arcmin", type=float, default=0.0,
+                    help="Gaussian sigma [arcmin] applied to the PREDICTED "
+                         "kappa at source positions, mimicking the "
+                         "simulation's map/shell smoothing (resolution-"
+                         "matched closure test; Phase 0 of docs/MICE_PLAN)")
     ap.add_argument("--seed", type=int, default=31415)
     ap.add_argument("--variant", default="")
     args = ap.parse_args()
+
+    # Gaussian-kernel quadrature offsets: the 2D Gaussian radius is Rayleigh
+    # distributed, so equal-weight Rayleigh quantiles x uniform angles give
+    # an unbiased quadrature of the convolution (prediction is linear in
+    # evaluation position). 4 radii x 8 angles = 32 evals per source.
+    smooth_offs = []
+    if args.smooth_arcmin > 0:
+        u = (np.arange(4) + 0.5) / 4
+        rr = args.smooth_arcmin / 60.0 * np.sqrt(-2.0 * np.log(1.0 - u))
+        ph = (np.arange(8) + 0.5) / 8 * 2.0 * np.pi
+        smooth_offs = [(r * np.cos(p), r * np.sin(p))
+                       for r in rr for p in ph]
 
     datadir = Path(args.datadir)
     outdir = Path(args.out); outdir.mkdir(parents=True, exist_ok=True)
@@ -228,11 +245,21 @@ def main():
             def kap(a, d):
                 return eng.kappa_gal(a, d, r_out) + clf.kappa_sum(a, d)
 
+            def kap_src(a, d):
+                """Prediction at a source, optionally kernel-smoothed.
+                Randoms stay unsmoothed: smoothing preserves the mean, so
+                the zero point is unchanged in expectation."""
+                if not smooth_offs:
+                    return kap(a, d)
+                cosd = np.cos(np.radians(d))
+                return float(np.mean([kap(a + dx / cosd, d + dy)
+                                      for dx, dy in smooth_offs]))
+
             k_rand = np.array([kap(a, d) for a, d in zip(rra, rdec)])
             zp_c[k] = k_rand.mean()
             for i in np.concatenate([need_lo, need_hi]):
                 col = 0 if k_lo[i] == k else 1
-                kap_sn[i, col] = kap(src.ra.iloc[i], src.dec.iloc[i])
+                kap_sn[i, col] = kap_src(src.ra.iloc[i], src.dec.iloc[i])
             log(f"  z_src={z_src:.3f}: {need_lo.size + need_hi.size:3d} "
                 f"src evals | zp {zp_c[k]:.4f}")
 

@@ -47,8 +47,20 @@ A = 0.92 ± 0.23 (stat) ± 0.09 (sys); permutation null p < 1e-4 (3.8σ).
   worth +39% in recovered amplitude. CAVEAT: absolute A_mock is not a
   model test — cosmoDC2 convergence lives on 0.5' HEALPix shells and is
   suppressed at the <~1 Mpc one-halo scales carrying the signal
-  (Korytov+2019; degraded at R<~1 Mpc per Kovacs+2022) — a MICE-type
-  lightcone is the follow-up. 5.2–5.5 not started.
+  (Korytov+2019; degraded at R<~1 Mpc per Kovacs+2022). RESOLVED by the
+  Phase-0 resolution-matched closure (docs/MICE_PLAN.md): smoothing the
+  PREDICTION with a Gaussian kernel recovers A_matched = 0.57/0.71/0.84/
+  0.93 (±0.04–0.08) at sigma = 0.25'/0.5'/0.85'/1.3' — monotonically ->
+  1 at the plausible effective map resolution, i.e. the DC2 deficit is a
+  resolution artifact and the model amplitude closes at map scales
+  (output/mock_dc2/mock_summary_sm*.json).
+- P5.2-analog (absolute one-halo closure vs DATA): in progress via
+  scripts/delta_sigma_closure.py — predicted DeltaSigma for the DESI DR1
+  "Lensing Without Borders" lens bins (BGS/LRG; measurements + lens
+  catalogs with LS photometry on NERSC at desicollab/science/c3/
+  DESI-Lensing, unblinded v1.5) vs DES/KiDS/HSC/SDSS sources. NOTE:
+  collaboration data — check DESI publication policy before quoting in
+  the paper (the public release repo is still a stub). 5.3–5.5 open.
 
 ---
 
