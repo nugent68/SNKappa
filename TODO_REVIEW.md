@@ -2,6 +2,11 @@
 
 ## IMPLEMENTATION STATUS (2026-07-10)
 
+NOTE: the manuscript now lives ONLY in the Overleaf project (git remote);
+`scripts/make_figs.py` (moved from paper/) regenerates its figures into
+`output/figs/` and its statistics into `output/des_full/paper_stats.json`.
+References to `paper/...` below are historical.
+
 All P0–P4 items below are implemented and the pipeline + paper are updated.
 Post-fix headline (P(Ia)>0.9, N=1450): slope = −2.00 ± 0.49,
 A = 0.92 ± 0.23 (stat) ± 0.09 (sys); permutation null p < 1e-4 (3.8σ).

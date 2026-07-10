@@ -110,9 +110,10 @@ again map-resolution-limited).
   brackets the DES attenuation correction.
 - ΔΣ closure → replaces the "bounds the halo-mass normalization at
   ~35%" statement with a direct one-halo amplitude validation.
-- All new numbers land in the attenuation paragraph + Table sys of
-  `paper/des_lensing_apjl.tex`; scripts and summaries tracked as for
-  DC2 (`output/mock_mice/mock_summary*.json`).
+- All new numbers land in the attenuation paragraph + Table sys of the
+  manuscript (Overleaf project only; `scripts/make_figs.py` regenerates
+  the figures into `output/figs/`); scripts and summaries tracked as
+  for DC2 (`output/mock_mice/mock_summary*.json`).
 
 ## Logistics summary
 
