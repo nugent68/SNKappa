@@ -77,6 +77,9 @@ class HaloModelConfig:
     mstar_scatter_dex: float = 0.15   # M*/L (color-based estimator) scatter
     smhm: str = "behroozi13"          # or "moster13"
     smhm_scatter_dex: float = 0.18
+    # 'posterior': HMF-weighted <Mh|M*> (Eddington-debiased; default);
+    # 'naive': direct inversion of the mean relation (legacy)
+    smhm_inverse: str = "posterior"
     cmodel: str = "diemer19"
     c_scatter_dex: float = 0.16
     profile: str = "bmo"              # "bmo" (truncated NFW) or "nfw"
@@ -107,7 +110,10 @@ class ClustersConfig:
     m200_from_m500: float = 1.4     # NFW c~5 conversion
     concentration: float = 5.0
     mass_scatter_dex: float = 0.25  # richness-mass scatter
-    miscentering_arcmin: float = 0.5
+    miscentering_arcmin: float = 0.5   # legacy fixed-angle (single-SN MC)
+    # batch pipeline: Rayleigh miscentering with a fixed PHYSICAL scale,
+    # sigma_mis = miscenter_frac_r500 * r500 (r500 ~ 0.66 r200 for c~5)
+    miscenter_frac_r500: float = 0.2
     member_dz: float = 0.0067       # x(1+z); ~2000 km/s for spec members
     manual: list = field(default_factory=list)
 

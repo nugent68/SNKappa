@@ -30,7 +30,7 @@ def split_normal_params(z_med, z_l68, z_u68, z_std=None):
     return z_med, sig_lo, sig_hi
 
 
-def grid_pdf(zgrid, mu, sig_lo, sig_hi):
+def grid_pdf(zgrid, mu, sig_lo, sig_hi, outlier_frac=0.0, z_out_max=1.5):
     """p(z) evaluated on zgrid for each galaxy; shape [n_gal, n_z].
 
     Model: two half-Gaussians joined at mu, each carrying probability mass 0.5,
@@ -42,6 +42,11 @@ def grid_pdf(zgrid, mu, sig_lo, sig_hi):
     Normalized so that the integral over the FULL z>0 axis is 1 -- weights on a
     truncated grid (z < z_src) then correctly down-weight galaxies whose PDF
     leaks past the source redshift.
+
+    outlier_frac: optional catastrophic-outlier floor -- that probability mass
+    is moved into a uniform component on (0, z_out_max], modeling the
+    quantile-blind outlier population measured against DESI spec-z
+    (scripts/photoz_validation.py). Default 0 preserves the pure split-normal.
     """
     zgrid = np.asarray(zgrid, dtype=float)
     mu = np.atleast_1d(mu)[:, None]
@@ -55,6 +60,9 @@ def grid_pdf(zgrid, mu, sig_lo, sig_hi):
     # mass at z<0 (low side only): Phi(-mu/slo), Phi(t) = 0.5(1+erf(t/sqrt2))
     p_neg = 0.5 * (1.0 + erf(-mu / (np.sqrt(2.0) * slo)))
     pdf = pdf / np.clip(1.0 - p_neg, 1e-6, None)
+    if outlier_frac > 0.0:
+        uniform = np.where((z > 0) & (z <= z_out_max), 1.0 / z_out_max, 0.0)
+        pdf = (1.0 - outlier_frac) * pdf + outlier_frac * uniform
     pdf[:, zgrid <= 0] = 0.0
     return pdf
 
@@ -70,18 +78,22 @@ def sample(rng, mu, sig_lo, sig_hi, size):
     """Draw z samples from each galaxy's two-half-Gaussian p(z);
     shape [size, n_gal]. Each side carries mass 0.5 (median = mu).
 
-    Draws with z<=0 are resampled once, then clipped to a small positive value
-    (negligible probability mass by construction).
+    Draws with z<=0 are resampled elementwise once, then clipped to a small
+    positive value (negligible probability mass by construction).
     """
     mu = np.atleast_1d(mu)
     slo = np.atleast_1d(sig_lo)
     shi = np.atleast_1d(sig_hi)
     n = mu.size
-    for _ in range(2):
-        pick_lo = rng.random((size, n)) < 0.5
-        mag = np.abs(rng.standard_normal((size, n)))
-        z = np.where(pick_lo, mu[None, :] - mag * slo[None, :],
-                     mu[None, :] + mag * shi[None, :])
-        if (z > 0).all():
-            break
+    pick_lo = rng.random((size, n)) < 0.5
+    mag = np.abs(rng.standard_normal((size, n)))
+    z = np.where(pick_lo, mu[None, :] - mag * slo[None, :],
+                 mu[None, :] + mag * shi[None, :])
+    neg = z <= 0
+    if neg.any():
+        # negative draws can only come from the low side: redraw those
+        mu_b = np.broadcast_to(mu[None, :], z.shape)
+        slo_b = np.broadcast_to(slo[None, :], z.shape)
+        z[neg] = mu_b[neg] - np.abs(
+            rng.standard_normal(int(neg.sum()))) * slo_b[neg]
     return np.clip(z, 1e-3, None)

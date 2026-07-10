@@ -1,0 +1,32 @@
+{
+  "variant": "mstar05",
+  "args": {
+    "variant": "mstar05",
+    "excise_host": false,
+    "no_specz": false,
+    "require_w1": false,
+    "smhm_inverse": "posterior",
+    "logmh_max": 13.8,
+    "mstar_offset": 0.05,
+    "n_rand": 200,
+    "groups": "X,S,C,E"
+  },
+  "n_all": 1572,
+  "slope_all": [
+    -2.0406458538144725,
+    0.476344352458261
+  ],
+  "n_good": 1450,
+  "slope_good": [
+    -1.9990506371131664,
+    0.4768966774825056
+  ],
+  "slope_XS": [
+    -0.6960687205431096,
+    0.9707234807116134
+  ],
+  "slope_CE": [
+    -2.629198827714292,
+    0.5511481173614148
+  ]
+}

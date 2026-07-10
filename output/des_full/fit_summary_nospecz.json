@@ -1,0 +1,27 @@
+{
+  "variant": "nospecz",
+  "args": {
+    "variant": "nospecz",
+    "excise_host": false,
+    "no_specz": true,
+    "require_w1": false,
+    "smhm_inverse": "posterior",
+    "logmh_max": 13.8,
+    "n_rand": 200,
+    "groups": "X,S"
+  },
+  "n_all": 752,
+  "slope_all": [
+    -0.5695667458791318,
+    1.0174476508139894
+  ],
+  "n_good": 699,
+  "slope_good": [
+    -0.5096603807438408,
+    0.9827158043027407
+  ],
+  "slope_XS": [
+    -0.5096603807438408,
+    1.0037813492025751
+  ]
+}

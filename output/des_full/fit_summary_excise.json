@@ -1,0 +1,31 @@
+{
+  "variant": "excise",
+  "args": {
+    "variant": "excise",
+    "excise_host": true,
+    "no_specz": false,
+    "require_w1": false,
+    "smhm_inverse": "posterior",
+    "logmh_max": 13.8,
+    "n_rand": 200,
+    "groups": "X,S,C,E"
+  },
+  "n_all": 1572,
+  "slope_all": [
+    -2.084889766582324,
+    0.49602085019702025
+  ],
+  "n_good": 1450,
+  "slope_good": [
+    -2.046715187741065,
+    0.4984316608468197
+  ],
+  "slope_XS": [
+    -0.7133282691091881,
+    1.0149761268803306
+  ],
+  "slope_CE": [
+    -2.680426313181805,
+    0.5654107459044284
+  ]
+}

@@ -1,0 +1,31 @@
+{
+  "variant": "naive",
+  "args": {
+    "variant": "naive",
+    "excise_host": false,
+    "no_specz": false,
+    "require_w1": false,
+    "smhm_inverse": "naive",
+    "logmh_max": 13.8,
+    "n_rand": 200,
+    "groups": "X,S,C,E"
+  },
+  "n_all": 1572,
+  "slope_all": [
+    -1.928751453069195,
+    0.4512439307889549
+  ],
+  "n_good": 1450,
+  "slope_good": [
+    -1.8903934843533658,
+    0.45219093656518755
+  ],
+  "slope_XS": [
+    -0.7618639949821536,
+    0.9002315627067823
+  ],
+  "slope_CE": [
+    -2.524441249158056,
+    0.5437849001632562
+  ]
+}

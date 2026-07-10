@@ -1,0 +1,31 @@
+{
+  "variant": "cap14.1",
+  "args": {
+    "variant": "cap14.1",
+    "excise_host": false,
+    "no_specz": false,
+    "require_w1": false,
+    "smhm_inverse": "posterior",
+    "logmh_max": 14.1,
+    "n_rand": 200,
+    "groups": "X,S,C,E"
+  },
+  "n_all": 1572,
+  "slope_all": [
+    -2.039645940208937,
+    0.48712139787033615
+  ],
+  "n_good": 1450,
+  "slope_good": [
+    -1.9964615593766057,
+    0.48781118454467587
+  ],
+  "slope_XS": [
+    -0.6239517879137508,
+    1.0018121471203776
+  ],
+  "slope_CE": [
+    -2.642419734268175,
+    0.5571056785998167
+  ]
+}

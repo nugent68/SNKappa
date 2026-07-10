@@ -164,13 +164,11 @@ def main():
     res["hr"] = res.MU - res.mu_model
     res["hr"] -= np.average(res.hr, weights=w)
 
+    # inverse-variance weights: np.polyfit expects w = 1/sigma (the weight
+    # multiplies the UNSQUARED residual) -- see snkappa.fitting
+    from snkappa.fitting import bootstrap_slope
     x, y = res.kappa_ext.to_numpy(), res.hr.to_numpy()
-    b, a = np.polyfit(x, y, 1, w=w)
-    boot = []
-    for _ in range(2000):
-        i = rng.integers(0, len(res), len(res))
-        boot.append(np.polyfit(x[i], y[i], 1, w=w.to_numpy()[i])[0])
-    berr = np.std(boot)
+    b, berr = bootstrap_slope(x, y, res.MUERR.to_numpy(), rng)
     rho = np.corrcoef(x, y)[0, 1]
     log("=" * 60)
     log(f"N = {len(res)} SNe | sigma(kappa_ext) = {x.std():.4f} | "

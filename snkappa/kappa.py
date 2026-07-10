@@ -33,7 +33,12 @@ def sigma_crit_msun_mpc2(cosmo, zl, zs):
     prefac = (const.c**2 / (4.0 * np.pi * const.G)).to(u.Msun / u.Mpc).value
     d_s = cosmo.angular_diameter_distance(zs).value
     d_l = cosmo.angular_diameter_distance(zl).value
-    d_ls = d_a_z1z2(cosmo, zl, zs).value
+    # only evaluate d_ls where zl < zs (astropy warns loudly on zl >= zs;
+    # those lenses carry Sigma_crit = inf anyway)
+    fg = zl < zs
+    d_ls = np.zeros_like(d_l)
+    if fg.any():
+        d_ls[fg] = np.atleast_1d(d_a_z1z2(cosmo, zl[fg], zs).value)
     with np.errstate(divide="ignore", invalid="ignore"):
         scr = prefac * d_s / (d_l * d_ls)
     scr[(d_ls <= 0) | (d_l <= 0)] = np.inf

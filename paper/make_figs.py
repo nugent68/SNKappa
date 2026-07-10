@@ -1,9 +1,23 @@
 #!/usr/bin/env python
 """Paper statistics + figures for the ApJL manuscript.
 
-Reads SNKappa/output/des_full/des_all_kappa.csv; writes fig1-3.pdf and
-stats.json into this directory. Palette: Okabe-Ito blue/vermilion
-(CVD-validated); identity always carried by linestyle + direct label too.
+Reads output/des_full/des_all_kappa.csv (+ variant CSVs if present); writes
+fig1-3.pdf, stats.json, table1_top.csv into this directory. Palette:
+Okabe-Ito blue/vermilion (CVD-validated); identity always carried by
+linestyle + direct label too.
+
+Statistics beyond the headline fit (TODO 1.1, 1.2b/c, 3.2, 3.6, 3.7):
+- permutation null: Hubble residuals shuffled among SNe WITHIN z bins
+  (preserves both marginals and the kappa spatial structure); empirical
+  p-value of the slope. This absorbs the spatial covariance of overlapping
+  apertures that an i.i.d. bootstrap ignores.
+- spatial block bootstrap (0.5 deg blocks >= aperture scale) as cross-check.
+- host-environment confounder tests: kappa_ext vs host stellar mass, and the
+  slope refit with a host-mass-step covariate.
+- robustness rows: z < 1.0, de-lensed weights (sigma_lens removed from
+  MUERR in quadrature), and any variant runs found on disk.
+- Table 1 gets the exact tail magnification -2.5 log10[(1-kappa)^-2]
+  instead of the linearized -2.171 kappa.
 """
 
 import json
@@ -16,8 +30,13 @@ import numpy as np
 import pandas as pd
 from scipy import stats as sps
 
+import sys
 HERE = Path(__file__).parent
-CSV = HERE.parent / "SNKappa/output/des_full/des_all_kappa.csv"
+ROOT = HERE.parent
+sys.path.insert(0, str(ROOT))
+from snkappa.fitting import bootstrap_slope  # noqa: E402
+
+CSV = ROOT / "output/des_full/des_all_kappa.csv"
 BLUE, VERM, GRAY = "#0072B2", "#D55E00", "#888888"
 SLOPE_TH = -5.0 / np.log(10.0)   # dHR/dkappa = -2.171 (mu = 1+2k weak limit)
 
@@ -33,13 +52,12 @@ good = r[r.PROBIA > 0.9].reset_index(drop=True)
 
 
 def wslope(d, n_boot=4000):
-    x, y, w = d.kappa_ext.to_numpy(), d.hr.to_numpy(), 1 / d.MUERR.to_numpy() ** 2
-    b = np.polyfit(x, y, 1, w=w)[0]
-    boot = np.empty(n_boot)
-    for k in range(n_boot):
-        i = rng.integers(0, len(d), len(d))
-        boot[k] = np.polyfit(x[i], y[i], 1, w=w[i])[0]
-    return b, boot.std()
+    return bootstrap_slope(d.kappa_ext.to_numpy(), d.hr.to_numpy(),
+                           d.MUERR.to_numpy(), rng, n_boot=n_boot)
+
+
+def slope_only(x, y, sig):
+    return float(np.polyfit(x, y, 1, w=1.0 / sig)[0])
 
 
 stats = {}
@@ -51,6 +69,65 @@ stats["amplitude"] = [b / SLOPE_TH, e / abs(SLOPE_TH)]
 rho_s, p_s = sps.spearmanr(good.kappa_ext, good.hr)
 stats["spearman"] = [rho_s, p_s]
 
+# ------------------------------------------------- permutation null (1.1) --
+x, y, sig = (good.kappa_ext.to_numpy(), good.hr.to_numpy(),
+             good.MUERR.to_numpy())
+zbin = good.zbin.to_numpy()
+n_perm = 10000
+perm = np.empty(n_perm)
+idx_by_bin = [np.flatnonzero(zbin == zb) for zb in np.unique(zbin)]
+yp = y.copy()
+for k in range(n_perm):
+    for idx in idx_by_bin:
+        yp[idx] = y[rng.permutation(idx)]
+    perm[k] = slope_only(x, yp, sig)
+p_perm = float(np.mean(perm <= b))          # one-sided (lensing: b < 0)
+stats["permutation"] = {
+    "n_perm": n_perm, "p_one_sided": max(p_perm, 1.0 / n_perm),
+    "null_sigma": float(perm.std()),
+    "z_equiv": float(abs(b - perm.mean()) / perm.std()),
+}
+
+# -------------------------------------- spatial block bootstrap (1.1) ------
+BLOCK_DEG = 0.5   # > 2x aperture radius (10 arcmin)
+bra = np.floor(good.HOST_RA.to_numpy() / BLOCK_DEG)
+bdec = np.floor(good.HOST_DEC.to_numpy() / BLOCK_DEG)
+block_id = pd.factorize(bra * 1000 + bdec)[0]
+blocks = [np.flatnonzero(block_id == u) for u in np.unique(block_id)]
+n_bboot = 4000
+bb = np.empty(n_bboot)
+for k in range(n_bboot):
+    pick = rng.integers(0, len(blocks), len(blocks))
+    idx = np.concatenate([blocks[j] for j in pick])
+    bb[k] = slope_only(x[idx], y[idx], sig[idx])
+stats["block_bootstrap"] = {"block_deg": BLOCK_DEG, "n_blocks": len(blocks),
+                            "slope_err": float(bb.std())}
+
+# ------------------------------- host-mass confounder tests (1.2b, 1.2c) --
+hm_ok = np.isfinite(good.HOST_LOGMASS.to_numpy()) \
+    & (good.HOST_LOGMASS.to_numpy() > 0)
+hx = good.HOST_LOGMASS.to_numpy()[hm_ok]
+rho_hm, p_hm = sps.spearmanr(hx, x[hm_ok])
+stats["kappa_vs_hostmass"] = {"n": int(hm_ok.sum()),
+                              "spearman_rho": float(rho_hm),
+                              "p": float(p_hm)}
+# slope with a host-mass-step covariate: y = b*kappa + m*step + const
+step = (hx >= 10.0).astype(float)
+A = np.column_stack([x[hm_ok], step, np.ones(step.size)])
+W = 1.0 / sig[hm_ok] ** 2
+ATA = A.T @ (A * W[:, None]); ATy = A.T @ (W * y[hm_ok])
+coef = np.linalg.solve(ATA, ATy)
+boot = np.empty(2000)
+for k in range(2000):
+    i = rng.integers(0, step.size, step.size)
+    Ai = A[i]; Wi = W[i]
+    boot[k] = np.linalg.solve(Ai.T @ (Ai * Wi[:, None]),
+                              Ai.T @ (Wi * y[hm_ok][i]))[0]
+stats["slope_with_masstep"] = {"slope": float(coef[0]),
+                               "err": float(boot.std()),
+                               "mass_step_mag": float(coef[1])}
+
+# ------------------------------------------------------------- subgroups --
 groups = {}
 for g in ("X", "S", "C", "E"):
     d = good[good.GROUP == g]
@@ -63,6 +140,37 @@ stats["groups"] = {k: list(v) for k, v in groups.items()}
 jk = [wslope(good[good.GROUP != g])[0] for g in ("X", "S", "C", "E")]
 stats["jackknife_range"] = [min(jk), max(jk)]
 
+# ------------------------------------------------- robustness rows (3.6/7) --
+rob = {}
+d = good[good.zHD < 1.0]
+rob["z_lt_1"] = list(wslope(d)) + [len(d)]
+# de-lensed weights: DES's MUERR already contains sigma_lens = 0.055 z, which
+# down-weights exactly the SNe carrying the signal; remove it in quadrature
+sig_dl = np.sqrt(np.clip(good.MUERR.to_numpy() ** 2
+                         - (0.055 * good.zHD.to_numpy()) ** 2,
+                         0.05 ** 2, None))
+b_dl, e_dl = bootstrap_slope(x, y, sig_dl, rng, n_boot=4000)
+rob["delensed_weights"] = [b_dl, e_dl, len(good)]
+if "area_flag" in good:
+    d = good[~good.area_flag.astype(bool)]
+    rob["area_clean"] = list(wslope(d)) + [len(d)]
+for var, fn in (("excise", "des_all_kappa_excise.csv"),
+                ("nospecz", "des_all_kappa_nospecz.csv"),
+                ("w1only", "des_all_kappa_w1only.csv"),
+                ("naive", "des_all_kappa_naive.csv"),
+                ("cap14.1", "des_all_kappa_cap14.1.csv"),
+                ("mstar05", "des_all_kappa_mstar05.csv")):
+    p = ROOT / "output/des_full" / fn
+    if p.exists():
+        dv = pd.read_csv(p)
+        dv = dv[dv.PROBIA > 0.9]
+        rob[f"variant_{var}"] = list(wslope(dv)) + [len(dv)]
+        if var == "nospecz":  # compare against headline on the same groups
+            dh = good[good.GROUP.isin(dv.GROUP.unique())]
+            rob["headline_XS_for_nospecz"] = list(wslope(dh)) + [len(dh)]
+stats["robustness"] = rob
+
+# ------------------------------------------------------------- means etc. --
 hi = good[good.kappa_ext > 0.005]; lo = good[good.kappa_ext <= 0.005]
 w_hi, w_lo = 1 / hi.MUERR**2, 1 / lo.MUERR**2
 m_hi = np.average(hi.hr, weights=w_hi); m_lo = np.average(lo.hr, weights=w_lo)
@@ -75,18 +183,18 @@ stats["n_all"], stats["n_good"] = len(r), len(good)
 
 # ---------------------------------------------------------------- fig 1 --
 fig, ax = plt.subplots(figsize=(3.5, 2.9))
-x, y = good.kappa_ext.to_numpy(), good.hr.to_numpy()
-m = (x > -0.015) & (x < 0.055)
-ax.plot(x[m], y[m], ".", ms=2.2, color=GRAY, alpha=0.45, rasterized=True)
-edges = np.quantile(x, np.linspace(0.02, 0.995, 9))
+xg, yg = good.kappa_ext.to_numpy(), good.hr.to_numpy()
+m = (xg > -0.015) & (xg < 0.055)
+ax.plot(xg[m], yg[m], ".", ms=2.2, color=GRAY, alpha=0.45, rasterized=True)
+edges = np.quantile(xg, np.linspace(0.02, 0.995, 9))
 xb, yb, eb = [], [], []
 for a_, b_ in zip(edges[:-1], edges[1:]):
-    s = (x >= a_) & (x < b_)
+    s = (xg >= a_) & (xg < b_)
     if s.sum() < 5:
         continue
     ww = 1 / good.MUERR.to_numpy()[s] ** 2
-    xb.append(np.average(x[s], weights=ww))
-    yb.append(np.average(y[s], weights=ww))
+    xb.append(np.average(xg[s], weights=ww))
+    yb.append(np.average(yg[s], weights=ww))
     eb.append(np.sqrt(1 / ww.sum()))
 ax.errorbar(xb, yb, yerr=eb, fmt="o", ms=4, color="k", lw=1, capsize=2,
             zorder=5)
@@ -135,18 +243,22 @@ ax.text(1.1, ypos[0] + 0.35, "prediction", color=VERM, fontsize=8,
         ha="left")
 ax.text(-0.1, ypos[0] + 0.35, "no lensing", color=GRAY, fontsize=8,
         ha="right")
-for yp, a_, e_, lab in zip(ypos, amps, errs, labels):
+for yp_, a_, e_, lab in zip(ypos, amps, errs, labels):
     c = BLUE if "combined" in lab else "k"
-    ax.errorbar(a_, yp, xerr=e_, fmt="o", color=c, ms=4.5 if c == BLUE else 3.5,
-                lw=1.4, capsize=2.5)
+    ax.errorbar(a_, yp_, xerr=e_, fmt="o", color=c,
+                ms=4.5 if c == BLUE else 3.5, lw=1.4, capsize=2.5)
 ax.set_yticks(ypos, labels, fontsize=8)
 ax.set_xlabel(r"lensing amplitude $A \equiv b_{\rm fit}/b_{\rm pred}$")
 ax.set_xlim(-1.6, 3.2)
 fig.tight_layout(); fig.savefig(HERE / "fig3_forest.pdf"); plt.close(fig)
 
-# top sightlines table data
+# ------------------------------------------- top sightlines table (3.2) --
 top = good.nlargest(10, "kappa_ext")[
-    ["CID", "FIELD", "zHD", "kappa_ext", "hr"]]
+    ["CID", "FIELD", "zHD", "kappa_ext", "hr"]].copy()
+# exact point-mass-free magnification (shear from the same halo sum is not
+# computed; |gamma| ~ kappa for isolated halos would brighten further, so
+# this is the conservative no-shear value)
+top["dmu_pred"] = 5.0 * np.log10(1.0 - top.kappa_ext)
 top.to_csv(HERE / "table1_top.csv", index=False)
 
 (HERE / "stats.json").write_text(json.dumps(stats, indent=2, default=float))

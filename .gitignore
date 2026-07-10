@@ -3,7 +3,14 @@ __pycache__/
 *.pyc
 *.egg-info/
 cache/
-output/
+# outputs are not tracked EXCEPT the released per-SN kappa catalog
+# (cited in the paper's Data Availability section) and the run summaries
+output/*
+!output/des_full/
+output/des_full/*
+!output/des_full/des_all_kappa.csv
+!output/des_full/fit_summary*.json
+!output/des_full/photoz_validation.json
 .pytest_cache/
 build/
 dist/

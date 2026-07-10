@@ -172,17 +172,54 @@ class HaloModel:
         self._h = self.cosmo.H0.value / 100.0
 
     def _build_smhm_inverse(self):
-        """Monotonic inverse interpolators logM* -> logMh per z bin."""
+        """logM* -> logMh interpolators per z bin.
+
+        Two modes (halo_cfg.smhm_inverse):
+        - 'naive': invert the MEAN forward relation. Above the SMHM knee
+          (dlogM*/dlogMh ~ 0.2-0.3) this overestimates <Mh|M*> by
+          ~0.1-0.2 dex: with scatter, the low-mass halos scattering up in
+          M* vastly outnumber the high-mass ones scattering down
+          (Eddington bias).
+        - 'posterior' (default): E[logMh | logM*] with
+          P(logMh|logM*) ∝ N(logM*; f(logMh), sigma_SMHM) n(logMh),
+          n(logMh) a halo-mass-function prior (colossus). NOTE the forward
+          Jensen term (E[kappa] over the SMHM scatter at fixed <Mh|M*>,
+          ~+10%) is still ignored; it partially cancels this correction,
+          and the residual is carried in the systematic budget.
+        """
         logmh_grid = np.linspace(9.5, 15.8, 160)
+        mode = getattr(self.cfg, "smhm_inverse", "posterior")
+        if mode not in ("naive", "posterior"):
+            raise ValueError(f"Unknown smhm_inverse: {mode}")
+        sig = getattr(self.cfg, "smhm_scatter_dex", 0.18)
+        if mode == "posterior":
+            from colossus.lss import mass_function
+            logms_grid = np.linspace(6.8, 12.6, 150)
         self._inv = []
         for z in self.zbins:
-            logms = self._forward(logmh_grid, z)
-            # enforce strict monotonicity for interpolation
-            logms = np.maximum.accumulate(logms)
-            logms += np.arange(logms.size) * 1e-9
+            logms_f = self._forward(logmh_grid, z)
+            if mode == "naive":
+                # enforce strict monotonicity for interpolation
+                logms = np.maximum.accumulate(logms_f)
+                logms += np.arange(logms.size) * 1e-9
+                self._inv.append(interp1d(
+                    logms, logmh_grid, bounds_error=False,
+                    fill_value=(logmh_grid[0], logmh_grid[-1])))
+                continue
+            # HMF prior dn/dlnM; despali16 supports the 200c SO definition
+            # directly. Only the relative shape matters.
+            hmf = mass_function.massFunction(
+                10.0 ** logmh_grid * self._h, float(z), mdef="200c",
+                model="despali16", q_out="dndlnM")
+            like = np.exp(-0.5 * ((logms_grid[:, None] - logms_f[None, :])
+                                  / sig) ** 2)
+            w = like * hmf[None, :]
+            norm = np.clip(w.sum(axis=1), 1e-300, None)
+            post = (w * logmh_grid[None, :]).sum(axis=1) / norm
+            post = np.maximum.accumulate(post)  # monotone by construction
             self._inv.append(interp1d(
-                logms, logmh_grid, bounds_error=False,
-                fill_value=(logmh_grid[0], logmh_grid[-1])))
+                logms_grid, post, bounds_error=False,
+                fill_value=(post[0], post[-1])))
 
     def zbin_index(self, z):
         """Nearest fine-grid bin index; z outside [0, z_src) clipped/flagged."""
@@ -210,7 +247,10 @@ class HaloModel:
             lmh = self._inv[b](logmstar[m])
             if dlogm is not None:
                 lmh = lmh + np.asarray(dlogm)[m]
-            logmh[m] = np.minimum(lmh, logmh_max)
+            # cap BEFORE the concentration call: c must describe the halo
+            # actually used, not the uncapped inversion
+            lmh = np.minimum(lmh, logmh_max)
+            logmh[m] = lmh
             c = concentration.concentration(
                 10.0 ** lmh * self._h, "200c", float(self.zbins[b]),
                 model=self.cfg.cmodel)

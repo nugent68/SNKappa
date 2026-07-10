@@ -1,0 +1,31 @@
+{
+  "variant": "headline",
+  "args": {
+    "variant": "",
+    "excise_host": false,
+    "no_specz": false,
+    "require_w1": false,
+    "smhm_inverse": "posterior",
+    "logmh_max": 13.8,
+    "n_rand": 500,
+    "groups": "X,S,C,E"
+  },
+  "n_all": 1572,
+  "slope_all": [
+    -2.0405532338192036,
+    0.48961900500901956
+  ],
+  "n_good": 1450,
+  "slope_good": [
+    -1.9969044870083912,
+    0.49249331620477454
+  ],
+  "slope_XS": [
+    -0.6570522711150817,
+    1.0200857446439644
+  ],
+  "slope_CE": [
+    -2.623664640462677,
+    0.5569365218910438
+  ]
+}
