@@ -104,6 +104,7 @@ def main():
     ap.add_argument("--smhm-inverse", default="posterior",
                     choices=("posterior", "naive"))
     ap.add_argument("--logmh-max", type=float, default=13.8)
+    ap.add_argument("--mstar-method", default="nir1um")
     ap.add_argument("--variant", default="")
     ap.add_argument("--out", default="output/delta_sigma")
     args = ap.parse_args()
@@ -117,7 +118,7 @@ def main():
     hcfg = HaloModelConfig(smhm_inverse=args.smhm_inverse,
                            logmh_max=args.logmh_max)
     hm = HaloModel(hcfg, cosmo, 1.2)
-    est = make_estimator("nir1um", cosmo)
+    est = make_estimator(args.mstar_method, cosmo)
     tab = bmo_table()
 
     results = {"args": vars(args), "bins": []}

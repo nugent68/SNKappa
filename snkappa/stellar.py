@@ -143,6 +143,49 @@ class Nir1um(StellarMassEstimator):
         return np.clip(logm, LOGM_MIN, LOGM_MAX)
 
 
+class Nir1umFSF(Nir1um):
+    """Nir1um recalibrated to the DESI DR1 FastSpecFit mass scale.
+
+    The constant M*/L_1um = 0.6 underestimates massive red galaxies by
+    0.2-0.25 dex (old stellar populations carry higher rest-1um M/L) -- a
+    deficit diagnosed by the galaxy-galaxy lensing closure test
+    (scripts/delta_sigma_closure.py) and pinned by a per-galaxy comparison
+    with the public FastSpecFit VAC (scripts/mstar_vs_fastspecfit.py).
+    This estimator adds the empirical median correction
+    Delta(logM*_raw, z) built by scripts/build_mstar_recal.py from
+    ~500k DESI DR1 BGS+LRG galaxies, bilinearly interpolated and clamped
+    to the calibration grid (faint/low-mass galaxies therefore extrapolate
+    the nearest calibrated cell; they carry little lensing weight).
+    """
+
+    def __init__(self, cosmo, table_path=None):
+        super().__init__(cosmo)
+        import json
+        from pathlib import Path
+        p = (Path(table_path) if table_path
+             else Path(__file__).parent / "data" / "nir1um_fsf_recal.json")
+        t = json.loads(p.read_text())
+        self._c0 = float(t["c0"]); self._m0 = float(t["m0"])
+        self._w = float(t["w"])
+        self._zn = np.asarray(t["z_nodes"], dtype=float)
+        self._an = np.asarray(t["a_nodes"], dtype=float)
+
+    def _delta(self, m, z):
+        a = np.interp(np.clip(z, self._zn[0], self._zn[-1]),
+                      self._zn, self._an)
+        return self._c0 + a / (1.0 + np.exp(-(m - self._m0) / self._w))
+
+    def logmstar(self, mags, z):
+        raw = super().logmstar(mags, z)
+        z = np.asarray(z, dtype=float)
+        # Delta is calibrated against the corrected (FSF-scale) mass, so
+        # apply it by fixed-point iteration starting from the raw estimate
+        m = raw
+        for _ in range(3):
+            m = raw + self._delta(m, z)
+        return np.clip(m, LOGM_MIN, LOGM_MAX)
+
+
 def make_estimator(name: str, cosmo) -> StellarMassEstimator:
     if name == "taylor2011":
         return Taylor2011(cosmo)
@@ -150,4 +193,6 @@ def make_estimator(name: str, cosmo) -> StellarMassEstimator:
         return W1Taylor(cosmo)
     if name == "nir1um":
         return Nir1um(cosmo)
+    if name == "nir1um_fsf":
+        return Nir1umFSF(cosmo)
     raise ValueError(f"Unknown mstar_method: {name}")
