@@ -16,6 +16,7 @@ output/mock_dc2/*
 !output/mock_dc2/mock_summary*.json
 !output/des_full/paper_stats.json
 !output/des_full/table1_top.csv
+!output/des_full/attenuation.json
 # the manuscript lives ONLY in the Overleaf project (see docs/); figures
 # are generated into output/figs/ by scripts/make_figs.py and pushed there
 paper/

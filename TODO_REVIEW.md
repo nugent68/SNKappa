@@ -25,7 +25,7 @@ A = 0.92 ± 0.23 (stat) ± 0.09 (sys); permutation null p < 1e-4 (3.8σ).
   `scripts/photoz_validation.py` (cov68=0.65–0.66, outliers 1%, 5% in
   faintest half-mag; outlier-floor hook added to `photoz.grid_pdf`, not
   activated); 1.5 W1 fraction 85–87%, W1-only slope −1.92±0.52.
-- P2: 2.1 `scripts/attenuation_mc.py` → λ_gal=0.97, λ incl. clusters
+- P2: 2.1 `scripts/attenuation_mc.py` → λ_gal=0.97 (pre-recalibration; 0.89 after — see TODO_RERUN), λ incl. clusters
   0.7 (mean) / 0.99 (median) → A_true ≈ 0.9–1.3 (in paper); 2.2 posterior
   <Mh|M*> with Despali16 HMF prior is now the default (`smhm_inverse`);
   2.3 systematics table in the paper (quad. total 0.09); 2.4 discussed as
