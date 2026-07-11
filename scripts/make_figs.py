@@ -1,8 +1,12 @@
 #!/usr/bin/env python
 """Paper statistics + figures for the ApJL manuscript.
 
-Reads output/des_full/des_all_kappa.csv (+ variant CSVs if present); writes
-fig1-3.pdf, stats.json, table1_top.csv into this directory. Palette:
+The manuscript itself lives ONLY in the Overleaf project (git remote);
+this script produces the numbers and figures that feed it. Reads
+output/des_full/des_all_kappa.csv (+ variant CSVs if present); writes
+fig1-3.pdf into output/figs/ (untracked -- push to Overleaf), and
+paper_stats.json + table1_top.csv into output/des_full/ (tracked: they
+back the published numbers). Palette:
 Okabe-Ito blue/vermilion (CVD-validated); identity always carried by
 linestyle + direct label too.
 
@@ -37,6 +41,9 @@ sys.path.insert(0, str(ROOT))
 from snkappa.fitting import bootstrap_slope  # noqa: E402
 
 CSV = ROOT / "output/des_full/des_all_kappa.csv"
+FIGDIR = ROOT / "output/figs"
+FIGDIR.mkdir(parents=True, exist_ok=True)
+STATDIR = ROOT / "output/des_full"
 BLUE, VERM, GRAY = "#0072B2", "#D55E00", "#888888"
 SLOPE_TH = -5.0 / np.log(10.0)   # dHR/dkappa = -2.171 (mu = 1+2k weak limit)
 
@@ -208,7 +215,7 @@ ax.set_xlim(-0.015, 0.055); ax.set_ylim(-0.42, 0.42)
 ax.set_xlabel(r"predicted external convergence $\kappa_{\rm ext}$")
 ax.set_ylabel(r"Hubble residual $\Delta\mu$ [mag]")
 ax.axhline(0, color="k", lw=0.5, alpha=0.4)
-fig.tight_layout(); fig.savefig(HERE / "fig1_slope.pdf"); plt.close(fig)
+fig.tight_layout(); fig.savefig(FIGDIR / "fig1_slope.pdf"); plt.close(fig)
 
 # ---------------------------------------------------------------- fig 2 --
 zb = r.groupby("zbin").agg(zp=("rand_mean", "mean"),
@@ -227,7 +234,7 @@ ax.text(0.30, 0.0128, r"$\sigma_{\rm lens}/2.17$ ($0.055z$, N-body)",
 ax.set_xlabel(r"source redshift $z$")
 ax.set_ylabel(r"$\kappa$")
 ax.set_xlim(0.1, 1.15); ax.set_ylim(0, 0.030)
-fig.tight_layout(); fig.savefig(HERE / "fig2_zeropoint.pdf"); plt.close(fig)
+fig.tight_layout(); fig.savefig(FIGDIR / "fig2_zeropoint.pdf"); plt.close(fig)
 
 # ---------------------------------------------------------------- fig 3 --
 order = ["X", "S", "C", "E", "X+S", "C+E"]
@@ -250,7 +257,7 @@ for yp_, a_, e_, lab in zip(ypos, amps, errs, labels):
 ax.set_yticks(ypos, labels, fontsize=8)
 ax.set_xlabel(r"lensing amplitude $A \equiv b_{\rm fit}/b_{\rm pred}$")
 ax.set_xlim(-1.6, 3.2)
-fig.tight_layout(); fig.savefig(HERE / "fig3_forest.pdf"); plt.close(fig)
+fig.tight_layout(); fig.savefig(FIGDIR / "fig3_forest.pdf"); plt.close(fig)
 
 # ------------------------------------------- top sightlines table (3.2) --
 top = good.nlargest(10, "kappa_ext")[
@@ -259,8 +266,8 @@ top = good.nlargest(10, "kappa_ext")[
 # computed; |gamma| ~ kappa for isolated halos would brighten further, so
 # this is the conservative no-shear value)
 top["dmu_pred"] = 5.0 * np.log10(1.0 - top.kappa_ext)
-top.to_csv(HERE / "table1_top.csv", index=False)
+top.to_csv(STATDIR / "table1_top.csv", index=False)
 
-(HERE / "stats.json").write_text(json.dumps(stats, indent=2, default=float))
+(STATDIR / "paper_stats.json").write_text(json.dumps(stats, indent=2, default=float))
 for k, v in stats.items():
     print(k, np.round(v, 4) if isinstance(v, (list, float)) else v)
