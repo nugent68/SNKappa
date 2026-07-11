@@ -117,8 +117,12 @@ def clean_and_merge(cfg, df: pd.DataFrame, zpix: pd.DataFrame) -> pd.DataFrame:
 
     band = cfg.los.mag_limit_band
     df = df[df[f"mag_{band}"] <= cfg.los.mag_limit].copy()
-    # need g and z for stellar masses
-    df = df[np.isfinite(df["mag_g"]) & np.isfinite(df["mag_z"])].copy()
+    # stellar masses need z plus EITHER W1 (nir1um path) or g (Taylor
+    # optical-color fallback). Requiring g unconditionally would silently
+    # drop g-undetected massive red galaxies (g-z >~ 3 at z <= 22.5) --
+    # exactly the highest-M*/L kappa contributors.
+    df = df[np.isfinite(df["mag_z"])
+            & (np.isfinite(df["mag_w1"]) | np.isfinite(df["mag_g"]))].copy()
 
     # -- DESI spec-z crossmatch (<= 1 arcsec) --------------------------------
     zpix = zpix.copy()
@@ -132,8 +136,13 @@ def clean_and_merge(cfg, df: pd.DataFrame, zpix: pd.DataFrame) -> pd.DataFrame:
                           zpix["mean_fiber_dec"].to_numpy() * u.deg)
         idx, sep, _ = c_spec.match_to_catalog_sky(c_gal)
         good = sep < 1.0 * u.arcsec
-        df.iloc[idx[good], df.columns.get_loc("z_spec")] = \
-            zpix["z"].to_numpy()[good]
+        # several fibers can match the same galaxy: keep the CLOSEST
+        # (previously last-write-wins in catalog order)
+        order = np.argsort(sep[good].arcsec)
+        gi = idx[good][order]
+        zv = zpix["z"].to_numpy()[good][order]
+        _, first = np.unique(gi, return_index=True)
+        df.iloc[gi[first], df.columns.get_loc("z_spec")] = zv[first]
 
     # -- redshift bookkeeping ------------------------------------------------
     df = df.rename(columns={"z_phot_median": "zp_med", "z_phot_std": "zp_std",
