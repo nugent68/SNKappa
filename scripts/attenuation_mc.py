@@ -81,7 +81,7 @@ def main():
                                 lambda u: TapClient(u, cfg0.data.cache_dir))
         hm_full = HaloModel(cfg0.halo_model, cfg0.cosmo, 1.15)
         members = clu.assign_members(cfg0, df, cl, hm_full)
-        est = make_estimator("nir1um", cfg0.cosmo)
+        est = make_estimator("nir1um_fsf", cfg0.cosmo)
         log(f"{gname}: catalog {len(df)}, {len(cl)} clusters; "
             f"{len(take)} subsample SNe")
 
