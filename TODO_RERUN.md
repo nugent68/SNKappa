@@ -1,5 +1,29 @@
 # SNKappa — rerun handoff (2026-07-10, follow-up to TODO_REVIEW.md)
 
+## STATUS: COMPLETED 2026-07-11 (cache machine)
+
+All reruns done; both repos pushed (SNKappa + Overleaf a120807). Results:
+- Headline UNCHANGED to quoted precision: slope −1.71 ± 0.42, A = 0.786 ±
+  0.196 (g-cut relaxation added only ~0.2% galaxies/region; gate 2 not
+  triggered — no bug-fix sentence needed, but the z+(W1|g) cut is now
+  stated in the Data section).
+- Gate 1 PASSED: cluster-inclusive excision did not collapse — it
+  strengthened slightly (−1.93 ± 0.47 vs galaxy-only −1.79). All other
+  variants unchanged (nospecz −0.66±0.71 [X,S groups, matching the
+  published row], w1only −1.65±0.46, naive −1.25±0.35, cap14.1
+  −1.68±0.41, mstar05 −1.65±0.41).
+- no_cluster_at_sn_plane: −1.16 ± 0.50 (N=1273) — weaker than expected,
+  BUT diagnosed as signal removal, not confounding: the 177 dropped SNe
+  carry slope −3.82 ± 0.76 which persists at −3.97 ± 0.86 under the
+  fully-excised kappa. Discussed with that diagnostic in the paper.
+- Permutation z was 3.65 → reran at 1e5 shuffles (make_figs N_PERM env):
+  p = 6e-5 (6/100000), null width 0.489 (3.7σ). Quoted in the paper.
+- attenuation.json now tracked (gitignore exception). λ reconciliation:
+  λ_gal(fresh) = 0.89 → manuscript's 0.90 was right; TODO_REVIEW's 0.97
+  was the pre-recalibration value. The population MEAN λ is unstable
+  (0.5–0.7, cluster-proximate tail); the paper now adopts
+  λ_mock = 0.68 ± 0.09 as the attenuation estimate → A_true 0.8–1.2.
+
 Audience: a session running in this repo on a machine that HAS the TAP
 cache (`cache/` with the four regional parquet sets; e.g. the Perlmutter
 checkout used for P5). The laptop that produced these commits could not

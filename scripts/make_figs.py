@@ -80,7 +80,10 @@ stats["spearman"] = [rho_s, p_s]
 x, y, sig = (good.kappa_ext.to_numpy(), good.hr.to_numpy(),
              good.MUERR.to_numpy())
 zbin = good.zbin.to_numpy()
-n_perm = 10000
+# 1e4 floors the empirical p at 1e-4 (~3.7 sigma); set N_PERM=100000 when
+# the z-score lands near that floor so the quoted sigma is resolved
+import os
+n_perm = int(os.environ.get("N_PERM", 10000))
 perm = np.empty(n_perm)
 idx_by_bin = [np.flatnonzero(zbin == zb) for zb in np.unique(zbin)]
 yp = y.copy()
