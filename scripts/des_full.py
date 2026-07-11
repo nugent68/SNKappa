@@ -22,7 +22,8 @@ Pipeline (engine lives in snkappa.batch, TODO 3.9):
 
 Run: .venv/bin/python scripts/des_full.py            (headline)
 Variants (robustness / systematics; see TODO_REVIEW.md):
-  --variant excise   --excise-host      host-environment excision (1.2a)
+  --variant excise   --excise-host      host-environment excision (1.2a;
+                                        galaxies AND clusters near the plane)
   --variant nospecz  --no-specz         ignore DESI spec-z (1.3)
   --variant w1only   --require-w1       drop Taylor2011 fallback pop. (1.5)
   --variant naive    --smhm-inverse naive   legacy SMHM inversion (2.2)
@@ -224,7 +225,7 @@ def main():
             if need_lo.size + need_hi.size == 0:
                 continue
             eng.set_zsrc(cfg.cosmo, z_src, excise_frac=excise_frac)
-            clf.set_zsrc(cfg.cosmo, z_src)
+            clf.set_zsrc(cfg.cosmo, z_src, excise_frac=excise_frac)
 
             def kap(ra, dec):
                 return eng.kappa_gal(ra, dec, r_out) + clf.kappa_sum(ra, dec)
@@ -247,6 +248,17 @@ def main():
             sig = (1 - t) * sig_c[lo] + t * (sig_c[hi] if t > 0 else 0.0)
             afrac, _ = catalog.area_fraction(cfg, df, row.HOST_RA,
                                              row.HOST_DEC)
+            # cluster-plane confounder guard: min |z_cl - z_SN|/(1+z_SN)
+            # over catalog clusters within 2 arcmin of the sightline
+            # (NaN if none) -- feeds the no-cluster-at-SN-plane robustness row
+            cl_dz = np.nan
+            if len(cl):
+                sepc = angular_sep_arcsec(row.HOST_RA, row.HOST_DEC,
+                                          cl.ra.to_numpy(), cl.dec.to_numpy())
+                nearc = sepc < 120.0
+                if nearc.any():
+                    cl_dz = float(np.min(np.abs(cl.z.to_numpy()[nearc]
+                                                - row.zHD)) / (1.0 + row.zHD))
             results.append({
                 "CID": row.CID, "FIELD": row.FIELD, "GROUP": gname,
                 "zHD": row.zHD, "MU": row.MU, "MUERR": row.MUERR,
@@ -258,6 +270,7 @@ def main():
                 "rand_mean": zp, "rand_sig": sig,
                 "n_rand_ok": int(rra.size),
                 "area_frac": afrac, "area_flag": afrac < AREA_FLAG_MIN,
+                "cl_dz_min_2am": cl_dz,
                 "n_spec_region": n_spec})
 
     res = pd.DataFrame(results)

@@ -94,6 +94,33 @@ def test_miscentering_mc(cfg, halo_model, cl_df):
     assert np.median(draws) < k_cen  # off-center halo -> lower central kappa
 
 
+def test_clusterfield_excision(cfg, halo_model, cl_df):
+    """set_zsrc(excise_frac=...) drops clusters near the source plane from
+    the foreground mask and from kappa_sum, identically to the galaxy-tier
+    host-plane excision."""
+    from snkappa.batch import ClusterField
+
+    clf = ClusterField(cl_df, halo_model)
+    ra0 = cfg.deflector.ra_lens + 0.02
+    dec0 = cfg.deflector.dec_lens
+
+    # both clusters (z=0.4, 0.5) are foreground for z_src=0.6 ...
+    clf.set_zsrc(cfg.cosmo, 0.6)
+    assert clf.fg.tolist() == [True, True]
+    k_all = clf.kappa_sum(ra0, dec0)
+
+    # ... but only z=0.5 sits within 0.1*(1+z_src)=0.16 of the source plane
+    # (|dz| = 0.10 < 0.16 excised; the z=0.4 cluster has |dz| = 0.20)
+    clf.set_zsrc(cfg.cosmo, 0.6, excise_frac=0.1)
+    assert clf.fg.tolist() == [True, False]
+    k_exc = clf.kappa_sum(ra0, dec0)
+    assert 0.0 < k_exc < k_all
+
+    # excision leaves distant-plane clusters untouched
+    clf.set_zsrc(cfg.cosmo, 1.5, excise_frac=0.1)
+    assert clf.fg.tolist() == [True, True]
+
+
 def test_sigma_v_diagnostic(cfg):
     rng = np.random.default_rng(8)
     n = 40

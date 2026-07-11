@@ -221,10 +221,23 @@ class ClusterField:
             self.profiles[i] = prof
         self.logprof = np.log10(np.clip(self.profiles, 1e-30, None))
 
-    def set_zsrc(self, cosmo, z_src):
+    def set_zsrc(self, cosmo, z_src, excise_frac=None):
+        """Prepare Sigma_crit and the foreground mask for one source plane.
+
+        excise_frac: host-environment robustness variant (TODO 1.2a) -- also
+        drop clusters with |z_cl - z_src| < excise_frac*(1+z_src). Cluster
+        catalog redshifts carry ~0.01-0.02 errors, so a cluster hosting the
+        SN itself can otherwise pass the z_cl < z_src - 0.02 foreground cut
+        and inject a large spurious kappa correlated with the host
+        environment; the excision variant must therefore cover the cluster
+        tier, which dominates the kappa_ext tail. Applied identically to SN
+        and random sightlines.
+        """
         self.sigcr = sigma_crit_msun_mpc2(
             cosmo, self.hm.zbins[self.ib], z_src)
         self.fg = self.z < z_src - 0.02
+        if excise_frac:
+            self.fg &= np.abs(self.z - z_src) >= excise_frac * (1.0 + z_src)
 
     def kappa_sum(self, ra0, dec0):
         """Summed cluster kappa at a sightline (call set_zsrc first)."""

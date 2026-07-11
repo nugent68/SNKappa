@@ -161,6 +161,13 @@ rob["delensed_weights"] = [b_dl, e_dl, len(good)]
 if "area_flag" in good:
     d = good[~good.area_flag.astype(bool)]
     rob["area_clean"] = list(wslope(d)) + [len(d)]
+if "cl_dz_min_2am" in good:
+    # cluster-plane guard: drop SNe with a catalog cluster within 2 arcmin
+    # whose redshift is consistent with the SN plane (|dz| < 0.05(1+z)) --
+    # the cluster-scale analog of the galaxy host-plane excision; a NaN
+    # (no nearby cluster) keeps the SN
+    d = good[~(good.cl_dz_min_2am < 0.05)]
+    rob["no_cluster_at_sn_plane"] = list(wslope(d)) + [len(d)]
 for var, fn in (("excise", "des_all_kappa_excise.csv"),
                 ("nospecz", "des_all_kappa_nospecz.csv"),
                 ("w1only", "des_all_kappa_w1only.csv"),
