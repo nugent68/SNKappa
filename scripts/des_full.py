@@ -88,6 +88,10 @@ def parse_args():
     p.add_argument("--mstar-offset", type=float, default=0.0,
                    help="global logM* offset in dex (M*/L calibration "
                         "systematic for the error budget)")
+    p.add_argument("--mstar-method", default="nir1um_fsf",
+                   help="stellar-mass estimator (nir1um_fsf = rest-1um "
+                        "recalibrated to the DESI DR1 FastSpecFit scale; "
+                        "nir1um = legacy constant M*/L)")
     p.add_argument("--n-rand", type=int, default=500)
     p.add_argument("--groups", default="X,S,C,E")
     return p.parse_args()
@@ -170,7 +174,7 @@ def main():
         members = clu.assign_members(cfg, df, cl, hm)
         df = df[~members].reset_index(drop=True)
         log(f"  {len(cl)} clusters; {int(members.sum())} members replaced")
-        est = make_estimator("nir1um", cfg.cosmo)
+        est = make_estimator(args.mstar_method, cfg.cosmo)
         if args.mstar_offset:
             class _Offset:
                 def __init__(self, base, off):
