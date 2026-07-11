@@ -54,13 +54,22 @@ A = 0.92 ± 0.23 (stat) ± 0.09 (sys); permutation null p < 1e-4 (3.8σ).
   1 at the plausible effective map resolution, i.e. the DC2 deficit is a
   resolution artifact and the model amplitude closes at map scales
   (output/mock_dc2/mock_summary_sm*.json).
-- P5.2-analog (absolute one-halo closure vs DATA): in progress via
+- P5.2-analog (absolute one-halo closure vs DATA): DONE via
   scripts/delta_sigma_closure.py — predicted DeltaSigma for the DESI DR1
-  "Lensing Without Borders" lens bins (BGS/LRG; measurements + lens
-  catalogs with LS photometry on NERSC at desicollab/science/c3/
-  DESI-Lensing, unblinded v1.5) vs DES/KiDS/HSC/SDSS sources. NOTE:
-  collaboration data — check DESI publication policy before quoting in
-  the paper (the public release repo is still a stub). 5.3–5.5 open.
+  "Lensing Without Borders" lens bins (BGS/LRG; unblinded v1.5 on NERSC)
+  vs DES/KiDS/HSC/SDSS sources. FINDING: with the original constant
+  M*/L_1um = 0.6, measured/predicted A_1h = 1.6–2.0 across all bins and
+  source surveys; per-galaxy comparison with the PUBLIC FastSpecFit VAC
+  (scripts/mstar_vs_fastspecfit.py) pinned the driver: Nir1um runs
+  0.2–0.25 dex low for massive red galaxies. FIX: nir1um_fsf estimator
+  (scripts/build_mstar_recal.py; sigmoid Delta(m,z), amplitude 0.6->0.14
+  over z 0.1->1.05, calibrated on 500k DESI galaxies). GATE PASSED:
+  recalibrated closure gives A_1h ~ 0.96–1.08 (BGS), 1.12–1.21 (LRG
+  0.4–0.6), 1.43 (LRG 0.6–0.8; satellites + residual high-z
+  under-correction). DES pipeline default switched to nir1um_fsf; full
+  rerun of headline + variants underway. NOTE: quoting the DeltaSigma
+  vectors in a paper needs DESI publication-policy sign-off (the M*
+  recalibration itself uses only the public FSF VAC). 5.3–5.5 open.
 
 ---
 
