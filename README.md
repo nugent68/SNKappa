@@ -91,6 +91,57 @@ string, row count, and retrieval timestamp.
    concentration scatter (`n_mc` draws) convolved with the random-LOS variance
    → P(κ_ext); percentiles 2.5/16/50/84/97.5 reported for both group branches.
 
+## Cluster tier: Wen & Han 2024 clusters as single halos
+
+Galaxy-sum halo models undercount clusters by construction: the common halo,
+ICM, and stripped material belong to no galaxy. With `clusters.enabled: true`
+(default in the DES survey pipeline; off for the single-SN default), detected
+clusters are injected as single NFW halos and their member galaxies' halos are
+**replaced, not added** (`snkappa/clusters.py`, `snkappa/batch.py:ClusterField`).
+
+- **Catalog**: Wen & Han 2024 (ApJS 272, 39; DESI Legacy Surveys DR9/DR10
+  clusters), fetched from the VizieR TAP service (table
+  `J/ApJS/272/39/table2`) over the full analysis region — 1600–1900 clusters
+  per DES field group. Manual entries can be added in the config (give
+  `m200`, or `m500`, or `sigma_v` — the latter converted via the Evrard
+  et al. 2008 σ–M200 relation). Clusters are kept if `0 < z_cl < z_src`
+  and the mass is finite.
+- **Masses**: `M200 = m200_from_m500 × M500` (default 1.4, the NFW c≈5
+  conversion); fixed concentration `c = 5` (`clusters.concentration`).
+- **Member replacement** (`assign_members`): a galaxy is a member if it lies
+  within θ_200 of a cluster center AND within a redshift window — spec-z:
+  `|z − z_cl| < member_dz (1+z_cl)` (default 0.0067, ≈2000 km/s); photo-z:
+  the same window widened to the galaxy's own 68% photo-z width. Members'
+  individual halos are removed so the cluster is not double-counted.
+- **Region-wide injection**: clusters contribute to *every* sightline —
+  the SN and all randoms — so the mass-sheet zero point stays consistent.
+  Foreground cut: `z_cl < z_src − 0.02`; the `--excise-host` robustness
+  variant also drops clusters with `|z_cl − z_src| < 0.1(1+z_src)`
+  (cluster catalog redshift errors could otherwise let the SN's own host
+  cluster masquerade as a foreground lens).
+- **Scatter + miscentering marginalization**: in the survey pipeline each
+  cluster's Σ(R) profile is precomputed ONCE, marginalized over (a) a
+  0.25 dex lognormal richness–mass scatter, **centered so E[M] =
+  M_catalog** (an uncentered lognormal would silently boost every mass by
+  18%), via Gauss–Hermite quadrature, and (b) Rayleigh miscentering with a
+  fixed *physical* scale `σ_mis = miscenter_frac_r500 × r500` (default
+  0.2), via quantile × azimuthal quadrature. Evaluation is then a
+  deterministic table interpolation — no per-sightline MC jitter to
+  attenuate a regression. (The single-SN pipeline instead propagates the
+  same scatter + a fixed-angle miscentering through its Monte Carlo,
+  `ClusterKappa.mc_kappa_sum`.)
+- **Host-cluster subtlety** (single-SN mode): a cluster whose center falls
+  inside the deflector exclusion radius hosts the lens itself; its
+  convergence is largely degenerate with the strong-lens model (its
+  uniform part IS the mass-sheet degeneracy). It is reported as a separate
+  conditional term, never folded into the headline κ_ext — but its members
+  are still replaced.
+- **Known gap**: Wen & Han is complete only above M500 ≈ 0.5–1 × 10^14 M⊙;
+  group-scale halos between the single-galaxy cap (10^13.8) and that limit
+  are represented only by their summed member halos and are systematically
+  under-massed (bounded by the cap-insensitivity test; see the paper's
+  robustness table).
+
 ## Optional: FrankenBlast hybrid stellar masses
 
 The default rest-1μm masses can be upgraded with full Bayesian SED posteriors
@@ -151,11 +202,14 @@ SBI++ models when LSST photometry exists).
   double-counts visible-structure variance as a systematic floor. A definitive
   treatment requires ray-traced simulation calibration of the ζ statistics
   (H0LiCOW approach) or multi-plane ray tracing of the output catalog.
-- **Group-included branch double counts.** With `include_lens_group: true`,
-  a cluster is represented as the sum of its members' capped halos, which can
-  overcount a single massive halo; treat that branch as an upper-bound
-  diagnostic. Inserting the known cluster (e.g. Wen & Han mass) as a single
-  halo is future work.
+- **Group-included branch double counts (clusters disabled only).** With
+  `include_lens_group: true` and `clusters.enabled: false`, a cluster is
+  represented as the sum of its members' capped halos, which can overcount
+  a single massive halo; treat that branch as an upper-bound diagnostic.
+  With the cluster tier enabled (see above), catalog clusters are injected
+  as single Wen & Han-mass halos with members replaced — but halos in the
+  group-mass gap below the Wen & Han completeness limit remain
+  member-sum-only.
 - **Overlapping randoms.** Random apertures within the control annulus
   overlap; the effective number of independent patches is ~annulus area /
   aperture area, so extreme tails of the empirical variance are mildly
@@ -187,6 +241,9 @@ SBI++ models when LSST photometry exists).
 - **Astro Data Lab**: "This research uses services or data provided by the Astro
   Data Lab, which is part of the Community Science and Data Center (CSDC) Program
   of NSF NOIRLab."
+- **Wen & Han 2024 cluster catalog** (when `clusters.enabled`): retrieved via the
+  CDS/VizieR TAP service (Strasbourg astronomical Data Center); cite Wen & Han
+  2024, ApJS 272, 39.
 
 ## References
 
@@ -196,4 +253,6 @@ Wright & Brainerd 2000, ApJ 534, 34 · Baltz, Marshall & Oguri 2009, JCAP 1, 15 
 Meidt et al. 2014, ApJ 788, 144 & Kettlety et al. 2018, MNRAS 473, 776
 (NIR M*/L) · Hogg et al. 2002, arXiv:astro-ph/0210394 (K-corrections) ·
 Rusu et al. 2017, MNRAS 467, 4220 (weighted number counts) ·
-Falco, Gorenstein & Shapiro 1985, ApJ 289, L1 (mass-sheet degeneracy)
+Falco, Gorenstein & Shapiro 1985, ApJ 289, L1 (mass-sheet degeneracy) ·
+Wen & Han 2024, ApJS 272, 39 (cluster catalog) ·
+Evrard et al. 2008, ApJ 672, 122 (σ_v–M200)
