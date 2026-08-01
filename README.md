@@ -1,6 +1,9 @@
 # SNKappa
 
-External-convergence (κ_ext) estimator for a single strongly lensed supernova.
+External-convergence (κ_ext) estimator from public catalogs, in two modes:
+a deep single-sightline mode for a strongly lensed supernova (below), and a
+survey mode that predicts κ_ext for thousands of SN sightlines at once
+(see **Survey mode** — the DES-SN5YR lensing-magnification analysis).
 
 `snkappa` reconstructs the line-of-sight (LOS) mass distribution toward a strongly
 lensed SN from a galaxy+halo catalog built by merging **DESI DR1 spectroscopy** with
@@ -90,6 +93,57 @@ string, row count, and retrieval timestamp.
 6. **Monte Carlo**: joint resampling of photo-z, SMHM scatter, M*/L scatter, and
    concentration scatter (`n_mc` draws) convolved with the random-LOS variance
    → P(κ_ext); percentiles 2.5/16/50/84/97.5 reported for both group branches.
+
+## Survey mode: DES-SN5YR (batch pipeline)
+
+The same halo chain, run as a survey: predict κ_ext for every SN sightline
+in the DES five-year sample and regress the published Hubble residuals on
+it — the lensing amplitude A = (observed slope)/(−5/ln 10) is then a
+population-level test of the galaxy–halo connection (ApJL draft; the
+manuscript lives in the Overleaf project, not this repo).
+
+```bash
+.venv/bin/python scripts/des_full.py                 # headline (all 4 field groups)
+.venv/bin/python scripts/des_full.py --variant excise --excise-host   # robustness
+.venv/bin/python scripts/attenuation_mc.py           # errors-in-variables lambda
+.venv/bin/python scripts/make_figs.py                # paper stats + figures
+```
+
+How it differs from the single-SN mode (`snkappa/batch.py`):
+
+- **One regional catalog per DES field group** (XMM-LSS, Stripe 82, CDF-S,
+  Elais-S1; dereddened z ≤ 22.5), fetched once; per-galaxy halo tables are
+  z_src-independent and built ONCE — only Σ_crit and the photo-z
+  truncation are recomputed per source-redshift bin (Δz_src = 0.05, then
+  linear interpolation to each SN's z_HD).
+- **No deflector**: these are unlensed field SNe, so only a 3″ inner
+  exclusion is applied; host coordinates proxy the sightlines.
+- **Deterministic prediction**: fiducial κ per sightline (no per-SN MC);
+  the cluster tier uses the precomputed miscentering-convolved profiles
+  (`ClusterField`), so the regression sees no MC jitter. Prediction and
+  Hubble residuals share one cosmology (flat ΛCDM, H0=70, Ω_M=0.352, the
+  DES-SN5YR SN-only fit).
+- **Zero point**: 500 random sightlines per field group, drawn once and
+  reused across all z_src bins (coherent per-bin zero points), with a
+  low-count guard against masked/edge apertures; per-SN unmasked-area and
+  cluster-proximity flags are written to the catalog.
+- **Variants** (`--variant ...`, see `TODO_REVIEW.md`): host-plane
+  excision (galaxies AND clusters), photo-z-only, W1-required, naive SMHM
+  inversion, halo-cap 10^14.1, M*±0.05 dex. `scripts/make_figs.py` adds
+  the permutation null (shuffles within z bins, preserving the κ spatial
+  structure), a 0.5° block bootstrap, and host-mass confounder tests.
+- **Calibration/validation scripts**: `mock_calibration.py` (end-to-end
+  cosmoDC2 rerun with forward-modeled noise → attenuation λ),
+  `delta_sigma_closure.py` (predicted ΔΣ vs measured DESI DR1
+  galaxy–galaxy lensing → the M*/L recalibration behind the default
+  `nir1um_fsf` estimator, built by `build_mstar_recal.py`),
+  `photoz_validation.py` (p(z) coverage against DESI spec-z).
+
+Inputs: `des_pilot/` holds the public DES-SN5YR Hubble-diagram and
+metadata tables (SNANA format; provenance in `des_pilot/README.md`).
+Outputs: `output/des_full/des_all_kappa.csv` — the released per-SN κ_ext
+catalog — plus `fit_summary*.json` and `paper_stats.json`, which back
+every number in the manuscript.
 
 ## Cluster tier: Wen & Han 2024 clusters as single halos
 
