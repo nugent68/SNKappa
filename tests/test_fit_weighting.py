@@ -57,3 +57,21 @@ def test_bootstrap_slope_consistent():
     assert abs(b - b_ref) < 1e-8 * max(1.0, abs(b_ref))
     # true slope -2.17 should be recovered within ~4 bootstrap sigma
     assert abs(b - (-2.17)) < 4 * e
+
+
+def test_two_component_recovers_distinct_slopes():
+    """Synthetic heteroscedastic data with different slopes on two
+    correlated regressors must be recovered by the WLS fit."""
+    import numpy as np
+    from snkappa.fitting import two_component_slopes
+
+    rng = np.random.default_rng(7)
+    n = 4000
+    x1 = rng.normal(0, 0.01, n)
+    x2 = 0.3 * x1 + rng.normal(0, 0.004, n)   # correlated components
+    sigma = rng.uniform(0.08, 0.3, n)
+    y = -2.0 * x1 - 4.0 * x2 + 0.01 + rng.standard_normal(n) * sigma
+    (b1, e1), (b2, e2) = two_component_slopes(x1, x2, y, sigma, rng)
+    assert abs(b1 - (-2.0)) < 3 * e1
+    assert abs(b2 - (-4.0)) < 3 * e2
+    assert e1 < 1.0 and e2 < 2.5

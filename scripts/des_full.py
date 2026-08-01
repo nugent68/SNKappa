@@ -48,7 +48,7 @@ from snkappa.config import (Config, ClustersConfig, CosmologyConfig,
 from snkappa import catalog, clusters as clu
 from snkappa.batch import BatchEngine, ClusterField
 from snkappa.datalab import TapClient
-from snkappa.fitting import bootstrap_slope
+from snkappa.fitting import bootstrap_slope, two_component_slopes
 from snkappa.halos import HaloModel
 from snkappa.kappa import angular_sep_arcsec
 from snkappa.stellar import make_estimator
@@ -215,8 +215,13 @@ def main():
         t_int = pos - k_lo
         t_int[k_hi == k_lo] = 0.0
 
-        kap_sn = np.full((len(sn), 2), np.nan)   # [SN, (lo, hi)]
+        # galaxy-halo and cluster-tier components tracked separately so the
+        # regression can fit an amplitude for each (two-component test)
+        kap_sn_g = np.full((len(sn), 2), np.nan)   # [SN, (lo, hi)]
+        kap_sn_c = np.full((len(sn), 2), np.nan)
         zp_c = np.full(ZSRC_CENTERS.size, np.nan)
+        zp_g_c = np.full(ZSRC_CENTERS.size, np.nan)
+        zp_cl_c = np.full(ZSRC_CENTERS.size, np.nan)
         sig_c = np.full(ZSRC_CENTERS.size, np.nan)
 
         for k, z_src in enumerate(ZSRC_CENTERS):
@@ -227,24 +232,36 @@ def main():
             eng.set_zsrc(cfg.cosmo, z_src, excise_frac=excise_frac)
             clf.set_zsrc(cfg.cosmo, z_src, excise_frac=excise_frac)
 
-            def kap(ra, dec):
-                return eng.kappa_gal(ra, dec, r_out) + clf.kappa_sum(ra, dec)
+            def kap2(ra, dec):
+                """(galaxy-halo, cluster-tier) kappa components."""
+                return (eng.kappa_gal(ra, dec, r_out), clf.kappa_sum(ra, dec))
 
-            k_rand = np.array([kap(a, d) for a, d in zip(rra, rdec)])
+            kr = np.array([kap2(a, d) for a, d in zip(rra, rdec)])
+            k_rand = kr.sum(axis=1)
             zp_c[k] = k_rand.mean()
+            zp_g_c[k] = kr[:, 0].mean()
+            zp_cl_c[k] = kr[:, 1].mean()
             sig_c[k] = 0.5 * np.subtract(*np.percentile(k_rand, [84, 16]))
             for i in np.concatenate([need_lo, need_hi]):
                 col = 0 if k_lo[i] == k else 1
-                kap_sn[i, col] = kap(sn.HOST_RA.iloc[i], sn.HOST_DEC.iloc[i])
+                kg, kc = kap2(sn.HOST_RA.iloc[i], sn.HOST_DEC.iloc[i])
+                kap_sn_g[i, col] = kg
+                kap_sn_c[i, col] = kc
             log(f"  z_src={z_src:.3f}: {need_lo.size + need_hi.size:3d} SN "
                 f"evals | zp {zp_c[k]:.4f} sig {sig_c[k]:.4f}")
+
+        def interp(arr, i, t):
+            return (1 - t) * arr[i, 0] + t * (arr[i, 1] if t > 0 else 0.0)
 
         for i, row in sn.iterrows():
             t = t_int[i]
             lo, hi = k_lo[i], k_hi[i]
-            k_raw = (1 - t) * kap_sn[i, 0] + t * (kap_sn[i, 1]
-                                                  if t > 0 else 0.0)
+            kg = interp(kap_sn_g, i, t)
+            kc = interp(kap_sn_c, i, t)
+            k_raw = kg + kc
             zp = (1 - t) * zp_c[lo] + t * (zp_c[hi] if t > 0 else 0.0)
+            zp_g = (1 - t) * zp_g_c[lo] + t * (zp_g_c[hi] if t > 0 else 0.0)
+            zp_cl = (1 - t) * zp_cl_c[lo] + t * (zp_cl_c[hi] if t > 0 else 0.0)
             sig = (1 - t) * sig_c[lo] + t * (sig_c[hi] if t > 0 else 0.0)
             afrac, _ = catalog.area_fraction(cfg, df, row.HOST_RA,
                                              row.HOST_DEC)
@@ -266,6 +283,7 @@ def main():
                 "HOST_RA": row.HOST_RA, "HOST_DEC": row.HOST_DEC,
                 "HOST_LOGMASS": row.HOST_LOGMASS,
                 "kappa_raw": k_raw, "kappa_ext": k_raw - zp,
+                "kappa_gal_ext": kg - zp_g, "kappa_cl_ext": kc - zp_cl,
                 "zbin": ZSRC_CENTERS[lo if t < 0.5 else hi],
                 "rand_mean": zp, "rand_sig": sig,
                 "n_rand_ok": int(rra.size),
@@ -307,6 +325,25 @@ def main():
     if {"C", "E"} & set(good.GROUP.unique()):
         summary["slope_CE"] = fit(good[good.GROUP.isin(["C", "E"])],
                                   "P(Ia)>0.9, photo-only (C+E)")
+    # two-component amplitudes: separate slopes for the galaxy-halo and
+    # cluster tiers (tests whether the cluster masses carry the right
+    # kappa normalization; A_x = b_x / (-5/ln10))
+    slope_th = -5.0 / np.log(10.0)
+    (bg, eg), (bc, ec) = two_component_slopes(
+        good.kappa_gal_ext.to_numpy(), good.kappa_cl_ext.to_numpy(),
+        good.hr.to_numpy(), good.MUERR.to_numpy(), rng)
+    summary["two_component"] = {
+        "slope_gal": [bg, eg], "slope_cl": [bc, ec],
+        "A_gal": [bg / slope_th, eg / abs(slope_th)],
+        "A_cl": [bc / slope_th, ec / abs(slope_th)],
+        "sigma_kappa_gal": float(good.kappa_gal_ext.std()),
+        "sigma_kappa_cl": float(good.kappa_cl_ext.std()),
+    }
+    log(f"two-component: gal slope {bg:+.2f}+-{eg:.2f} "
+        f"(A_gal={bg/slope_th:.2f}+-{eg/abs(slope_th):.2f}) | "
+        f"cl slope {bc:+.2f}+-{ec:.2f} "
+        f"(A_cl={bc/slope_th:.2f}+-{ec/abs(slope_th):.2f})")
+
     hi = good[good.kappa_ext > 0.005]; lo_ = good[good.kappa_ext <= 0.005]
     log(f"mean HR kappa>0.005: {np.average(hi.hr, weights=1/hi.MUERR**2):+.3f}"
         f" (N={len(hi)}) | kappa<=0.005: "
