@@ -76,6 +76,14 @@ stats["amplitude"] = [b / SLOPE_TH, e / abs(SLOPE_TH)]
 rho_s, p_s = sps.spearmanr(good.kappa_ext, good.hr)
 stats["spearman"] = [rho_s, p_s]
 
+# exact kappa+shear prediction (dmu_pred column; slope = amplitude A)
+if "dmu_pred" in good:
+    b_x, e_x = bootstrap_slope(good.dmu_pred.to_numpy(),
+                               good.hr.to_numpy(),
+                               good.MUERR.to_numpy(), rng)
+    stats["slope_dmu_exact"] = [b_x, e_x]
+    stats["mean_gamma"] = float(good.gamma.mean())
+
 # ------------------------------------------------- permutation null (1.1) --
 x, y, sig = (good.kappa_ext.to_numpy(), good.hr.to_numpy(),
              good.MUERR.to_numpy())
@@ -271,11 +279,11 @@ fig.tight_layout(); fig.savefig(FIGDIR / "fig3_forest.pdf"); plt.close(fig)
 
 # ------------------------------------------- top sightlines table (3.2) --
 top = good.nlargest(10, "kappa_ext")[
-    ["CID", "FIELD", "zHD", "kappa_ext", "hr"]].copy()
-# exact point-mass-free magnification (shear from the same halo sum is not
-# computed; |gamma| ~ kappa for isolated halos would brighten further, so
-# this is the conservative no-shear value)
-top["dmu_pred"] = 5.0 * np.log10(1.0 - top.kappa_ext)
+    ["CID", "FIELD", "zHD", "kappa_ext", "hr"]
+    + (["gamma", "dmu_pred"] if "dmu_pred" in good else [])].copy()
+if "dmu_pred" not in top:
+    # legacy catalogs: convergence-only exact magnification (no shear)
+    top["dmu_pred"] = 5.0 * np.log10(1.0 - top.kappa_ext)
 top.to_csv(STATDIR / "table1_top.csv", index=False)
 
 (STATDIR / "paper_stats.json").write_text(json.dumps(stats, indent=2, default=float))

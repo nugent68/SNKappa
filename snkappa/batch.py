@@ -151,6 +151,51 @@ class BatchEngine:
             k += float(np.sum(self.pWA[b][m] * sig))
         return k
 
+    def kappa_shear_gal(self, ra0, dec0, r_out):
+        """(kappa, gamma1, gamma2) of the galaxy-halo sum at (ra0, dec0).
+
+        kappa is IDENTICAL to kappa_gal (same haversine separations and
+        tables). Shear is spin-2 and must be vector-summed: each halo
+        contributes gamma_t = amp * DeltaSigma_dimless(x) tangentially,
+        i.e. gamma1 = -gamma_t cos 2phi, gamma2 = -gamma_t sin 2phi with
+        phi the halo's position angle (flat-sky; exact angles are
+        irrelevant at the <=10 arcmin aperture scale).
+        """
+        k = g1 = g2 = 0.0
+        b = self._band(self.s_dec, dec0, r_out)
+        th = angular_sep_arcsec(ra0, dec0, self.s_ra[b], self.s_dec[b])
+        m = (th > self.r_in) & (th < r_out) & (self.sA[b] > 0)
+        if m.any():
+            sA = self.sA[b][m]
+            x = th[m] / self.s_ths[b][m]
+            tau = self.s_tau[b][m]
+            k += float(np.sum(sA * self.hm.sigma_dimless(x, tau)))
+            gt = sA * self.hm.delta_sigma_dimless(x, tau)
+            dx = (self.s_ra[b][m] - ra0) * np.cos(np.radians(dec0))
+            dy = self.s_dec[b][m] - dec0
+            phi = np.arctan2(dy, dx)
+            g1 += float(np.sum(-gt * np.cos(2.0 * phi)))
+            g2 += float(np.sum(-gt * np.sin(2.0 * phi)))
+        b = self._band(self.p_dec, dec0, r_out)
+        th = angular_sep_arcsec(ra0, dec0, self.p_ra[b], self.p_dec[b])
+        m = (th > self.r_in) & (th < r_out)
+        if m.any():
+            ths = self.p_ths[b][m]
+            x = th[m][:, None] / ths
+            tau = self.p_tau[b][m]
+            sig = self.hm.sigma_dimless(x.ravel(),
+                                        tau.ravel()).reshape(x.shape)
+            k += float(np.sum(self.pWA[b][m] * sig))
+            dsig = self.hm.delta_sigma_dimless(
+                x.ravel(), tau.ravel()).reshape(x.shape)
+            gt = np.sum(self.pWA[b][m] * dsig, axis=1)   # per galaxy
+            dx = (self.p_ra[b][m] - ra0) * np.cos(np.radians(dec0))
+            dy = self.p_dec[b][m] - dec0
+            phi = np.arctan2(dy, dx)
+            g1 += float(np.sum(-gt * np.cos(2.0 * phi)))
+            g2 += float(np.sum(-gt * np.sin(2.0 * phi)))
+        return k, g1, g2
+
     def counts(self, ra0, dec0, r_out):
         """Catalog galaxies in the aperture (masking / edge diagnostic)."""
         b = self._band(self.all_dec, dec0, r_out)
@@ -221,6 +266,22 @@ class ClusterField:
             self.profiles[i] = prof
         self.logprof = np.log10(np.clip(self.profiles, 1e-30, None))
 
+        # DeltaSigma(r) = mean Sigma inside r minus Sigma(r), from the SAME
+        # miscentering-convolved profile (which is circular about the
+        # catalog center by construction, so its tangential shear follows
+        # from its own 2D mean). Trapezoid on the radial grid; the r->0
+        # disk is seeded flat at the innermost value (the convolved core
+        # is flat well beyond grid[0] = 1 arcsec, since sigma_mis is
+        # typically arcminutes). Can be slightly negative in the core
+        # (non-monotonic convolved profile): kept linear, not log.
+        grid_r = 10.0 ** self.loggrid
+        integ = self.profiles * grid_r[None, :]
+        m2 = np.empty_like(self.profiles)
+        m2[:, 0] = 0.5 * grid_r[0] ** 2 * self.profiles[:, 0]
+        dm = 0.5 * (integ[:, 1:] + integ[:, :-1]) * np.diff(grid_r)[None]
+        m2[:, 1:] = m2[:, 0:1] + np.cumsum(dm, axis=1)
+        self.dsig_prof = 2.0 * m2 / grid_r[None, :] ** 2 - self.profiles
+
     def set_zsrc(self, cosmo, z_src, excise_frac=None):
         """Prepare Sigma_crit and the foreground mask for one source plane.
 
@@ -241,16 +302,28 @@ class ClusterField:
 
     def kappa_sum(self, ra0, dec0):
         """Summed cluster kappa at a sightline (call set_zsrc first)."""
+        return self.kappa_shear_sum(ra0, dec0)[0]
+
+    def kappa_shear_sum(self, ra0, dec0):
+        """(kappa, gamma1, gamma2) summed over foreground clusters
+        (call set_zsrc first); shear vector-summed like the galaxy tier."""
         dx = (self.ra - ra0) * np.cos(np.radians(dec0)) * 3600.0
         dy = (self.dec - dec0) * 3600.0
         sep = np.hypot(dx, dy)
         near = (sep < self.R_MAX_ARCSEC) & self.fg
         if not near.any():
-            return 0.0
+            return 0.0, 0.0, 0.0
         ls = np.log10(np.clip(sep[near], 1.0, None))
         idx = np.clip(np.searchsorted(self.loggrid, ls) - 1, 0,
                       self.loggrid.size - 2)
         f = (ls - self.loggrid[idx]) / (self.loggrid[idx + 1]
                                         - self.loggrid[idx])
         lp = self.logprof[near, idx] * (1 - f) + self.logprof[near, idx + 1] * f
-        return float(np.sum(10.0 ** lp / self.sigcr[near]))
+        k = float(np.sum(10.0 ** lp / self.sigcr[near]))
+        ds = (self.dsig_prof[near, idx] * (1 - f)
+              + self.dsig_prof[near, idx + 1] * f)
+        gt = ds / self.sigcr[near]
+        phi = np.arctan2(dy[near], dx[near])
+        g1 = float(np.sum(-gt * np.cos(2.0 * phi)))
+        g2 = float(np.sum(-gt * np.sin(2.0 * phi)))
+        return k, g1, g2

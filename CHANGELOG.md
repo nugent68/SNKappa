@@ -5,6 +5,38 @@ manuscript to the commits and tracked artifacts that produced it. Code
 comments of the form `(TODO n.m)` refer to the review-checklist item
 numbers listed at the bottom of this file.
 
+## 2026-08-01 — Measurement-improvement sprint (shear, robustness, moments, de-lensing)
+
+- **Shear + exact magnification**: tangential shear vector-summed
+  (spin-2) over both tiers from the analytic BMO ΔΣ; ClusterField shear
+  from the miscentering-convolved profile's own ΔΣ. New catalog columns
+  `gamma`, `dmu_pred` (exact 2.5 log10[(1−κ)²−|γ|²], random-zero-pointed).
+  ⟨|γ|⟩ = 0.0083 adds ~4% to the prediction dispersion; exact-prediction
+  fit **A = 0.757 ± 0.192** (vs κ-only 0.786 ± 0.195); κ columns
+  bit-identical; zero strong-lensing clips. Table 1 Δμ_pred now includes
+  shear.
+- **Latent-fit robustness** (`latent_fit.py --robustness`): jackknife
+  [1.12–1.66], z<1 and de-lensed-weights rows stable; EIV permutation
+  null z = 2.31 — the latent fit is the amplitude estimator, not the
+  detection statistic (detection remains the WLS permutation, 3.7σ).
+- **Moments channels** (`moments_test.py`): honest nulls with diagnosis —
+  the variance channel is degenerate with the MUERR calibration (freeing
+  it gives c0 = 0.86, i.e. DES errors over-cover ~14% in this subsample,
+  and a = 0 ± 1.2 for the z-growing part); skew channels are noise-
+  limited (predicted 0.01–0.03 vs ~0.2 noise per bin). LSST-scale
+  samples needed for the moments channels.
+- **Variant harmonization**: the 2026-07-11 variant sweep had used
+  n_rand = 200 (vs 500 for the headline); all six variants rerun at 500
+  with the new columns. Table-2-class slopes shift at the second decimal
+  (e.g. excise −1.93 → −1.91, naive −1.25 → −1.23); the nospecz variant
+  is X+S-restricted as published.
+- **De-lensing demo** (`delens_demo.py`): ΔΩ_M = −0.002 (ΛCDM,
+  negligible); diagonal SN-only wCDM shifts Δw = +0.09 — driven by the
+  mean SN-vs-random overdensity (⟨κ_ext⟩_w = +0.0019 at z > 0.7, a
+  +3.3 mmag coherent high-z correction); de-lensing raises the z > 0.7
+  skewness by +0.17 (removal of the magnified bright tail). Differential,
+  no-covariance statement only.
+
 ## 2026-08-01 — Latent-variable (errors-in-variables) regression
 
 `snkappa/latent.py` + `scripts/latent_fit.py`: empirical-Bayes EIV fit of

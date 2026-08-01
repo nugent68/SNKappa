@@ -51,6 +51,7 @@ def log(msg):
 
 NOISE_CSV = Path("output/des_full/latent_noise.csv")
 FIT_JSON = Path("output/des_full/latent_fit.json")
+ROB_JSON = Path("output/des_full/latent_robustness.json")
 
 
 def rvar(a):
@@ -148,36 +149,50 @@ def stage_noise(args):
     log(f"saved {NOISE_CSV}")
 
 
-def stage_fit(args):
-    res = pd.read_csv("output/des_full/des_all_kappa.csv")
+def load_merged(csv_path="output/des_full/des_all_kappa.csv",
+                prob_cut=0.9):
+    """Catalog merged with the per-SN noise table (P(Ia) cut applied)."""
+    res = pd.read_csv(csv_path)
     noise = pd.read_csv(NOISE_CSV)
     d = res.merge(noise[["CID", "rvar_gal_cl", "rvar_gal_tot",
                          "rvar_cl_cl", "rvar_cl_tot", "var_zp"]], on="CID")
-    d = d[d.PROBIA > 0.9].reset_index(drop=True)
-    rng = np.random.default_rng(31415)
-    log(f"fitting {len(d)} SNe (P(Ia)>0.9) with per-SN noise variances")
+    return d[d.PROBIA > prob_cut].reset_index(drop=True)
 
+
+def prep_arrays(d, afid, delensed_weights=False):
+    """(x, y, zbin, s2_cl, s2_bk, sig2_y, rb) for the EIV fit."""
     zbin = d.zbin.to_numpy()
     # classical (shrinkage-driving) vs Berkson (residual-only) split
     s2_cl = (d.rvar_gal_cl + d.rvar_cl_cl + d.var_zp).to_numpy()
     s2_bk = (np.clip(d.rvar_gal_tot - d.rvar_gal_cl, 0, None)
              + np.clip(d.rvar_cl_tot - d.rvar_cl_cl, 0, None)).to_numpy()
-    s2_all = s2_cl + s2_bk
     x = d.kappa_ext.to_numpy()
     y = d.hr.to_numpy()
 
+    muerr2 = d.MUERR.to_numpy() ** 2
+    if delensed_weights:
+        muerr2 = np.clip(muerr2 - (0.055 * d.zHD.to_numpy()) ** 2,
+                         0.05 ** 2, None)
     # sigma_y: MUERR minus the catalog-visible lensing variance already
     # modeled through the latent term (A_fid fixed; effect is small)
     tau2_apx = np.clip(d.rand_sig.to_numpy() ** 2 - s2_cl, 1e-10, None)
-    sig2_y = np.clip(d.MUERR.to_numpy() ** 2
-                     - (SLOPE_TH * args.afid) ** 2 * tau2_apx,
-                     (0.5 * d.MUERR.to_numpy()) ** 2, None)
+    sig2_y = np.clip(muerr2 - (SLOPE_TH * afid) ** 2 * tau2_apx,
+                     0.25 * muerr2, None)
 
     # randoms-based tau2 fallback for thin bins
     rb = {zb: float(np.clip(
             d.loc[d.zbin == zb, "rand_sig"].mean() ** 2
             - s2_cl[zbin == zb].mean(), 1e-10, None))
           for zb in np.unique(zbin)}
+    return x, y, zbin, s2_cl, s2_bk, sig2_y, rb
+
+
+def stage_fit(args):
+    d = load_merged()
+    rng = np.random.default_rng(31415)
+    log(f"fitting {len(d)} SNe (P(Ia)>0.9) with per-SN noise variances")
+    x, y, zbin, s2_cl, s2_bk, sig2_y, rb = prep_arrays(d, args.afid)
+    s2_all = s2_cl + s2_bk
 
     single = fit_amplitude(x, s2_cl, zbin, y, sig2_y, rng=rng,
                            n_boot=args.n_boot, rand_based_tau2=rb,
@@ -223,10 +238,84 @@ def stage_fit(args):
     log(f"saved {FIT_JSON}")
 
 
+def _quick_A(d, afid, delensed_weights=False):
+    """Latent single-A fit without bootstrap (robustness rows)."""
+    x, y, zbin, s2_cl, s2_bk, sig2_y, rb = prep_arrays(
+        d, afid, delensed_weights)
+    f = fit_amplitude(x, s2_cl, zbin, y, sig2_y, rng=None,
+                      rand_based_tau2=rb, s2_berk=s2_bk)
+    return [f["A"], f["A_err_post"], len(d)]
+
+
+def stage_robustness(args):
+    """Permutation null, jackknife, and variant rows for the latent A."""
+    d = load_merged()
+    rng = np.random.default_rng(1618)
+    x, y, zbin, s2_cl, s2_bk, sig2_y, rb = prep_arrays(d, args.afid)
+    grid = np.linspace(-1.0, 3.0, 101)
+    out = {"headline": _quick_A(d, args.afid)}
+    A_obs = out["headline"][0]
+    log(f"headline latent A = {A_obs:.3f} (N={len(d)})")
+
+    # permutation null: shuffle hr within z bins (preserves kappa spatial
+    # structure and both marginals), refit the latent A each time
+    idx_by_bin = [np.flatnonzero(zbin == zb) for zb in np.unique(zbin)]
+    yp = y.copy()
+    perm = np.empty(args.n_perm)
+    for k in range(args.n_perm):
+        for idx in idx_by_bin:
+            yp[idx] = y[rng.permutation(idx)]
+        f = fit_amplitude(x, s2_cl, zbin, yp, sig2_y, rng=None,
+                          rand_based_tau2=rb, s2_berk=s2_bk, grid=grid)
+        perm[k] = f["A"]
+        if (k + 1) % 500 == 0:
+            log(f"  permutation {k + 1}/{args.n_perm}")
+    p_perm = float(np.mean(perm >= A_obs))    # one-sided: lensing -> A > 0
+    out["permutation"] = {
+        "n_perm": args.n_perm,
+        "p_one_sided": max(p_perm, 1.0 / args.n_perm),
+        "null_mean": float(perm.mean()), "null_sigma": float(perm.std()),
+        "z_equiv": float((A_obs - perm.mean()) / perm.std())}
+    log(f"permutation: p = {out['permutation']['p_one_sided']:.2e}, "
+        f"null sigma = {perm.std():.3f} "
+        f"(z = {out['permutation']['z_equiv']:.2f})")
+
+    # jackknife over field groups
+    out["jackknife"] = {g: _quick_A(d[d.GROUP != g], args.afid)
+                        for g in ("X", "S", "C", "E")}
+
+    # sample rows mirroring Table 2
+    out["z_lt_1"] = _quick_A(d[d.zHD < 1.0], args.afid)
+    out["delensed_weights"] = _quick_A(d, args.afid, delensed_weights=True)
+
+    # variant refits: variant kappa columns joined to the HEADLINE noise
+    # variances by CID (same sightlines; the noise budget is dominated by
+    # the same galaxies/clusters -- documented approximation)
+    for var in ("excise", "w1only", "cap14.1", "mstar05", "naive",
+                "nospecz"):
+        p = Path(f"output/des_full/des_all_kappa_{var}.csv")
+        if not p.exists():
+            continue
+        dv = load_merged(p)
+        out[f"variant_{var}"] = _quick_A(dv, args.afid)
+        if var == "nospecz":
+            dh = d[d.GROUP.isin(dv.GROUP.unique())]
+            out["headline_XS_for_nospecz"] = _quick_A(dh, args.afid)
+    for k2, v in out.items():
+        if k2 not in ("permutation",):
+            log(f"  {k2}: {v}")
+    ROB_JSON.write_text(json.dumps(out, indent=2, default=float))
+    log(f"saved {ROB_JSON}")
+
+
 def main():
     ap = argparse.ArgumentParser(description=__doc__)
     ap.add_argument("--noise", action="store_true",
                     help="stage 1: compute per-SN noise variances (slow)")
+    ap.add_argument("--robustness", action="store_true",
+                    help="permutation null + jackknife + variant rows "
+                         "for the latent A")
+    ap.add_argument("--n-perm", type=int, default=2000)
     ap.add_argument("--n-mc", type=int, default=64)
     ap.add_argument("--limit", type=int, default=0,
                     help="stage 1: max SNe per group (0 = all; for timing)")
@@ -235,6 +324,8 @@ def main():
     args = ap.parse_args()
     if args.noise:
         stage_noise(args)
+    elif args.robustness:
+        stage_robustness(args)
     else:
         stage_fit(args)
 

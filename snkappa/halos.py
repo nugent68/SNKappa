@@ -296,3 +296,11 @@ class HaloModel:
         if self._profile == "nfw":
             return nfw_sigma_dimless(x)
         return bmo_table().sigma_dimless(x, tau)
+
+    def delta_sigma_dimless(self, x, tau):
+        """DeltaSigma/(rho_s r_s): tangential-shear amplitude is
+        gamma_t = DeltaSigma / Sigma_crit (BMO profile only)."""
+        if self._profile != "bmo":
+            raise NotImplementedError(
+                "delta_sigma_dimless: BMO profile only")
+        return bmo_table().delta_sigma_dimless(x, tau)

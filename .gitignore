@@ -19,6 +19,9 @@ output/mock_dc2/*
 !output/des_full/attenuation.json
 !output/des_full/latent_fit.json
 !output/des_full/latent_noise.csv
+!output/des_full/latent_robustness.json
+!output/des_full/moments_test.json
+!output/des_full/delens_demo.json
 # the manuscript lives ONLY in the Overleaf project; figures are
 # generated into output/figs/ by scripts/make_figs.py and pushed there
 paper/

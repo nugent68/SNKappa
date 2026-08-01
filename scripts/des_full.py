@@ -18,7 +18,10 @@ Pipeline (engine lives in snkappa.batch, TODO 3.9):
 - prediction and Hubble residuals use the SAME cosmology
   (flat LCDM, H0=70, Om0=0.352, the DES-SN5YR SN-only fit),
 - inverse-variance regression via np.polyfit with w = 1/sigma
-  (the polyfit weight multiplies the unsquared residual).
+  (the polyfit weight multiplies the unsquared residual),
+- tangential shear vector-summed over both tiers and the EXACT predicted
+  magnification dmu_pred = 2.5 log10[(1-k)^2 - |g|^2] (zero-pointed on
+  the randoms) alongside the linearized kappa prediction.
 
 Run: .venv/bin/python scripts/des_full.py            (headline)
 Variants (robustness / systematics; item numbers in CHANGELOG.md):
@@ -72,6 +75,18 @@ ZC = np.arange(0.02, 1.14, 0.04)   # photo-z marginalization grid
 OMEGA_M = 0.352                 # DES-SN5YR flat-LCDM (SN-only); used for BOTH
 H0 = 70.0                       # the kappa prediction and the residuals
 AREA_FLAG_MIN = 0.90            # per-SN unmasked-area fraction threshold
+N_CLIP = [0]                    # (1-k)^2 - g^2 <= floor occurrences
+
+
+def dmu_exact(kappa, gamma):
+    """Exact magnification magnitude: 2.5 log10[(1-k)^2 - |g|^2].
+    Floored far inside the strong-lensing regime (counted in N_CLIP)."""
+    arg = (1.0 - np.asarray(kappa, float)) ** 2 \
+        - np.asarray(gamma, float) ** 2
+    n_bad = int(np.count_nonzero(arg <= 1e-4))
+    if n_bad:
+        N_CLIP[0] += n_bad
+    return 2.5 * np.log10(np.clip(arg, 1e-4, None))
 
 
 def parse_args():
@@ -219,9 +234,12 @@ def main():
         # regression can fit an amplitude for each (two-component test)
         kap_sn_g = np.full((len(sn), 2), np.nan)   # [SN, (lo, hi)]
         kap_sn_c = np.full((len(sn), 2), np.nan)
+        gam_sn = np.full((len(sn), 2), np.nan)     # |gamma| (vector-summed)
+        dmu_sn = np.full((len(sn), 2), np.nan)     # exact dmu, un-zeropointed
         zp_c = np.full(ZSRC_CENTERS.size, np.nan)
         zp_g_c = np.full(ZSRC_CENTERS.size, np.nan)
         zp_cl_c = np.full(ZSRC_CENTERS.size, np.nan)
+        zp_dmu_c = np.full(ZSRC_CENTERS.size, np.nan)
         sig_c = np.full(ZSRC_CENTERS.size, np.nan)
 
         for k, z_src in enumerate(ZSRC_CENTERS):
@@ -232,21 +250,29 @@ def main():
             eng.set_zsrc(cfg.cosmo, z_src, excise_frac=excise_frac)
             clf.set_zsrc(cfg.cosmo, z_src, excise_frac=excise_frac)
 
-            def kap2(ra, dec):
-                """(galaxy-halo, cluster-tier) kappa components."""
-                return (eng.kappa_gal(ra, dec, r_out), clf.kappa_sum(ra, dec))
+            def kap3(ra, dec):
+                """(kappa_gal, kappa_cl, gamma1, gamma2); shear vector-
+                summed across both tiers."""
+                kg, g1g, g2g = eng.kappa_shear_gal(ra, dec, r_out)
+                kc, g1c, g2c = clf.kappa_shear_sum(ra, dec)
+                return kg, kc, g1g + g1c, g2g + g2c
 
-            kr = np.array([kap2(a, d) for a, d in zip(rra, rdec)])
-            k_rand = kr.sum(axis=1)
+            kr = np.array([kap3(a, d) for a, d in zip(rra, rdec)])
+            k_rand = kr[:, 0] + kr[:, 1]
             zp_c[k] = k_rand.mean()
             zp_g_c[k] = kr[:, 0].mean()
             zp_cl_c[k] = kr[:, 1].mean()
+            zp_dmu_c[k] = dmu_exact(k_rand,
+                                    np.hypot(kr[:, 2], kr[:, 3])).mean()
             sig_c[k] = 0.5 * np.subtract(*np.percentile(k_rand, [84, 16]))
             for i in np.concatenate([need_lo, need_hi]):
                 col = 0 if k_lo[i] == k else 1
-                kg, kc = kap2(sn.HOST_RA.iloc[i], sn.HOST_DEC.iloc[i])
+                kg, kc, g1, g2 = kap3(sn.HOST_RA.iloc[i],
+                                      sn.HOST_DEC.iloc[i])
                 kap_sn_g[i, col] = kg
                 kap_sn_c[i, col] = kc
+                gam_sn[i, col] = np.hypot(g1, g2)
+                dmu_sn[i, col] = float(dmu_exact(kg + kc, gam_sn[i, col]))
             log(f"  z_src={z_src:.3f}: {need_lo.size + need_hi.size:3d} SN "
                 f"evals | zp {zp_c[k]:.4f} sig {sig_c[k]:.4f}")
 
@@ -259,6 +285,9 @@ def main():
             kg = interp(kap_sn_g, i, t)
             kc = interp(kap_sn_c, i, t)
             k_raw = kg + kc
+            dmu_raw = interp(dmu_sn, i, t)
+            zp_dmu = (1 - t) * zp_dmu_c[lo] + t * (zp_dmu_c[hi]
+                                                   if t > 0 else 0.0)
             zp = (1 - t) * zp_c[lo] + t * (zp_c[hi] if t > 0 else 0.0)
             zp_g = (1 - t) * zp_g_c[lo] + t * (zp_g_c[hi] if t > 0 else 0.0)
             zp_cl = (1 - t) * zp_cl_c[lo] + t * (zp_cl_c[hi] if t > 0 else 0.0)
@@ -284,6 +313,8 @@ def main():
                 "HOST_LOGMASS": row.HOST_LOGMASS,
                 "kappa_raw": k_raw, "kappa_ext": k_raw - zp,
                 "kappa_gal_ext": kg - zp_g, "kappa_cl_ext": kc - zp_cl,
+                "gamma": gam_sn[i, 0 if t < 0.5 else 1],
+                "dmu_pred": dmu_raw - zp_dmu,
                 "zbin": ZSRC_CENTERS[lo if t < 0.5 else hi],
                 "rand_mean": zp, "rand_sig": sig,
                 "n_rand_ok": int(rra.size),
@@ -343,6 +374,18 @@ def main():
         f"(A_gal={bg/slope_th:.2f}+-{eg/abs(slope_th):.2f}) | "
         f"cl slope {bc:+.2f}+-{ec:.2f} "
         f"(A_cl={bc/slope_th:.2f}+-{ec/abs(slope_th):.2f})")
+
+    # exact-prediction fit: hr vs dmu_pred (kappa AND shear, exact
+    # magnification); the slope is the amplitude A directly
+    b_x, e_x = bootstrap_slope(good.dmu_pred.to_numpy(), good.hr.to_numpy(),
+                               good.MUERR.to_numpy(), rng)
+    summary["slope_dmu_exact"] = [b_x, e_x]
+    summary["sigma_dmu_pred"] = float(good.dmu_pred.std())
+    summary["mean_gamma"] = float(good.gamma.mean())
+    summary["n_dmu_clipped"] = N_CLIP[0]
+    log(f"exact-dmu fit (shear incl.): A = {b_x:+.3f} +- {e_x:.3f} "
+        f"| sig_dmu_pred = {good.dmu_pred.std():.4f} mag "
+        f"| <|gamma|> = {good.gamma.mean():.4f} | clipped {N_CLIP[0]}")
 
     hi = good[good.kappa_ext > 0.005]; lo_ = good[good.kappa_ext <= 0.005]
     log(f"mean HR kappa>0.005: {np.average(hi.hr, weights=1/hi.MUERR**2):+.3f}"
