@@ -5,6 +5,27 @@ manuscript to the commits and tracked artifacts that produced it. Code
 comments of the form `(TODO n.m)` refer to the review-checklist item
 numbers listed at the bottom of this file.
 
+## 2026-08-01 — Latent-variable (errors-in-variables) regression
+
+`snkappa/latent.py` + `scripts/latent_fit.py`: empirical-Bayes EIV fit of
+the amplitude with per-SN Monte-Carlo noise variances for all 1450 sight
+lines (`output/des_full/latent_noise.csv`), replacing the external
+lambda correction. The prediction noise is split into a CLASSICAL part
+(M* measurement error, richness-mass error, zero-point sampling — drives
+the shrinkage) and a BERKSON part (photo-z p(z), SMHM/concentration
+intrinsic scatter, miscentering — already marginalized by the prediction;
+enters the residual only and does not attenuate). Misclassifying Berkson
+variance as classical inflates A (1.78 vs 1.38 here) — unit-tested.
+Result: **A = 1.38 ± 0.54** (single), A_gal = 1.55 ± 0.67 /
+A_cl = 1.68 ± 0.85 (two-component) — consistent with unity and with the
+mock-based de-attenuation of the naive fit (0.79/0.68 ≈ 1.2). Estimator
+validated on synthetic latents at the observed kappa skewness (bias
++2 ± 2% at skew 4.8). Artifacts: `output/des_full/latent_fit.json`.
+
+Also: two-component WLS amplitudes (2026-08-01, `073cd1b`):
+A_gal = 0.85 ± 0.32, A_cl = 0.76 ± 0.27, components uncorrelated
+(r = 0.015); catalog gains kappa_gal_ext / kappa_cl_ext columns.
+
 ## 2026-07-11 — Post-review reruns; all gates passed (`dc74d8b`)
 
 All published numbers regenerated after the `c652439` fixes:
