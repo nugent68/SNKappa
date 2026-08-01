@@ -45,7 +45,9 @@ data:
   cache_dir: cache
 
 halo_model:
-  mstar_method: nir1um       # rest-1um M* via z<->W1 interpolation; swappable
+  mstar_method: nir1um_fsf   # rest-1um M*, recalibrated to the DESI DR1
+                             # FastSpecFit scale (DeltaSigma closure-validated;
+                             # CHANGELOG 2026-07-10). Was: nir1um (v0.2 section)
   mstar_scatter_dex: 0.16   # measured vs FrankenBlast SBI++ calibration sample (487 fits)
   smhm: behroozi13           # or moster13
   smhm_scatter_dex: 0.18
