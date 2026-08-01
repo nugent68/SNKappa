@@ -1,6 +1,7 @@
 #!/usr/bin/env python
 """Absolute one-halo closure test against measured galaxy-galaxy lensing
-(Phase 4 of docs/MICE_PLAN.md).
+(resolution-free complement to the cosmoDC2 mock calibration; see
+CHANGELOG.md 2026-07-10).
 
 Predicts the stacked excess surface density DeltaSigma(rp) for the DESI DR1
 lens samples of the "Lensing Without Borders" measurements (Heydenreich et

@@ -127,7 +127,7 @@ How it differs from the single-SN mode (`snkappa/batch.py`):
   reused across all z_src bins (coherent per-bin zero points), with a
   low-count guard against masked/edge apertures; per-SN unmasked-area and
   cluster-proximity flags are written to the catalog.
-- **Variants** (`--variant ...`, see `TODO_REVIEW.md`): host-plane
+- **Variants** (`--variant ...`, see `CHANGELOG.md`): host-plane
   excision (galaxies AND clusters), photo-z-only, W1-required, naive SMHM
   inversion, halo-cap 10^14.1, M*±0.05 dex. `scripts/make_figs.py` adds
   the permutation null (shuffles within z bins, preserving the κ spatial

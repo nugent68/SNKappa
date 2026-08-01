@@ -152,7 +152,7 @@ def main():
                     help="Gaussian sigma [arcmin] applied to the PREDICTED "
                          "kappa at source positions, mimicking the "
                          "simulation's map/shell smoothing (resolution-"
-                         "matched closure test; Phase 0 of docs/MICE_PLAN)")
+                         "matched closure test)")
     ap.add_argument("--seed", type=int, default=31415)
     ap.add_argument("--variant", default="")
     args = ap.parse_args()

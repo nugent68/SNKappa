@@ -21,7 +21,7 @@ Pipeline (engine lives in snkappa.batch, TODO 3.9):
   (the polyfit weight multiplies the unsquared residual).
 
 Run: .venv/bin/python scripts/des_full.py            (headline)
-Variants (robustness / systematics; see TODO_REVIEW.md):
+Variants (robustness / systematics; item numbers in CHANGELOG.md):
   --variant excise   --excise-host      host-environment excision (1.2a;
                                         galaxies AND clusters near the plane)
   --variant nospecz  --no-specz         ignore DESI spec-z (1.3)
