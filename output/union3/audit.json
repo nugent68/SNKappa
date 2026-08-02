@@ -1,0 +1,3788 @@
+{
+  "n_total": 2087,
+  "n_z_gt_min": 1380,
+  "z_min": 0.1,
+  "residual_path": "per-SN distances NOT released (UNITY spline nodes only); Tripp-standardize released mB/x1/c + host mass",
+  "n_covered": 1380,
+  "n_uncovered": 0,
+  "by_coverage": {
+    "ls_north": 234,
+    "ls_south": 1146
+  },
+  "by_sample_covered": {
+    "Amanullah10": 5,
+    "CalanTololo": 1,
+    "CfA1": 1,
+    "DES3_Deep": 50,
+    "DES3_Shallow": 155,
+    "ESSENCE": 172,
+    "Foundation": 2,
+    "Knop03": 11,
+    "LSQ": 2,
+    "LSQ+LCO": 2,
+    "MCT": 11,
+    "NB99": 4,
+    "Pan-STARRS": 296,
+    "Riess07": 32,
+    "SDSS": 381,
+    "SNLS": 235,
+    "SuzukiRubin": 15,
+    "Tonry03": 5
+  },
+  "uncovered_samples": {},
+  "uncovered_zrange": null,
+  "n_regions_covered": 286,
+  "regions": [
+    {
+      "region": 5,
+      "ra": 35.974,
+      "dec": -4.745,
+      "radius_deg": 2.34,
+      "n_sn": 158,
+      "z_min": 0.134,
+      "z_max": 1.914,
+      "samples": [
+        "DES3_Deep",
+        "DES3_Shallow",
+        "MCT",
+        "Pan-STARRS",
+        "SNLS",
+        "SuzukiRubin"
+      ],
+      "coverage": "ls_south"
+    },
+    {
+      "region": 4,
+      "ra": 53.462,
+      "dec": -28.027,
+      "radius_deg": 2.09,
+      "n_sn": 104,
+      "z_min": 0.103,
+      "z_max": 1.55,
+      "samples": [
+        "DES3_Deep",
+        "DES3_Shallow",
+        "MCT",
+        "Pan-STARRS",
+        "Riess07",
+        "SuzukiRubin"
+      ],
+      "coverage": "ls_south"
+    },
+    {
+      "region": 23,
+      "ra": 214.785,
+      "dec": 52.856,
+      "radius_deg": 2.11,
+      "n_sn": 89,
+      "z_min": 0.101,
+      "z_max": 1.614,
+      "samples": [
+        "MCT",
+        "Pan-STARRS",
+        "SNLS"
+      ],
+      "coverage": "ls_north"
+    },
+    {
+      "region": 22,
+      "ra": 150.081,
+      "dec": 2.246,
+      "radius_deg": 1.55,
+      "n_sn": 87,
+      "z_min": 0.101,
+      "z_max": 1.54,
+      "samples": [
+        "MCT",
+        "Pan-STARRS",
+        "SNLS"
+      ],
+      "coverage": "ls_south"
+    },
+    {
+      "region": 265,
+      "ra": 333.912,
+      "dec": -17.744,
+      "radius_deg": 0.68,
+      "n_sn": 66,
+      "z_min": 0.269,
+      "z_max": 1.19,
+      "samples": [
+        "SNLS",
+        "SuzukiRubin"
+      ],
+      "coverage": "ls_south"
+    },
+    {
+      "region": 14,
+      "ra": 37.708,
+      "dec": -8.494,
+      "radius_deg": 1.2,
+      "n_sn": 57,
+      "z_min": 0.145,
+      "z_max": 0.769,
+      "samples": [
+        "ESSENCE"
+      ],
+      "coverage": "ls_south"
+    },
+    {
+      "region": 17,
+      "ra": 17.779,
+      "dec": 0.203,
+      "radius_deg": 1.65,
+      "n_sn": 57,
+      "z_min": 0.119,
+      "z_max": 0.805,
+      "samples": [
+        "ESSENCE",
+        "SDSS"
+      ],
+      "coverage": "ls_south"
+    },
+    {
+      "region": 6,
+      "ra": 41.801,
+      "dec": -0.637,
+      "radius_deg": 2.35,
+      "n_sn": 52,
+      "z_min": 0.133,
+      "z_max": 0.638,
+      "samples": [
+        "DES3_Shallow",
+        "SDSS"
+      ],
+      "coverage": "ls_south"
+    },
+    {
+      "region": 16,
+      "ra": 32.054,
+      "dec": -4.256,
+      "radius_deg": 1.26,
+      "n_sn": 50,
+      "z_min": 0.21,
+      "z_max": 0.727,
+      "samples": [
+        "ESSENCE"
+      ],
+      "coverage": "ls_south"
+    },
+    {
+      "region": 29,
+      "ra": 333.816,
+      "dec": 0.494,
+      "radius_deg": 1.55,
+      "n_sn": 45,
+      "z_min": 0.125,
+      "z_max": 0.632,
+      "samples": [
+        "Pan-STARRS",
+        "SDSS"
+      ],
+      "coverage": "ls_south"
+    },
+    {
+      "region": 39,
+      "ra": 242.829,
+      "dec": 54.942,
+      "radius_deg": 1.39,
+      "n_sn": 32,
+      "z_min": 0.107,
+      "z_max": 0.667,
+      "samples": [
+        "Pan-STARRS"
+      ],
+      "coverage": "ls_north"
+    },
+    {
+      "region": 24,
+      "ra": 189.249,
+      "dec": 62.228,
+      "radius_deg": 0.16,
+      "n_sn": 26,
+      "z_min": 0.461,
+      "z_max": 2.26,
+      "samples": [
+        "MCT",
+        "Riess07",
+        "SuzukiRubin"
+      ],
+      "coverage": "ls_north"
+    },
+    {
+      "region": 42,
+      "ra": 352.374,
+      "dec": -0.501,
+      "radius_deg": 1.29,
+      "n_sn": 23,
+      "z_min": 0.122,
+      "z_max": 0.507,
+      "samples": [
+        "Pan-STARRS",
+        "SDSS"
+      ],
+      "coverage": "ls_south"
+    },
+    {
+      "region": 15,
+      "ra": 351.945,
+      "dec": -9.122,
+      "radius_deg": 1.22,
+      "n_sn": 21,
+      "z_min": 0.203,
+      "z_max": 0.758,
+      "samples": [
+        "ESSENCE"
+      ],
+      "coverage": "ls_south"
+    },
+    {
+      "region": 30,
+      "ra": 129.8,
+      "dec": 44.177,
+      "radius_deg": 1.04,
+      "n_sn": 20,
+      "z_min": 0.106,
+      "z_max": 0.579,
+      "samples": [
+        "Pan-STARRS"
+      ],
+      "coverage": "ls_north"
+    },
+    {
+      "region": 10,
+      "ra": 9.32,
+      "dec": -43.982,
+      "radius_deg": 0.99,
+      "n_sn": 20,
+      "z_min": 0.104,
+      "z_max": 0.565,
+      "samples": [
+        "DES3_Shallow"
+      ],
+      "coverage": "ls_south"
+    },
+    {
+      "region": 32,
+      "ra": 131.722,
+      "dec": 44.583,
+      "radius_deg": 0.89,
+      "n_sn": 14,
+      "z_min": 0.12,
+      "z_max": 0.502,
+      "samples": [
+        "Pan-STARRS"
+      ],
+      "coverage": "ls_north"
+    },
+    {
+      "region": 70,
+      "ra": 328.609,
+      "dec": 0.481,
+      "radius_deg": 0.78,
+      "n_sn": 9,
+      "z_min": 0.112,
+      "z_max": 0.287,
+      "samples": [
+        "SDSS"
+      ],
+      "coverage": "ls_south"
+    },
+    {
+      "region": 31,
+      "ra": 162.25,
+      "dec": 57.467,
+      "radius_deg": 0.86,
+      "n_sn": 9,
+      "z_min": 0.209,
+      "z_max": 0.588,
+      "samples": [
+        "Pan-STARRS"
+      ],
+      "coverage": "ls_north"
+    },
+    {
+      "region": 38,
+      "ra": 184.539,
+      "dec": 47.866,
+      "radius_deg": 0.5,
+      "n_sn": 7,
+      "z_min": 0.178,
+      "z_max": 0.336,
+      "samples": [
+        "Pan-STARRS"
+      ],
+      "coverage": "ls_north"
+    },
+    {
+      "region": 110,
+      "ra": 323.287,
+      "dec": -0.928,
+      "radius_deg": 0.97,
+      "n_sn": 7,
+      "z_min": 0.166,
+      "z_max": 0.309,
+      "samples": [
+        "SDSS"
+      ],
+      "coverage": "ls_south"
+    },
+    {
+      "region": 83,
+      "ra": 31.386,
+      "dec": -0.403,
+      "radius_deg": 0.67,
+      "n_sn": 6,
+      "z_min": 0.156,
+      "z_max": 0.339,
+      "samples": [
+        "SDSS"
+      ],
+      "coverage": "ls_south"
+    },
+    {
+      "region": 9,
+      "ra": 7.694,
+      "dec": -42.39,
+      "radius_deg": 0.44,
+      "n_sn": 6,
+      "z_min": 0.184,
+      "z_max": 0.609,
+      "samples": [
+        "DES3_Shallow"
+      ],
+      "coverage": "ls_south"
+    },
+    {
+      "region": 7,
+      "ra": 7.21,
+      "dec": -43.23,
+      "radius_deg": 0.48,
+      "n_sn": 6,
+      "z_min": 0.36,
+      "z_max": 0.579,
+      "samples": [
+        "DES3_Shallow"
+      ],
+      "coverage": "ls_south"
+    },
+    {
+      "region": 71,
+      "ra": 34.374,
+      "dec": 0.337,
+      "radius_deg": 0.54,
+      "n_sn": 5,
+      "z_min": 0.147,
+      "z_max": 0.315,
+      "samples": [
+        "SDSS"
+      ],
+      "coverage": "ls_south"
+    },
+    {
+      "region": 107,
+      "ra": 337.581,
+      "dec": -0.299,
+      "radius_deg": 0.36,
+      "n_sn": 5,
+      "z_min": 0.207,
+      "z_max": 0.287,
+      "samples": [
+        "SDSS"
+      ],
+      "coverage": "ls_south"
+    },
+    {
+      "region": 129,
+      "ra": 7.841,
+      "dec": -0.192,
+      "radius_deg": 0.54,
+      "n_sn": 5,
+      "z_min": 0.116,
+      "z_max": 0.257,
+      "samples": [
+        "SDSS"
+      ],
+      "coverage": "ls_south"
+    },
+    {
+      "region": 51,
+      "ra": 185.949,
+      "dec": 47.783,
+      "radius_deg": 0.46,
+      "n_sn": 5,
+      "z_min": 0.232,
+      "z_max": 0.504,
+      "samples": [
+        "Pan-STARRS"
+      ],
+      "coverage": "ls_north"
+    },
+    {
+      "region": 174,
+      "ra": 313.687,
+      "dec": -0.276,
+      "radius_deg": 0.56,
+      "n_sn": 5,
+      "z_min": 0.174,
+      "z_max": 0.403,
+      "samples": [
+        "SDSS"
+      ],
+      "coverage": "ls_south"
+    },
+    {
+      "region": 63,
+      "ra": 359.627,
+      "dec": 0.501,
+      "radius_deg": 0.68,
+      "n_sn": 5,
+      "z_min": 0.161,
+      "z_max": 0.316,
+      "samples": [
+        "SDSS"
+      ],
+      "coverage": "ls_south"
+    },
+    {
+      "region": 8,
+      "ra": 33.913,
+      "dec": -4.551,
+      "radius_deg": 0.5,
+      "n_sn": 5,
+      "z_min": 0.148,
+      "z_max": 0.643,
+      "samples": [
+        "DES3_Shallow"
+      ],
+      "coverage": "ls_south"
+    },
+    {
+      "region": 101,
+      "ra": 3.207,
+      "dec": 0.271,
+      "radius_deg": 0.53,
+      "n_sn": 5,
+      "z_min": 0.12,
+      "z_max": 0.401,
+      "samples": [
+        "SDSS"
+      ],
+      "coverage": "ls_south"
+    },
+    {
+      "region": 176,
+      "ra": 55.156,
+      "dec": 1.038,
+      "radius_deg": 0.42,
+      "n_sn": 4,
+      "z_min": 0.177,
+      "z_max": 0.245,
+      "samples": [
+        "SDSS"
+      ],
+      "coverage": "ls_south"
+    },
+    {
+      "region": 140,
+      "ra": 6.779,
+      "dec": -0.067,
+      "radius_deg": 0.33,
+      "n_sn": 4,
+      "z_min": 0.202,
+      "z_max": 0.246,
+      "samples": [
+        "SDSS"
+      ],
+      "coverage": "ls_south"
+    },
+    {
+      "region": 165,
+      "ra": 332.0,
+      "dec": -1.08,
+      "radius_deg": 0.22,
+      "n_sn": 4,
+      "z_min": 0.148,
+      "z_max": 0.38,
+      "samples": [
+        "SDSS"
+      ],
+      "coverage": "ls_south"
+    },
+    {
+      "region": 0,
+      "ra": 210.49,
+      "dec": 4.928,
+      "radius_deg": 0.2,
+      "n_sn": 4,
+      "z_min": 0.544,
+      "z_max": 1.124,
+      "samples": [
+        "Amanullah10",
+        "Knop03"
+      ],
+      "coverage": "ls_south"
+    },
+    {
+      "region": 112,
+      "ra": 16.061,
+      "dec": 0.293,
+      "radius_deg": 0.42,
+      "n_sn": 4,
+      "z_min": 0.203,
+      "z_max": 0.308,
+      "samples": [
+        "SDSS"
+      ],
+      "coverage": "ls_south"
+    },
+    {
+      "region": 118,
+      "ra": 4.546,
+      "dec": -0.341,
+      "radius_deg": 0.39,
+      "n_sn": 4,
+      "z_min": 0.103,
+      "z_max": 0.32,
+      "samples": [
+        "SDSS"
+      ],
+      "coverage": "ls_south"
+    },
+    {
+      "region": 111,
+      "ra": 5.83,
+      "dec": -0.333,
+      "radius_deg": 0.39,
+      "n_sn": 4,
+      "z_min": 0.107,
+      "z_max": 0.37,
+      "samples": [
+        "SDSS"
+      ],
+      "coverage": "ls_south"
+    },
+    {
+      "region": 90,
+      "ra": 312.661,
+      "dec": -0.576,
+      "radius_deg": 0.41,
+      "n_sn": 4,
+      "z_min": 0.128,
+      "z_max": 0.399,
+      "samples": [
+        "SDSS"
+      ],
+      "coverage": "ls_south"
+    },
+    {
+      "region": 92,
+      "ra": 53.795,
+      "dec": 0.712,
+      "radius_deg": 0.52,
+      "n_sn": 4,
+      "z_min": 0.123,
+      "z_max": 0.389,
+      "samples": [
+        "SDSS"
+      ],
+      "coverage": "ls_south"
+    },
+    {
+      "region": 72,
+      "ra": 46.593,
+      "dec": 0.924,
+      "radius_deg": 0.28,
+      "n_sn": 3,
+      "z_min": 0.117,
+      "z_max": 0.176,
+      "samples": [
+        "SDSS"
+      ],
+      "coverage": "ls_south"
+    },
+    {
+      "region": 73,
+      "ra": 25.136,
+      "dec": -0.645,
+      "radius_deg": 0.26,
+      "n_sn": 3,
+      "z_min": 0.16,
+      "z_max": 0.243,
+      "samples": [
+        "SDSS"
+      ],
+      "coverage": "ls_south"
+    },
+    {
+      "region": 128,
+      "ra": 357.47,
+      "dec": -0.951,
+      "radius_deg": 0.43,
+      "n_sn": 3,
+      "z_min": 0.185,
+      "z_max": 0.225,
+      "samples": [
+        "SDSS"
+      ],
+      "coverage": "ls_south"
+    },
+    {
+      "region": 127,
+      "ra": 318.778,
+      "dec": -0.324,
+      "radius_deg": 0.23,
+      "n_sn": 3,
+      "z_min": 0.196,
+      "z_max": 0.404,
+      "samples": [
+        "SDSS"
+      ],
+      "coverage": "ls_south"
+    },
+    {
+      "region": 77,
+      "ra": 338.762,
+      "dec": -0.106,
+      "radius_deg": 0.37,
+      "n_sn": 3,
+      "z_min": 0.211,
+      "z_max": 0.281,
+      "samples": [
+        "SDSS"
+      ],
+      "coverage": "ls_south"
+    },
+    {
+      "region": 79,
+      "ra": 1.831,
+      "dec": 0.317,
+      "radius_deg": 0.38,
+      "n_sn": 3,
+      "z_min": 0.12,
+      "z_max": 0.263,
+      "samples": [
+        "SDSS"
+      ],
+      "coverage": "ls_south"
+    },
+    {
+      "region": 130,
+      "ra": 347.788,
+      "dec": -0.706,
+      "radius_deg": 0.33,
+      "n_sn": 3,
+      "z_min": 0.138,
+      "z_max": 0.389,
+      "samples": [
+        "SDSS"
+      ],
+      "coverage": "ls_south"
+    },
+    {
+      "region": 68,
+      "ra": 339.124,
+      "dec": 0.608,
+      "radius_deg": 0.22,
+      "n_sn": 3,
+      "z_min": 0.137,
+      "z_max": 0.237,
+      "samples": [
+        "SDSS"
+      ],
+      "coverage": "ls_south"
+    },
+    {
+      "region": 103,
+      "ra": 22.909,
+      "dec": -0.555,
+      "radius_deg": 0.16,
+      "n_sn": 3,
+      "z_min": 0.252,
+      "z_max": 0.392,
+      "samples": [
+        "SDSS"
+      ],
+      "coverage": "ls_south"
+    },
+    {
+      "region": 156,
+      "ra": 20.835,
+      "dec": 1.027,
+      "radius_deg": 0.27,
+      "n_sn": 3,
+      "z_min": 0.192,
+      "z_max": 0.261,
+      "samples": [
+        "SDSS"
+      ],
+      "coverage": "ls_south"
+    },
+    {
+      "region": 47,
+      "ra": 183.561,
+      "dec": 46.856,
+      "radius_deg": 0.38,
+      "n_sn": 3,
+      "z_min": 0.103,
+      "z_max": 0.294,
+      "samples": [
+        "Pan-STARRS"
+      ],
+      "coverage": "ls_north"
+    },
+    {
+      "region": 198,
+      "ra": 37.535,
+      "dec": 1.127,
+      "radius_deg": 0.34,
+      "n_sn": 3,
+      "z_min": 0.177,
+      "z_max": 1.057,
+      "samples": [
+        "SDSS",
+        "Tonry03"
+      ],
+      "coverage": "ls_south"
+    },
+    {
+      "region": 187,
+      "ra": 5.313,
+      "dec": 1.05,
+      "radius_deg": 0.48,
+      "n_sn": 3,
+      "z_min": 0.223,
+      "z_max": 0.294,
+      "samples": [
+        "SDSS"
+      ],
+      "coverage": "ls_south"
+    },
+    {
+      "region": 45,
+      "ra": 352.301,
+      "dec": 0.717,
+      "radius_deg": 0.3,
+      "n_sn": 3,
+      "z_min": 0.118,
+      "z_max": 0.365,
+      "samples": [
+        "Pan-STARRS",
+        "SDSS"
+      ],
+      "coverage": "ls_south"
+    },
+    {
+      "region": 46,
+      "ra": 163.562,
+      "dec": 58.982,
+      "radius_deg": 0.36,
+      "n_sn": 3,
+      "z_min": 0.174,
+      "z_max": 0.275,
+      "samples": [
+        "Pan-STARRS"
+      ],
+      "coverage": "ls_north"
+    },
+    {
+      "region": 217,
+      "ra": 26.323,
+      "dec": -0.002,
+      "radius_deg": 0.31,
+      "n_sn": 3,
+      "z_min": 0.165,
+      "z_max": 0.387,
+      "samples": [
+        "SDSS"
+      ],
+      "coverage": "ls_south"
+    },
+    {
+      "region": 34,
+      "ra": 161.227,
+      "dec": 58.275,
+      "radius_deg": 0.28,
+      "n_sn": 3,
+      "z_min": 0.226,
+      "z_max": 0.405,
+      "samples": [
+        "Pan-STARRS"
+      ],
+      "coverage": "ls_north"
+    },
+    {
+      "region": 228,
+      "ra": 29.435,
+      "dec": -0.46,
+      "radius_deg": 0.07,
+      "n_sn": 2,
+      "z_min": 0.219,
+      "z_max": 0.378,
+      "samples": [
+        "SDSS"
+      ],
+      "coverage": "ls_south"
+    },
+    {
+      "region": 206,
+      "ra": 340.875,
+      "dec": 0.342,
+      "radius_deg": 0.09,
+      "n_sn": 2,
+      "z_min": 0.175,
+      "z_max": 0.197,
+      "samples": [
+        "SDSS"
+      ],
+      "coverage": "ls_south"
+    },
+    {
+      "region": 124,
+      "ra": 40.21,
+      "dec": 0.826,
+      "radius_deg": 0.17,
+      "n_sn": 2,
+      "z_min": 0.37,
+      "z_max": 0.421,
+      "samples": [
+        "SDSS"
+      ],
+      "coverage": "ls_south"
+    },
+    {
+      "region": 210,
+      "ra": 11.453,
+      "dec": -1.015,
+      "radius_deg": 0.23,
+      "n_sn": 2,
+      "z_min": 0.106,
+      "z_max": 0.174,
+      "samples": [
+        "SDSS"
+      ],
+      "coverage": "ls_south"
+    },
+    {
+      "region": 213,
+      "ra": 315.94,
+      "dec": -0.964,
+      "radius_deg": 0.17,
+      "n_sn": 2,
+      "z_min": 0.138,
+      "z_max": 0.205,
+      "samples": [
+        "SDSS"
+      ],
+      "coverage": "ls_south"
+    },
+    {
+      "region": 226,
+      "ra": 12.418,
+      "dec": 0.636,
+      "radius_deg": 0.14,
+      "n_sn": 2,
+      "z_min": 0.114,
+      "z_max": 0.189,
+      "samples": [
+        "SDSS"
+      ],
+      "coverage": "ls_south"
+    },
+    {
+      "region": 229,
+      "ra": 48.525,
+      "dec": 0.45,
+      "radius_deg": 0.21,
+      "n_sn": 2,
+      "z_min": 0.127,
+      "z_max": 0.212,
+      "samples": [
+        "SDSS"
+      ],
+      "coverage": "ls_south"
+    },
+    {
+      "region": 108,
+      "ra": 3.195,
+      "dec": -0.799,
+      "radius_deg": 0.19,
+      "n_sn": 2,
+      "z_min": 0.284,
+      "z_max": 0.294,
+      "samples": [
+        "SDSS"
+      ],
+      "coverage": "ls_south"
+    },
+    {
+      "region": 245,
+      "ra": 37.1,
+      "dec": 0.419,
+      "radius_deg": 0.23,
+      "n_sn": 2,
+      "z_min": 0.165,
+      "z_max": 0.816,
+      "samples": [
+        "SDSS",
+        "Tonry03"
+      ],
+      "coverage": "ls_south"
+    },
+    {
+      "region": 106,
+      "ra": 34.783,
+      "dec": -0.329,
+      "radius_deg": 0.06,
+      "n_sn": 2,
+      "z_min": 0.249,
+      "z_max": 0.279,
+      "samples": [
+        "SDSS"
+      ],
+      "coverage": "ls_south"
+    },
+    {
+      "region": 105,
+      "ra": 348.986,
+      "dec": -0.613,
+      "radius_deg": 0.16,
+      "n_sn": 2,
+      "z_min": 0.185,
+      "z_max": 0.23,
+      "samples": [
+        "SDSS"
+      ],
+      "coverage": "ls_south"
+    },
+    {
+      "region": 261,
+      "ra": 10.525,
+      "dec": 0.396,
+      "radius_deg": 0.18,
+      "n_sn": 2,
+      "z_min": 0.211,
+      "z_max": 0.264,
+      "samples": [
+        "SDSS"
+      ],
+      "coverage": "ls_south"
+    },
+    {
+      "region": 266,
+      "ra": 187.372,
+      "dec": 1.855,
+      "radius_deg": 0.02,
+      "n_sn": 2,
+      "z_min": 0.982,
+      "z_max": 1.094,
+      "samples": [
+        "SuzukiRubin"
+      ],
+      "coverage": "ls_south"
+    },
+    {
+      "region": 102,
+      "ra": 11.493,
+      "dec": 0.957,
+      "radius_deg": 0.18,
+      "n_sn": 2,
+      "z_min": 0.129,
+      "z_max": 0.212,
+      "samples": [
+        "SDSS"
+      ],
+      "coverage": "ls_south"
+    },
+    {
+      "region": 269,
+      "ra": 218.623,
+      "dec": 34.453,
+      "radius_deg": 0.0,
+      "n_sn": 2,
+      "z_min": 0.851,
+      "z_max": 1.232,
+      "samples": [
+        "SuzukiRubin"
+      ],
+      "coverage": "ls_north"
+    },
+    {
+      "region": 283,
+      "ra": 164.329,
+      "dec": -3.407,
+      "radius_deg": 0.16,
+      "n_sn": 2,
+      "z_min": 0.499,
+      "z_max": 0.64,
+      "samples": [
+        "Knop03"
+      ],
+      "coverage": "ls_south"
+    },
+    {
+      "region": 204,
+      "ra": 30.536,
+      "dec": -1.061,
+      "radius_deg": 0.1,
+      "n_sn": 2,
+      "z_min": 0.136,
+      "z_max": 0.194,
+      "samples": [
+        "SDSS"
+      ],
+      "coverage": "ls_south"
+    },
+    {
+      "region": 160,
+      "ra": 39.141,
+      "dec": -0.93,
+      "radius_deg": 0.14,
+      "n_sn": 2,
+      "z_min": 0.251,
+      "z_max": 0.366,
+      "samples": [
+        "SDSS"
+      ],
+      "coverage": "ls_south"
+    },
+    {
+      "region": 199,
+      "ra": 32.888,
+      "dec": -0.955,
+      "radius_deg": 0.07,
+      "n_sn": 2,
+      "z_min": 0.16,
+      "z_max": 0.316,
+      "samples": [
+        "SDSS"
+      ],
+      "coverage": "ls_south"
+    },
+    {
+      "region": 144,
+      "ra": 312.864,
+      "dec": 0.338,
+      "radius_deg": 0.25,
+      "n_sn": 2,
+      "z_min": 0.137,
+      "z_max": 0.306,
+      "samples": [
+        "SDSS"
+      ],
+      "coverage": "ls_south"
+    },
+    {
+      "region": 155,
+      "ra": 345.46,
+      "dec": -0.929,
+      "radius_deg": 0.25,
+      "n_sn": 2,
+      "z_min": 0.209,
+      "z_max": 0.268,
+      "samples": [
+        "SDSS"
+      ],
+      "coverage": "ls_south"
+    },
+    {
+      "region": 153,
+      "ra": 325.821,
+      "dec": 0.855,
+      "radius_deg": 0.23,
+      "n_sn": 2,
+      "z_min": 0.297,
+      "z_max": 0.353,
+      "samples": [
+        "SDSS"
+      ],
+      "coverage": "ls_south"
+    },
+    {
+      "region": 152,
+      "ra": 9.932,
+      "dec": -0.126,
+      "radius_deg": 0.24,
+      "n_sn": 2,
+      "z_min": 0.178,
+      "z_max": 0.237,
+      "samples": [
+        "SDSS"
+      ],
+      "coverage": "ls_south"
+    },
+    {
+      "region": 151,
+      "ra": 347.995,
+      "dec": 0.386,
+      "radius_deg": 0.21,
+      "n_sn": 2,
+      "z_min": 0.103,
+      "z_max": 0.309,
+      "samples": [
+        "SDSS"
+      ],
+      "coverage": "ls_south"
+    },
+    {
+      "region": 149,
+      "ra": 13.77,
+      "dec": -0.32,
+      "radius_deg": 0.1,
+      "n_sn": 2,
+      "z_min": 0.123,
+      "z_max": 0.246,
+      "samples": [
+        "SDSS"
+      ],
+      "coverage": "ls_south"
+    },
+    {
+      "region": 146,
+      "ra": 341.636,
+      "dec": 0.586,
+      "radius_deg": 0.18,
+      "n_sn": 2,
+      "z_min": 0.223,
+      "z_max": 0.3,
+      "samples": [
+        "SDSS"
+      ],
+      "coverage": "ls_south"
+    },
+    {
+      "region": 145,
+      "ra": 20.376,
+      "dec": 0.2,
+      "radius_deg": 0.22,
+      "n_sn": 2,
+      "z_min": 0.131,
+      "z_max": 0.217,
+      "samples": [
+        "SDSS"
+      ],
+      "coverage": "ls_south"
+    },
+    {
+      "region": 1,
+      "ra": 209.285,
+      "dec": 4.429,
+      "radius_deg": 0.09,
+      "n_sn": 2,
+      "z_min": 0.511,
+      "z_max": 1.03,
+      "samples": [
+        "Amanullah10"
+      ],
+      "coverage": "ls_south"
+    },
+    {
+      "region": 164,
+      "ra": 48.112,
+      "dec": -0.582,
+      "radius_deg": 0.19,
+      "n_sn": 2,
+      "z_min": 0.139,
+      "z_max": 0.278,
+      "samples": [
+        "SDSS"
+      ],
+      "coverage": "ls_south"
+    },
+    {
+      "region": 168,
+      "ra": 319.014,
+      "dec": 0.605,
+      "radius_deg": 0.07,
+      "n_sn": 2,
+      "z_min": 0.135,
+      "z_max": 0.137,
+      "samples": [
+        "SDSS"
+      ],
+      "coverage": "ls_south"
+    },
+    {
+      "region": 142,
+      "ra": 330.363,
+      "dec": 0.881,
+      "radius_deg": 0.2,
+      "n_sn": 2,
+      "z_min": 0.171,
+      "z_max": 0.203,
+      "samples": [
+        "SDSS"
+      ],
+      "coverage": "ls_south"
+    },
+    {
+      "region": 97,
+      "ra": 329.076,
+      "dec": -0.298,
+      "radius_deg": 0.21,
+      "n_sn": 2,
+      "z_min": 0.107,
+      "z_max": 0.291,
+      "samples": [
+        "SDSS"
+      ],
+      "coverage": "ls_south"
+    },
+    {
+      "region": 136,
+      "ra": 304.901,
+      "dec": -1.02,
+      "radius_deg": 0.12,
+      "n_sn": 2,
+      "z_min": 0.138,
+      "z_max": 0.139,
+      "samples": [
+        "SDSS"
+      ],
+      "coverage": "ls_south"
+    },
+    {
+      "region": 132,
+      "ra": 349.899,
+      "dec": -1.181,
+      "radius_deg": 0.23,
+      "n_sn": 2,
+      "z_min": 0.287,
+      "z_max": 0.299,
+      "samples": [
+        "SDSS"
+      ],
+      "coverage": "ls_south"
+    },
+    {
+      "region": 183,
+      "ra": 51.009,
+      "dec": 0.845,
+      "radius_deg": 0.22,
+      "n_sn": 2,
+      "z_min": 0.128,
+      "z_max": 0.211,
+      "samples": [
+        "SDSS"
+      ],
+      "coverage": "ls_south"
+    },
+    {
+      "region": 184,
+      "ra": 35.212,
+      "dec": 0.422,
+      "radius_deg": 0.09,
+      "n_sn": 2,
+      "z_min": 0.299,
+      "z_max": 0.304,
+      "samples": [
+        "SDSS"
+      ],
+      "coverage": "ls_south"
+    },
+    {
+      "region": 99,
+      "ra": 49.754,
+      "dec": -0.097,
+      "radius_deg": 0.25,
+      "n_sn": 2,
+      "z_min": 0.116,
+      "z_max": 0.181,
+      "samples": [
+        "SDSS"
+      ],
+      "coverage": "ls_south"
+    },
+    {
+      "region": 285,
+      "ra": 206.762,
+      "dec": 2.197,
+      "radius_deg": 0.23,
+      "n_sn": 2,
+      "z_min": 0.646,
+      "z_max": 0.742,
+      "samples": [
+        "Knop03"
+      ],
+      "coverage": "ls_south"
+    },
+    {
+      "region": 12,
+      "ra": 42.452,
+      "dec": 0.695,
+      "radius_deg": 0.21,
+      "n_sn": 2,
+      "z_min": 0.19,
+      "z_max": 0.326,
+      "samples": [
+        "DES3_Shallow",
+        "SDSS"
+      ],
+      "coverage": "ls_south"
+    },
+    {
+      "region": 87,
+      "ra": 315.865,
+      "dec": 0.513,
+      "radius_deg": 0.08,
+      "n_sn": 2,
+      "z_min": 0.123,
+      "z_max": 0.302,
+      "samples": [
+        "SDSS"
+      ],
+      "coverage": "ls_south"
+    },
+    {
+      "region": 67,
+      "ra": 13.22,
+      "dec": 0.54,
+      "radius_deg": 0.09,
+      "n_sn": 2,
+      "z_min": 0.235,
+      "z_max": 0.243,
+      "samples": [
+        "SDSS"
+      ],
+      "coverage": "ls_south"
+    },
+    {
+      "region": 43,
+      "ra": 351.679,
+      "dec": -1.743,
+      "radius_deg": 0.23,
+      "n_sn": 2,
+      "z_min": 0.238,
+      "z_max": 0.287,
+      "samples": [
+        "Pan-STARRS"
+      ],
+      "coverage": "ls_south"
+    },
+    {
+      "region": 49,
+      "ra": 186.428,
+      "dec": 46.701,
+      "radius_deg": 0.15,
+      "n_sn": 2,
+      "z_min": 0.262,
+      "z_max": 0.532,
+      "samples": [
+        "Pan-STARRS"
+      ],
+      "coverage": "ls_north"
+    },
+    {
+      "region": 80,
+      "ra": 317.741,
+      "dec": -0.284,
+      "radius_deg": 0.19,
+      "n_sn": 2,
+      "z_min": 0.141,
+      "z_max": 0.244,
+      "samples": [
+        "SDSS"
+      ],
+      "coverage": "ls_south"
+    },
+    {
+      "region": 41,
+      "ra": 213.007,
+      "dec": 51.873,
+      "radius_deg": 0.2,
+      "n_sn": 2,
+      "z_min": 0.251,
+      "z_max": 0.451,
+      "samples": [
+        "Pan-STARRS"
+      ],
+      "coverage": "ls_north"
+    },
+    {
+      "region": 65,
+      "ra": 321.287,
+      "dec": 0.355,
+      "radius_deg": 0.08,
+      "n_sn": 2,
+      "z_min": 0.358,
+      "z_max": 0.403,
+      "samples": [
+        "SDSS"
+      ],
+      "coverage": "ls_south"
+    },
+    {
+      "region": 82,
+      "ra": 6.862,
+      "dec": 0.885,
+      "radius_deg": 0.24,
+      "n_sn": 2,
+      "z_min": 0.212,
+      "z_max": 0.385,
+      "samples": [
+        "SDSS"
+      ],
+      "coverage": "ls_south"
+    },
+    {
+      "region": 84,
+      "ra": 52.523,
+      "dec": -1.166,
+      "radius_deg": 0.19,
+      "n_sn": 2,
+      "z_min": 0.143,
+      "z_max": 0.3,
+      "samples": [
+        "SDSS"
+      ],
+      "coverage": "ls_south"
+    },
+    {
+      "region": 37,
+      "ra": 162.465,
+      "dec": 58.865,
+      "radius_deg": 0.09,
+      "n_sn": 2,
+      "z_min": 0.306,
+      "z_max": 0.503,
+      "samples": [
+        "Pan-STARRS"
+      ],
+      "coverage": "ls_north"
+    },
+    {
+      "region": 54,
+      "ra": 149.751,
+      "dec": 0.847,
+      "radius_deg": 0.21,
+      "n_sn": 2,
+      "z_min": 0.2,
+      "z_max": 0.425,
+      "samples": [
+        "Pan-STARRS"
+      ],
+      "coverage": "ls_south"
+    },
+    {
+      "region": 95,
+      "ra": 354.446,
+      "dec": 0.445,
+      "radius_deg": 0.2,
+      "n_sn": 2,
+      "z_min": 0.243,
+      "z_max": 0.275,
+      "samples": [
+        "SDSS"
+      ],
+      "coverage": "ls_south"
+    },
+    {
+      "region": 33,
+      "ra": 186.459,
+      "dec": 46.041,
+      "radius_deg": 0.09,
+      "n_sn": 2,
+      "z_min": 0.111,
+      "z_max": 0.292,
+      "samples": [
+        "Pan-STARRS"
+      ],
+      "coverage": "ls_north"
+    },
+    {
+      "region": 94,
+      "ra": 38.476,
+      "dec": 0.415,
+      "radius_deg": 0.13,
+      "n_sn": 2,
+      "z_min": 0.362,
+      "z_max": 0.455,
+      "samples": [
+        "SDSS",
+        "Tonry03"
+      ],
+      "coverage": "ls_south"
+    },
+    {
+      "region": 89,
+      "ra": 27.057,
+      "dec": 0.484,
+      "radius_deg": 0.18,
+      "n_sn": 2,
+      "z_min": 0.16,
+      "z_max": 0.198,
+      "samples": [
+        "SDSS"
+      ],
+      "coverage": "ls_south"
+    },
+    {
+      "region": 233,
+      "ra": 29.73,
+      "dec": -1.027,
+      "radius_deg": 0.0,
+      "n_sn": 1,
+      "z_min": 0.189,
+      "z_max": 0.189,
+      "samples": [
+        "SDSS"
+      ],
+      "coverage": "ls_south"
+    },
+    {
+      "region": 222,
+      "ra": 6.365,
+      "dec": -0.84,
+      "radius_deg": 0.0,
+      "n_sn": 1,
+      "z_min": 0.287,
+      "z_max": 0.287,
+      "samples": [
+        "SDSS"
+      ],
+      "coverage": "ls_south"
+    },
+    {
+      "region": 236,
+      "ra": 345.761,
+      "dec": 0.849,
+      "radius_deg": 0.0,
+      "n_sn": 1,
+      "z_min": 0.326,
+      "z_max": 0.326,
+      "samples": [
+        "SDSS"
+      ],
+      "coverage": "ls_south"
+    },
+    {
+      "region": 223,
+      "ra": 27.6,
+      "dec": 1.172,
+      "radius_deg": 0.0,
+      "n_sn": 1,
+      "z_min": 0.238,
+      "z_max": 0.238,
+      "samples": [
+        "SDSS"
+      ],
+      "coverage": "ls_south"
+    },
+    {
+      "region": 224,
+      "ra": 23.368,
+      "dec": 0.525,
+      "radius_deg": 0.0,
+      "n_sn": 1,
+      "z_min": 0.37,
+      "z_max": 0.37,
+      "samples": [
+        "SDSS"
+      ],
+      "coverage": "ls_south"
+    },
+    {
+      "region": 225,
+      "ra": 337.478,
+      "dec": 1.059,
+      "radius_deg": 0.0,
+      "n_sn": 1,
+      "z_min": 0.129,
+      "z_max": 0.129,
+      "samples": [
+        "SDSS"
+      ],
+      "coverage": "ls_south"
+    },
+    {
+      "region": 21,
+      "ra": 322.35,
+      "dec": 0.14,
+      "radius_deg": 0.0,
+      "n_sn": 1,
+      "z_min": 1.7,
+      "z_max": 1.7,
+      "samples": [
+        "MCT"
+      ],
+      "coverage": "ls_south"
+    },
+    {
+      "region": 235,
+      "ra": 8.906,
+      "dec": 0.37,
+      "radius_deg": 0.0,
+      "n_sn": 1,
+      "z_min": 0.257,
+      "z_max": 0.257,
+      "samples": [
+        "SDSS"
+      ],
+      "coverage": "ls_south"
+    },
+    {
+      "region": 227,
+      "ra": 11.516,
+      "dec": -0.01,
+      "radius_deg": 0.0,
+      "n_sn": 1,
+      "z_min": 0.109,
+      "z_max": 0.109,
+      "samples": [
+        "SDSS"
+      ],
+      "coverage": "ls_south"
+    },
+    {
+      "region": 232,
+      "ra": 354.204,
+      "dec": -0.782,
+      "radius_deg": 0.0,
+      "n_sn": 1,
+      "z_min": 0.285,
+      "z_max": 0.285,
+      "samples": [
+        "SDSS"
+      ],
+      "coverage": "ls_south"
+    },
+    {
+      "region": 20,
+      "ra": 322.428,
+      "dec": -7.697,
+      "radius_deg": 0.0,
+      "n_sn": 1,
+      "z_min": 1.206,
+      "z_max": 1.206,
+      "samples": [
+        "MCT"
+      ],
+      "coverage": "ls_south"
+    },
+    {
+      "region": 234,
+      "ra": 359.072,
+      "dec": -0.506,
+      "radius_deg": 0.0,
+      "n_sn": 1,
+      "z_min": 0.176,
+      "z_max": 0.176,
+      "samples": [
+        "SDSS"
+      ],
+      "coverage": "ls_south"
+    },
+    {
+      "region": 19,
+      "ra": 329.842,
+      "dec": -21.12,
+      "radius_deg": 0.0,
+      "n_sn": 1,
+      "z_min": 0.109,
+      "z_max": 0.109,
+      "samples": [
+        "Foundation"
+      ],
+      "coverage": "ls_south"
+    },
+    {
+      "region": 230,
+      "ra": 307.117,
+      "dec": 0.006,
+      "radius_deg": 0.0,
+      "n_sn": 1,
+      "z_min": 0.242,
+      "z_max": 0.242,
+      "samples": [
+        "SDSS"
+      ],
+      "coverage": "ls_south"
+    },
+    {
+      "region": 220,
+      "ra": 37.137,
+      "dec": -1.042,
+      "radius_deg": 0.0,
+      "n_sn": 1,
+      "z_min": 0.144,
+      "z_max": 0.144,
+      "samples": [
+        "SDSS"
+      ],
+      "coverage": "ls_south"
+    },
+    {
+      "region": 231,
+      "ra": 330.395,
+      "dec": -0.257,
+      "radius_deg": 0.0,
+      "n_sn": 1,
+      "z_min": 0.318,
+      "z_max": 0.318,
+      "samples": [
+        "SDSS"
+      ],
+      "coverage": "ls_south"
+    },
+    {
+      "region": 221,
+      "ra": 300.637,
+      "dec": 0.372,
+      "radius_deg": 0.0,
+      "n_sn": 1,
+      "z_min": 0.177,
+      "z_max": 0.177,
+      "samples": [
+        "SDSS"
+      ],
+      "coverage": "ls_south"
+    },
+    {
+      "region": 96,
+      "ra": 21.528,
+      "dec": 0.677,
+      "radius_deg": 0.0,
+      "n_sn": 1,
+      "z_min": 0.331,
+      "z_max": 0.331,
+      "samples": [
+        "SDSS"
+      ],
+      "coverage": "ls_south"
+    },
+    {
+      "region": 219,
+      "ra": 309.203,
+      "dec": 0.098,
+      "radius_deg": 0.0,
+      "n_sn": 1,
+      "z_min": 0.145,
+      "z_max": 0.145,
+      "samples": [
+        "SDSS"
+      ],
+      "coverage": "ls_south"
+    },
+    {
+      "region": 209,
+      "ra": 38.1,
+      "dec": -0.714,
+      "radius_deg": 0.0,
+      "n_sn": 1,
+      "z_min": 0.25,
+      "z_max": 0.25,
+      "samples": [
+        "SDSS"
+      ],
+      "coverage": "ls_south"
+    },
+    {
+      "region": 200,
+      "ra": 36.722,
+      "dec": -0.328,
+      "radius_deg": 0.0,
+      "n_sn": 1,
+      "z_min": 0.205,
+      "z_max": 0.205,
+      "samples": [
+        "SDSS"
+      ],
+      "coverage": "ls_south"
+    },
+    {
+      "region": 201,
+      "ra": 341.246,
+      "dec": -1.007,
+      "radius_deg": 0.0,
+      "n_sn": 1,
+      "z_min": 0.127,
+      "z_max": 0.127,
+      "samples": [
+        "SDSS"
+      ],
+      "coverage": "ls_south"
+    },
+    {
+      "region": 202,
+      "ra": 0.375,
+      "dec": 0.276,
+      "radius_deg": 0.0,
+      "n_sn": 1,
+      "z_min": 0.385,
+      "z_max": 0.385,
+      "samples": [
+        "SDSS"
+      ],
+      "coverage": "ls_south"
+    },
+    {
+      "region": 203,
+      "ra": 21.118,
+      "dec": 0.074,
+      "radius_deg": 0.0,
+      "n_sn": 1,
+      "z_min": 0.389,
+      "z_max": 0.389,
+      "samples": [
+        "SDSS"
+      ],
+      "coverage": "ls_south"
+    },
+    {
+      "region": 205,
+      "ra": 26.421,
+      "dec": -1.054,
+      "radius_deg": 0.0,
+      "n_sn": 1,
+      "z_min": 0.196,
+      "z_max": 0.196,
+      "samples": [
+        "SDSS"
+      ],
+      "coverage": "ls_south"
+    },
+    {
+      "region": 28,
+      "ra": 179.252,
+      "dec": -11.444,
+      "radius_deg": 0.0,
+      "n_sn": 1,
+      "z_min": 0.13,
+      "z_max": 0.13,
+      "samples": [
+        "NB99"
+      ],
+      "coverage": "ls_south"
+    },
+    {
+      "region": 207,
+      "ra": 350.362,
+      "dec": 1.132,
+      "radius_deg": 0.0,
+      "n_sn": 1,
+      "z_min": 0.334,
+      "z_max": 0.334,
+      "samples": [
+        "SDSS"
+      ],
+      "coverage": "ls_south"
+    },
+    {
+      "region": 208,
+      "ra": 8.108,
+      "dec": -1.054,
+      "radius_deg": 0.0,
+      "n_sn": 1,
+      "z_min": 0.153,
+      "z_max": 0.153,
+      "samples": [
+        "SDSS"
+      ],
+      "coverage": "ls_south"
+    },
+    {
+      "region": 27,
+      "ra": 191.253,
+      "dec": -6.458,
+      "radius_deg": 0.0,
+      "n_sn": 1,
+      "z_min": 0.144,
+      "z_max": 0.144,
+      "samples": [
+        "NB99"
+      ],
+      "coverage": "ls_south"
+    },
+    {
+      "region": 218,
+      "ra": 356.172,
+      "dec": -0.03,
+      "radius_deg": 0.0,
+      "n_sn": 1,
+      "z_min": 0.177,
+      "z_max": 0.177,
+      "samples": [
+        "SDSS"
+      ],
+      "coverage": "ls_south"
+    },
+    {
+      "region": 211,
+      "ra": 51.836,
+      "dec": 1.09,
+      "radius_deg": 0.0,
+      "n_sn": 1,
+      "z_min": 0.301,
+      "z_max": 0.301,
+      "samples": [
+        "SDSS"
+      ],
+      "coverage": "ls_south"
+    },
+    {
+      "region": 212,
+      "ra": 45.291,
+      "dec": -0.026,
+      "radius_deg": 0.0,
+      "n_sn": 1,
+      "z_min": 0.399,
+      "z_max": 0.399,
+      "samples": [
+        "SDSS"
+      ],
+      "coverage": "ls_south"
+    },
+    {
+      "region": 26,
+      "ra": 165.316,
+      "dec": -11.754,
+      "radius_deg": 0.0,
+      "n_sn": 1,
+      "z_min": 0.124,
+      "z_max": 0.124,
+      "samples": [
+        "NB99"
+      ],
+      "coverage": "ls_south"
+    },
+    {
+      "region": 214,
+      "ra": 1.492,
+      "dec": 1.103,
+      "radius_deg": 0.0,
+      "n_sn": 1,
+      "z_min": 0.139,
+      "z_max": 0.139,
+      "samples": [
+        "SDSS"
+      ],
+      "coverage": "ls_south"
+    },
+    {
+      "region": 215,
+      "ra": 339.724,
+      "dec": -1.167,
+      "radius_deg": 0.0,
+      "n_sn": 1,
+      "z_min": 0.184,
+      "z_max": 0.184,
+      "samples": [
+        "SDSS"
+      ],
+      "coverage": "ls_south"
+    },
+    {
+      "region": 238,
+      "ra": 10.078,
+      "dec": -1.037,
+      "radius_deg": 0.0,
+      "n_sn": 1,
+      "z_min": 0.269,
+      "z_max": 0.269,
+      "samples": [
+        "SDSS"
+      ],
+      "coverage": "ls_south"
+    },
+    {
+      "region": 216,
+      "ra": 12.879,
+      "dec": -0.947,
+      "radius_deg": 0.0,
+      "n_sn": 1,
+      "z_min": 0.199,
+      "z_max": 0.199,
+      "samples": [
+        "SDSS"
+      ],
+      "coverage": "ls_south"
+    },
+    {
+      "region": 25,
+      "ra": 140.067,
+      "dec": 0.561,
+      "radius_deg": 0.0,
+      "n_sn": 1,
+      "z_min": 0.156,
+      "z_max": 0.156,
+      "samples": [
+        "NB99"
+      ],
+      "coverage": "ls_south"
+    },
+    {
+      "region": 237,
+      "ra": 351.375,
+      "dec": 0.423,
+      "radius_deg": 0.0,
+      "n_sn": 1,
+      "z_min": 0.276,
+      "z_max": 0.276,
+      "samples": [
+        "SDSS"
+      ],
+      "coverage": "ls_south"
+    },
+    {
+      "region": 243,
+      "ra": 316.234,
+      "dec": 0.061,
+      "radius_deg": 0.0,
+      "n_sn": 1,
+      "z_min": 0.397,
+      "z_max": 0.397,
+      "samples": [
+        "SDSS"
+      ],
+      "coverage": "ls_south"
+    },
+    {
+      "region": 239,
+      "ra": 13.509,
+      "dec": 1.069,
+      "radius_deg": 0.0,
+      "n_sn": 1,
+      "z_min": 0.205,
+      "z_max": 0.205,
+      "samples": [
+        "SDSS"
+      ],
+      "coverage": "ls_south"
+    },
+    {
+      "region": 274,
+      "ra": 51.455,
+      "dec": -19.303,
+      "radius_deg": 0.0,
+      "n_sn": 1,
+      "z_min": 0.109,
+      "z_max": 0.109,
+      "samples": [
+        "LSQ+LCO"
+      ],
+      "coverage": "ls_south"
+    },
+    {
+      "region": 264,
+      "ra": 319.395,
+      "dec": -0.524,
+      "radius_deg": 0.0,
+      "n_sn": 1,
+      "z_min": 0.208,
+      "z_max": 0.208,
+      "samples": [
+        "SDSS"
+      ],
+      "coverage": "ls_south"
+    },
+    {
+      "region": 11,
+      "ra": 8.468,
+      "dec": -42.095,
+      "radius_deg": 0.0,
+      "n_sn": 1,
+      "z_min": 0.422,
+      "z_max": 0.422,
+      "samples": [
+        "DES3_Shallow"
+      ],
+      "coverage": "ls_south"
+    },
+    {
+      "region": 267,
+      "ra": 218.12,
+      "dec": 33.536,
+      "radius_deg": 0.0,
+      "n_sn": 1,
+      "z_min": 1.111,
+      "z_max": 1.111,
+      "samples": [
+        "SuzukiRubin"
+      ],
+      "coverage": "ls_north"
+    },
+    {
+      "region": 268,
+      "ra": 217.328,
+      "dec": 34.644,
+      "radius_deg": 0.0,
+      "n_sn": 1,
+      "z_min": 1.351,
+      "z_max": 1.351,
+      "samples": [
+        "SuzukiRubin"
+      ],
+      "coverage": "ls_north"
+    },
+    {
+      "region": 3,
+      "ra": 230.285,
+      "dec": 27.927,
+      "radius_deg": 0.0,
+      "n_sn": 1,
+      "z_min": 0.125,
+      "z_max": 0.125,
+      "samples": [
+        "CfA1"
+      ],
+      "coverage": "ls_south"
+    },
+    {
+      "region": 270,
+      "ra": 219.535,
+      "dec": 34.238,
+      "radius_deg": 0.0,
+      "n_sn": 1,
+      "z_min": 1.416,
+      "z_max": 1.416,
+      "samples": [
+        "SuzukiRubin"
+      ],
+      "coverage": "ls_north"
+    },
+    {
+      "region": 271,
+      "ra": 356.373,
+      "dec": -36.546,
+      "radius_deg": 0.0,
+      "n_sn": 1,
+      "z_min": 1.048,
+      "z_max": 1.048,
+      "samples": [
+        "SuzukiRubin"
+      ],
+      "coverage": "ls_south"
+    },
+    {
+      "region": 272,
+      "ra": 338.854,
+      "dec": -25.953,
+      "radius_deg": 0.0,
+      "n_sn": 1,
+      "z_min": 0.621,
+      "z_max": 0.621,
+      "samples": [
+        "SuzukiRubin"
+      ],
+      "coverage": "ls_south"
+    },
+    {
+      "region": 273,
+      "ra": 63.516,
+      "dec": 4.299,
+      "radius_deg": 0.0,
+      "n_sn": 1,
+      "z_min": 0.477,
+      "z_max": 0.477,
+      "samples": [
+        "Tonry03"
+      ],
+      "coverage": "ls_south"
+    },
+    {
+      "region": 275,
+      "ra": 350.669,
+      "dec": -21.455,
+      "radius_deg": 0.0,
+      "n_sn": 1,
+      "z_min": 0.119,
+      "z_max": 0.119,
+      "samples": [
+        "LSQ+LCO"
+      ],
+      "coverage": "ls_south"
+    },
+    {
+      "region": 240,
+      "ra": 36.409,
+      "dec": 0.71,
+      "radius_deg": 0.0,
+      "n_sn": 1,
+      "z_min": 0.4,
+      "z_max": 0.4,
+      "samples": [
+        "SDSS"
+      ],
+      "coverage": "ls_south"
+    },
+    {
+      "region": 276,
+      "ra": 193.416,
+      "dec": -18.507,
+      "radius_deg": 0.0,
+      "n_sn": 1,
+      "z_min": 0.112,
+      "z_max": 0.112,
+      "samples": [
+        "LSQ"
+      ],
+      "coverage": "ls_south"
+    },
+    {
+      "region": 277,
+      "ra": 80.748,
+      "dec": -33.464,
+      "radius_deg": 0.0,
+      "n_sn": 1,
+      "z_min": 0.112,
+      "z_max": 0.112,
+      "samples": [
+        "LSQ"
+      ],
+      "coverage": "ls_south"
+    },
+    {
+      "region": 278,
+      "ra": 74.048,
+      "dec": -3.691,
+      "radius_deg": 0.0,
+      "n_sn": 1,
+      "z_min": 0.863,
+      "z_max": 0.863,
+      "samples": [
+        "Knop03"
+      ],
+      "coverage": "ls_south"
+    },
+    {
+      "region": 279,
+      "ra": 74.735,
+      "dec": -3.991,
+      "radius_deg": 0.0,
+      "n_sn": 1,
+      "z_min": 0.538,
+      "z_max": 0.538,
+      "samples": [
+        "Knop03"
+      ],
+      "coverage": "ls_south"
+    },
+    {
+      "region": 280,
+      "ra": 125.409,
+      "dec": 3.42,
+      "radius_deg": 0.0,
+      "n_sn": 1,
+      "z_min": 0.78,
+      "z_max": 0.78,
+      "samples": [
+        "Knop03"
+      ],
+      "coverage": "ls_south"
+    },
+    {
+      "region": 281,
+      "ra": 163.484,
+      "dec": -3.653,
+      "radius_deg": 0.0,
+      "n_sn": 1,
+      "z_min": 0.357,
+      "z_max": 0.357,
+      "samples": [
+        "Knop03"
+      ],
+      "coverage": "ls_south"
+    },
+    {
+      "region": 282,
+      "ra": 164.063,
+      "dec": -4.256,
+      "radius_deg": 0.0,
+      "n_sn": 1,
+      "z_min": 0.442,
+      "z_max": 0.442,
+      "samples": [
+        "Knop03"
+      ],
+      "coverage": "ls_south"
+    },
+    {
+      "region": 2,
+      "ra": 346.145,
+      "dec": -37.345,
+      "radius_deg": 0.0,
+      "n_sn": 1,
+      "z_min": 0.101,
+      "z_max": 0.101,
+      "samples": [
+        "CalanTololo"
+      ],
+      "coverage": "ls_south"
+    },
+    {
+      "region": 284,
+      "ra": 205.904,
+      "dec": 2.325,
+      "radius_deg": 0.0,
+      "n_sn": 1,
+      "z_min": 0.431,
+      "z_max": 0.431,
+      "samples": [
+        "Knop03"
+      ],
+      "coverage": "ls_south"
+    },
+    {
+      "region": 263,
+      "ra": 311.755,
+      "dec": -0.099,
+      "radius_deg": 0.0,
+      "n_sn": 1,
+      "z_min": 0.22,
+      "z_max": 0.22,
+      "samples": [
+        "SDSS"
+      ],
+      "coverage": "ls_south"
+    },
+    {
+      "region": 262,
+      "ra": 28.814,
+      "dec": 0.643,
+      "radius_deg": 0.0,
+      "n_sn": 1,
+      "z_min": 0.228,
+      "z_max": 0.228,
+      "samples": [
+        "SDSS"
+      ],
+      "coverage": "ls_south"
+    },
+    {
+      "region": 13,
+      "ra": 36.534,
+      "dec": -6.76,
+      "radius_deg": 0.0,
+      "n_sn": 1,
+      "z_min": 0.289,
+      "z_max": 0.289,
+      "samples": [
+        "DES3_Shallow"
+      ],
+      "coverage": "ls_south"
+    },
+    {
+      "region": 260,
+      "ra": 25.757,
+      "dec": -0.945,
+      "radius_deg": 0.0,
+      "n_sn": 1,
+      "z_min": 0.217,
+      "z_max": 0.217,
+      "samples": [
+        "SDSS"
+      ],
+      "coverage": "ls_south"
+    },
+    {
+      "region": 241,
+      "ra": 50.236,
+      "dec": 1.058,
+      "radius_deg": 0.0,
+      "n_sn": 1,
+      "z_min": 0.209,
+      "z_max": 0.209,
+      "samples": [
+        "SDSS"
+      ],
+      "coverage": "ls_south"
+    },
+    {
+      "region": 242,
+      "ra": 46.682,
+      "dec": -0.754,
+      "radius_deg": 0.0,
+      "n_sn": 1,
+      "z_min": 0.213,
+      "z_max": 0.213,
+      "samples": [
+        "SDSS"
+      ],
+      "coverage": "ls_south"
+    },
+    {
+      "region": 36,
+      "ra": 211.862,
+      "dec": 53.343,
+      "radius_deg": 0.0,
+      "n_sn": 1,
+      "z_min": 0.261,
+      "z_max": 0.261,
+      "samples": [
+        "Pan-STARRS"
+      ],
+      "coverage": "ls_north"
+    },
+    {
+      "region": 244,
+      "ra": 357.908,
+      "dec": 0.28,
+      "radius_deg": 0.0,
+      "n_sn": 1,
+      "z_min": 0.122,
+      "z_max": 0.122,
+      "samples": [
+        "SDSS"
+      ],
+      "coverage": "ls_south"
+    },
+    {
+      "region": 18,
+      "ra": 202.634,
+      "dec": -0.735,
+      "radius_deg": 0.0,
+      "n_sn": 1,
+      "z_min": 0.104,
+      "z_max": 0.104,
+      "samples": [
+        "Foundation"
+      ],
+      "coverage": "ls_south"
+    },
+    {
+      "region": 246,
+      "ra": 358.586,
+      "dec": -0.918,
+      "radius_deg": 0.0,
+      "n_sn": 1,
+      "z_min": 0.104,
+      "z_max": 0.104,
+      "samples": [
+        "SDSS"
+      ],
+      "coverage": "ls_south"
+    },
+    {
+      "region": 247,
+      "ra": 25.66,
+      "dec": 1.03,
+      "radius_deg": 0.0,
+      "n_sn": 1,
+      "z_min": 0.164,
+      "z_max": 0.164,
+      "samples": [
+        "SDSS"
+      ],
+      "coverage": "ls_south"
+    },
+    {
+      "region": 248,
+      "ra": 8.903,
+      "dec": -0.233,
+      "radius_deg": 0.0,
+      "n_sn": 1,
+      "z_min": 0.199,
+      "z_max": 0.199,
+      "samples": [
+        "SDSS"
+      ],
+      "coverage": "ls_south"
+    },
+    {
+      "region": 249,
+      "ra": 40.286,
+      "dec": 0.144,
+      "radius_deg": 0.0,
+      "n_sn": 1,
+      "z_min": 0.314,
+      "z_max": 0.314,
+      "samples": [
+        "SDSS"
+      ],
+      "coverage": "ls_south"
+    },
+    {
+      "region": 250,
+      "ra": 341.742,
+      "dec": -0.072,
+      "radius_deg": 0.0,
+      "n_sn": 1,
+      "z_min": 0.202,
+      "z_max": 0.202,
+      "samples": [
+        "SDSS"
+      ],
+      "coverage": "ls_south"
+    },
+    {
+      "region": 251,
+      "ra": 349.481,
+      "dec": 1.223,
+      "radius_deg": 0.0,
+      "n_sn": 1,
+      "z_min": 0.401,
+      "z_max": 0.401,
+      "samples": [
+        "SDSS"
+      ],
+      "coverage": "ls_south"
+    },
+    {
+      "region": 252,
+      "ra": 315.394,
+      "dec": -0.269,
+      "radius_deg": 0.0,
+      "n_sn": 1,
+      "z_min": 0.146,
+      "z_max": 0.146,
+      "samples": [
+        "SDSS"
+      ],
+      "coverage": "ls_south"
+    },
+    {
+      "region": 253,
+      "ra": 357.295,
+      "dec": 0.798,
+      "radius_deg": 0.0,
+      "n_sn": 1,
+      "z_min": 0.352,
+      "z_max": 0.352,
+      "samples": [
+        "SDSS"
+      ],
+      "coverage": "ls_south"
+    },
+    {
+      "region": 254,
+      "ra": 34.141,
+      "dec": -0.722,
+      "radius_deg": 0.0,
+      "n_sn": 1,
+      "z_min": 0.304,
+      "z_max": 0.304,
+      "samples": [
+        "SDSS"
+      ],
+      "coverage": "ls_south"
+    },
+    {
+      "region": 255,
+      "ra": 47.755,
+      "dec": 0.357,
+      "radius_deg": 0.0,
+      "n_sn": 1,
+      "z_min": 0.268,
+      "z_max": 0.268,
+      "samples": [
+        "SDSS"
+      ],
+      "coverage": "ls_south"
+    },
+    {
+      "region": 256,
+      "ra": 346.554,
+      "dec": 0.329,
+      "radius_deg": 0.0,
+      "n_sn": 1,
+      "z_min": 0.331,
+      "z_max": 0.331,
+      "samples": [
+        "SDSS"
+      ],
+      "coverage": "ls_south"
+    },
+    {
+      "region": 257,
+      "ra": 329.938,
+      "dec": 1.127,
+      "radius_deg": 0.0,
+      "n_sn": 1,
+      "z_min": 0.234,
+      "z_max": 0.234,
+      "samples": [
+        "SDSS"
+      ],
+      "coverage": "ls_south"
+    },
+    {
+      "region": 258,
+      "ra": 9.879,
+      "dec": 1.024,
+      "radius_deg": 0.0,
+      "n_sn": 1,
+      "z_min": 0.246,
+      "z_max": 0.246,
+      "samples": [
+        "SDSS"
+      ],
+      "coverage": "ls_south"
+    },
+    {
+      "region": 259,
+      "ra": 349.12,
+      "dec": -0.098,
+      "radius_deg": 0.0,
+      "n_sn": 1,
+      "z_min": 0.276,
+      "z_max": 0.276,
+      "samples": [
+        "SDSS"
+      ],
+      "coverage": "ls_south"
+    },
+    {
+      "region": 35,
+      "ra": 159.592,
+      "dec": 57.39,
+      "radius_deg": 0.0,
+      "n_sn": 1,
+      "z_min": 0.103,
+      "z_max": 0.103,
+      "samples": [
+        "Pan-STARRS"
+      ],
+      "coverage": "ls_north"
+    },
+    {
+      "region": 191,
+      "ra": 319.668,
+      "dec": -1.024,
+      "radius_deg": 0.0,
+      "n_sn": 1,
+      "z_min": 0.174,
+      "z_max": 0.174,
+      "samples": [
+        "SDSS"
+      ],
+      "coverage": "ls_south"
+    },
+    {
+      "region": 197,
+      "ra": 14.88,
+      "dec": -0.257,
+      "radius_deg": 0.0,
+      "n_sn": 1,
+      "z_min": 0.219,
+      "z_max": 0.219,
+      "samples": [
+        "SDSS"
+      ],
+      "coverage": "ls_south"
+    },
+    {
+      "region": 135,
+      "ra": 335.261,
+      "dec": -0.748,
+      "radius_deg": 0.0,
+      "n_sn": 1,
+      "z_min": 0.214,
+      "z_max": 0.214,
+      "samples": [
+        "SDSS"
+      ],
+      "coverage": "ls_south"
+    },
+    {
+      "region": 126,
+      "ra": 348.465,
+      "dec": 1.257,
+      "radius_deg": 0.0,
+      "n_sn": 1,
+      "z_min": 0.271,
+      "z_max": 0.271,
+      "samples": [
+        "SDSS"
+      ],
+      "coverage": "ls_south"
+    },
+    {
+      "region": 76,
+      "ra": 323.799,
+      "dec": 0.163,
+      "radius_deg": 0.0,
+      "n_sn": 1,
+      "z_min": 0.262,
+      "z_max": 0.262,
+      "samples": [
+        "SDSS"
+      ],
+      "coverage": "ls_south"
+    },
+    {
+      "region": 75,
+      "ra": 320.414,
+      "dec": 0.895,
+      "radius_deg": 0.0,
+      "n_sn": 1,
+      "z_min": 0.296,
+      "z_max": 0.296,
+      "samples": [
+        "SDSS"
+      ],
+      "coverage": "ls_south"
+    },
+    {
+      "region": 74,
+      "ra": 45.323,
+      "dec": -0.644,
+      "radius_deg": 0.0,
+      "n_sn": 1,
+      "z_min": 0.183,
+      "z_max": 0.183,
+      "samples": [
+        "SDSS"
+      ],
+      "coverage": "ls_south"
+    },
+    {
+      "region": 69,
+      "ra": 15.535,
+      "dec": -0.879,
+      "radius_deg": 0.0,
+      "n_sn": 1,
+      "z_min": 0.19,
+      "z_max": 0.19,
+      "samples": [
+        "SDSS"
+      ],
+      "coverage": "ls_south"
+    },
+    {
+      "region": 131,
+      "ra": 325.002,
+      "dec": -0.008,
+      "radius_deg": 0.0,
+      "n_sn": 1,
+      "z_min": 0.144,
+      "z_max": 0.144,
+      "samples": [
+        "SDSS"
+      ],
+      "coverage": "ls_south"
+    },
+    {
+      "region": 133,
+      "ra": 335.814,
+      "dec": 0.253,
+      "radius_deg": 0.0,
+      "n_sn": 1,
+      "z_min": 0.257,
+      "z_max": 0.257,
+      "samples": [
+        "SDSS"
+      ],
+      "coverage": "ls_south"
+    },
+    {
+      "region": 134,
+      "ra": 329.956,
+      "dec": -1.194,
+      "radius_deg": 0.0,
+      "n_sn": 1,
+      "z_min": 0.103,
+      "z_max": 0.103,
+      "samples": [
+        "SDSS"
+      ],
+      "coverage": "ls_south"
+    },
+    {
+      "region": 66,
+      "ra": 36.012,
+      "dec": -0.048,
+      "radius_deg": 0.0,
+      "n_sn": 1,
+      "z_min": 0.55,
+      "z_max": 0.55,
+      "samples": [
+        "SDSS"
+      ],
+      "coverage": "ls_south"
+    },
+    {
+      "region": 78,
+      "ra": 349.374,
+      "dec": 0.429,
+      "radius_deg": 0.0,
+      "n_sn": 1,
+      "z_min": 0.118,
+      "z_max": 0.118,
+      "samples": [
+        "SDSS"
+      ],
+      "coverage": "ls_south"
+    },
+    {
+      "region": 137,
+      "ra": 309.683,
+      "dec": -0.475,
+      "radius_deg": 0.0,
+      "n_sn": 1,
+      "z_min": 0.146,
+      "z_max": 0.146,
+      "samples": [
+        "SDSS"
+      ],
+      "coverage": "ls_south"
+    },
+    {
+      "region": 138,
+      "ra": 316.766,
+      "dec": 0.723,
+      "radius_deg": 0.0,
+      "n_sn": 1,
+      "z_min": 0.168,
+      "z_max": 0.168,
+      "samples": [
+        "SDSS"
+      ],
+      "coverage": "ls_south"
+    },
+    {
+      "region": 139,
+      "ra": 323.694,
+      "dec": 1.176,
+      "radius_deg": 0.0,
+      "n_sn": 1,
+      "z_min": 0.12,
+      "z_max": 0.12,
+      "samples": [
+        "SDSS"
+      ],
+      "coverage": "ls_south"
+    },
+    {
+      "region": 141,
+      "ra": 41.786,
+      "dec": 0.775,
+      "radius_deg": 0.0,
+      "n_sn": 1,
+      "z_min": 0.189,
+      "z_max": 0.189,
+      "samples": [
+        "SDSS"
+      ],
+      "coverage": "ls_south"
+    },
+    {
+      "region": 64,
+      "ra": 320.02,
+      "dec": -0.177,
+      "radius_deg": 0.0,
+      "n_sn": 1,
+      "z_min": 0.208,
+      "z_max": 0.208,
+      "samples": [
+        "SDSS"
+      ],
+      "coverage": "ls_south"
+    },
+    {
+      "region": 62,
+      "ra": 4.016,
+      "dec": 0.808,
+      "radius_deg": 0.0,
+      "n_sn": 1,
+      "z_min": 0.25,
+      "z_max": 0.25,
+      "samples": [
+        "SDSS"
+      ],
+      "coverage": "ls_south"
+    },
+    {
+      "region": 61,
+      "ra": 315.19,
+      "dec": 0.192,
+      "radius_deg": 0.0,
+      "n_sn": 1,
+      "z_min": 0.162,
+      "z_max": 0.162,
+      "samples": [
+        "SDSS"
+      ],
+      "coverage": "ls_south"
+    },
+    {
+      "region": 60,
+      "ra": 9.356,
+      "dec": 0.973,
+      "radius_deg": 0.0,
+      "n_sn": 1,
+      "z_min": 0.38,
+      "z_max": 0.38,
+      "samples": [
+        "SDSS"
+      ],
+      "coverage": "ls_south"
+    },
+    {
+      "region": 125,
+      "ra": 310.08,
+      "dec": -0.007,
+      "radius_deg": 0.0,
+      "n_sn": 1,
+      "z_min": 0.38,
+      "z_max": 0.38,
+      "samples": [
+        "SDSS"
+      ],
+      "coverage": "ls_south"
+    },
+    {
+      "region": 123,
+      "ra": 39.117,
+      "dec": 0.511,
+      "radius_deg": 0.0,
+      "n_sn": 1,
+      "z_min": 0.258,
+      "z_max": 0.258,
+      "samples": [
+        "SDSS"
+      ],
+      "coverage": "ls_south"
+    },
+    {
+      "region": 147,
+      "ra": 359.819,
+      "dec": -1.25,
+      "radius_deg": 0.0,
+      "n_sn": 1,
+      "z_min": 0.265,
+      "z_max": 0.265,
+      "samples": [
+        "SDSS"
+      ],
+      "coverage": "ls_south"
+    },
+    {
+      "region": 109,
+      "ra": 46.089,
+      "dec": -1.063,
+      "radius_deg": 0.0,
+      "n_sn": 1,
+      "z_min": 0.124,
+      "z_max": 0.124,
+      "samples": [
+        "SDSS"
+      ],
+      "coverage": "ls_south"
+    },
+    {
+      "region": 98,
+      "ra": 307.219,
+      "dec": -0.779,
+      "radius_deg": 0.0,
+      "n_sn": 1,
+      "z_min": 0.174,
+      "z_max": 0.174,
+      "samples": [
+        "SDSS"
+      ],
+      "coverage": "ls_south"
+    },
+    {
+      "region": 100,
+      "ra": 2.369,
+      "dec": 1.155,
+      "radius_deg": 0.0,
+      "n_sn": 1,
+      "z_min": 0.409,
+      "z_max": 0.409,
+      "samples": [
+        "SDSS"
+      ],
+      "coverage": "ls_south"
+    },
+    {
+      "region": 93,
+      "ra": 12.238,
+      "dec": -0.906,
+      "radius_deg": 0.0,
+      "n_sn": 1,
+      "z_min": 0.331,
+      "z_max": 0.331,
+      "samples": [
+        "SDSS"
+      ],
+      "coverage": "ls_south"
+    },
+    {
+      "region": 91,
+      "ra": 55.497,
+      "dec": -0.783,
+      "radius_deg": 0.0,
+      "n_sn": 1,
+      "z_min": 0.126,
+      "z_max": 0.126,
+      "samples": [
+        "SDSS"
+      ],
+      "coverage": "ls_south"
+    },
+    {
+      "region": 104,
+      "ra": 327.786,
+      "dec": -0.843,
+      "radius_deg": 0.0,
+      "n_sn": 1,
+      "z_min": 0.309,
+      "z_max": 0.309,
+      "samples": [
+        "SDSS"
+      ],
+      "coverage": "ls_south"
+    },
+    {
+      "region": 88,
+      "ra": 20.407,
+      "dec": -0.977,
+      "radius_deg": 0.0,
+      "n_sn": 1,
+      "z_min": 0.164,
+      "z_max": 0.164,
+      "samples": [
+        "SDSS"
+      ],
+      "coverage": "ls_south"
+    },
+    {
+      "region": 86,
+      "ra": 50.09,
+      "dec": -0.886,
+      "radius_deg": 0.0,
+      "n_sn": 1,
+      "z_min": 0.194,
+      "z_max": 0.194,
+      "samples": [
+        "SDSS"
+      ],
+      "coverage": "ls_south"
+    },
+    {
+      "region": 85,
+      "ra": 344.201,
+      "dec": 0.401,
+      "radius_deg": 0.0,
+      "n_sn": 1,
+      "z_min": 0.289,
+      "z_max": 0.289,
+      "samples": [
+        "SDSS"
+      ],
+      "coverage": "ls_south"
+    },
+    {
+      "region": 81,
+      "ra": 312.043,
+      "dec": -1.171,
+      "radius_deg": 0.0,
+      "n_sn": 1,
+      "z_min": 0.152,
+      "z_max": 0.152,
+      "samples": [
+        "SDSS"
+      ],
+      "coverage": "ls_south"
+    },
+    {
+      "region": 122,
+      "ra": 32.46,
+      "dec": -0.062,
+      "radius_deg": 0.0,
+      "n_sn": 1,
+      "z_min": 0.212,
+      "z_max": 0.212,
+      "samples": [
+        "SDSS"
+      ],
+      "coverage": "ls_south"
+    },
+    {
+      "region": 113,
+      "ra": 307.936,
+      "dec": 0.245,
+      "radius_deg": 0.0,
+      "n_sn": 1,
+      "z_min": 0.299,
+      "z_max": 0.299,
+      "samples": [
+        "SDSS"
+      ],
+      "coverage": "ls_south"
+    },
+    {
+      "region": 114,
+      "ra": 310.483,
+      "dec": 1.092,
+      "radius_deg": 0.0,
+      "n_sn": 1,
+      "z_min": 0.266,
+      "z_max": 0.266,
+      "samples": [
+        "SDSS"
+      ],
+      "coverage": "ls_south"
+    },
+    {
+      "region": 115,
+      "ra": 358.969,
+      "dec": 0.877,
+      "radius_deg": 0.0,
+      "n_sn": 1,
+      "z_min": 0.326,
+      "z_max": 0.326,
+      "samples": [
+        "SDSS"
+      ],
+      "coverage": "ls_south"
+    },
+    {
+      "region": 116,
+      "ra": 345.262,
+      "dec": -0.207,
+      "radius_deg": 0.0,
+      "n_sn": 1,
+      "z_min": 0.304,
+      "z_max": 0.304,
+      "samples": [
+        "SDSS"
+      ],
+      "coverage": "ls_south"
+    },
+    {
+      "region": 117,
+      "ra": 350.018,
+      "dec": -0.055,
+      "radius_deg": 0.0,
+      "n_sn": 1,
+      "z_min": 0.109,
+      "z_max": 0.109,
+      "samples": [
+        "SDSS"
+      ],
+      "coverage": "ls_south"
+    },
+    {
+      "region": 119,
+      "ra": 314.186,
+      "dec": 0.408,
+      "radius_deg": 0.0,
+      "n_sn": 1,
+      "z_min": 0.367,
+      "z_max": 0.367,
+      "samples": [
+        "SDSS"
+      ],
+      "coverage": "ls_south"
+    },
+    {
+      "region": 120,
+      "ra": 26.498,
+      "dec": 1.196,
+      "radius_deg": 0.0,
+      "n_sn": 1,
+      "z_min": 0.19,
+      "z_max": 0.19,
+      "samples": [
+        "SDSS"
+      ],
+      "coverage": "ls_south"
+    },
+    {
+      "region": 121,
+      "ra": 52.09,
+      "dec": -0.326,
+      "radius_deg": 0.0,
+      "n_sn": 1,
+      "z_min": 0.218,
+      "z_max": 0.218,
+      "samples": [
+        "SDSS"
+      ],
+      "coverage": "ls_south"
+    },
+    {
+      "region": 59,
+      "ra": 47.693,
+      "dec": -0.205,
+      "radius_deg": 0.0,
+      "n_sn": 1,
+      "z_min": 0.147,
+      "z_max": 0.147,
+      "samples": [
+        "SDSS"
+      ],
+      "coverage": "ls_south"
+    },
+    {
+      "region": 148,
+      "ra": 327.399,
+      "dec": 0.001,
+      "radius_deg": 0.0,
+      "n_sn": 1,
+      "z_min": 0.278,
+      "z_max": 0.278,
+      "samples": [
+        "SDSS"
+      ],
+      "coverage": "ls_south"
+    },
+    {
+      "region": 196,
+      "ra": 27.169,
+      "dec": -0.577,
+      "radius_deg": 0.0,
+      "n_sn": 1,
+      "z_min": 0.134,
+      "z_max": 0.134,
+      "samples": [
+        "SDSS"
+      ],
+      "coverage": "ls_south"
+    },
+    {
+      "region": 40,
+      "ra": 241.437,
+      "dec": 56.074,
+      "radius_deg": 0.0,
+      "n_sn": 1,
+      "z_min": 0.328,
+      "z_max": 0.328,
+      "samples": [
+        "Pan-STARRS"
+      ],
+      "coverage": "ls_north"
+    },
+    {
+      "region": 44,
+      "ra": 131.828,
+      "dec": 43.408,
+      "radius_deg": 0.0,
+      "n_sn": 1,
+      "z_min": 0.173,
+      "z_max": 0.173,
+      "samples": [
+        "Pan-STARRS"
+      ],
+      "coverage": "ls_north"
+    },
+    {
+      "region": 175,
+      "ra": 54.277,
+      "dec": 0.009,
+      "radius_deg": 0.0,
+      "n_sn": 1,
+      "z_min": 0.118,
+      "z_max": 0.118,
+      "samples": [
+        "SDSS"
+      ],
+      "coverage": "ls_south"
+    },
+    {
+      "region": 177,
+      "ra": 329.7,
+      "dec": 0.198,
+      "radius_deg": 0.0,
+      "n_sn": 1,
+      "z_min": 0.153,
+      "z_max": 0.153,
+      "samples": [
+        "SDSS"
+      ],
+      "coverage": "ls_south"
+    },
+    {
+      "region": 178,
+      "ra": 22.634,
+      "dec": 0.22,
+      "radius_deg": 0.0,
+      "n_sn": 1,
+      "z_min": 0.38,
+      "z_max": 0.38,
+      "samples": [
+        "SDSS"
+      ],
+      "coverage": "ls_south"
+    },
+    {
+      "region": 179,
+      "ra": 35.843,
+      "dec": 0.819,
+      "radius_deg": 0.0,
+      "n_sn": 1,
+      "z_min": 0.249,
+      "z_max": 0.249,
+      "samples": [
+        "SDSS"
+      ],
+      "coverage": "ls_south"
+    },
+    {
+      "region": 180,
+      "ra": 58.059,
+      "dec": 0.292,
+      "radius_deg": 0.0,
+      "n_sn": 1,
+      "z_min": 0.394,
+      "z_max": 0.394,
+      "samples": [
+        "SDSS"
+      ],
+      "coverage": "ls_south"
+    },
+    {
+      "region": 181,
+      "ra": 2.853,
+      "dec": 0.703,
+      "radius_deg": 0.0,
+      "n_sn": 1,
+      "z_min": 0.198,
+      "z_max": 0.198,
+      "samples": [
+        "SDSS"
+      ],
+      "coverage": "ls_south"
+    },
+    {
+      "region": 182,
+      "ra": 316.642,
+      "dec": -0.648,
+      "radius_deg": 0.0,
+      "n_sn": 1,
+      "z_min": 0.215,
+      "z_max": 0.215,
+      "samples": [
+        "SDSS"
+      ],
+      "coverage": "ls_south"
+    },
+    {
+      "region": 185,
+      "ra": 22.25,
+      "dec": 0.77,
+      "radius_deg": 0.0,
+      "n_sn": 1,
+      "z_min": 0.361,
+      "z_max": 0.361,
+      "samples": [
+        "SDSS"
+      ],
+      "coverage": "ls_south"
+    },
+    {
+      "region": 172,
+      "ra": 314.895,
+      "dec": 1.223,
+      "radius_deg": 0.0,
+      "n_sn": 1,
+      "z_min": 0.261,
+      "z_max": 0.261,
+      "samples": [
+        "SDSS"
+      ],
+      "coverage": "ls_south"
+    },
+    {
+      "region": 186,
+      "ra": 32.799,
+      "dec": 0.696,
+      "radius_deg": 0.0,
+      "n_sn": 1,
+      "z_min": 0.291,
+      "z_max": 0.291,
+      "samples": [
+        "SDSS"
+      ],
+      "coverage": "ls_south"
+    },
+    {
+      "region": 188,
+      "ra": 354.557,
+      "dec": 1.249,
+      "radius_deg": 0.0,
+      "n_sn": 1,
+      "z_min": 0.187,
+      "z_max": 0.187,
+      "samples": [
+        "SDSS"
+      ],
+      "coverage": "ls_south"
+    },
+    {
+      "region": 189,
+      "ra": 33.742,
+      "dec": 0.603,
+      "radius_deg": 0.0,
+      "n_sn": 1,
+      "z_min": 0.184,
+      "z_max": 0.184,
+      "samples": [
+        "SDSS"
+      ],
+      "coverage": "ls_south"
+    },
+    {
+      "region": 190,
+      "ra": 55.561,
+      "dec": 0.478,
+      "radius_deg": 0.0,
+      "n_sn": 1,
+      "z_min": 0.159,
+      "z_max": 0.159,
+      "samples": [
+        "SDSS"
+      ],
+      "coverage": "ls_south"
+    },
+    {
+      "region": 192,
+      "ra": 326.847,
+      "dec": -0.495,
+      "radius_deg": 0.0,
+      "n_sn": 1,
+      "z_min": 0.185,
+      "z_max": 0.185,
+      "samples": [
+        "SDSS"
+      ],
+      "coverage": "ls_south"
+    },
+    {
+      "region": 193,
+      "ra": 340.701,
+      "dec": -0.902,
+      "radius_deg": 0.0,
+      "n_sn": 1,
+      "z_min": 0.125,
+      "z_max": 0.125,
+      "samples": [
+        "SDSS"
+      ],
+      "coverage": "ls_south"
+    },
+    {
+      "region": 194,
+      "ra": 53.019,
+      "dec": -0.1,
+      "radius_deg": 0.0,
+      "n_sn": 1,
+      "z_min": 0.306,
+      "z_max": 0.306,
+      "samples": [
+        "SDSS"
+      ],
+      "coverage": "ls_south"
+    },
+    {
+      "region": 195,
+      "ra": 39.721,
+      "dec": 0.09,
+      "radius_deg": 0.0,
+      "n_sn": 1,
+      "z_min": 0.261,
+      "z_max": 0.261,
+      "samples": [
+        "SDSS"
+      ],
+      "coverage": "ls_south"
+    },
+    {
+      "region": 173,
+      "ra": 343.551,
+      "dec": 1.051,
+      "radius_deg": 0.0,
+      "n_sn": 1,
+      "z_min": 0.328,
+      "z_max": 0.328,
+      "samples": [
+        "SDSS"
+      ],
+      "coverage": "ls_south"
+    },
+    {
+      "region": 171,
+      "ra": 308.195,
+      "dec": 0.927,
+      "radius_deg": 0.0,
+      "n_sn": 1,
+      "z_min": 0.178,
+      "z_max": 0.178,
+      "samples": [
+        "SDSS"
+      ],
+      "coverage": "ls_south"
+    },
+    {
+      "region": 58,
+      "ra": 352.676,
+      "dec": -1.556,
+      "radius_deg": 0.0,
+      "n_sn": 1,
+      "z_min": 0.307,
+      "z_max": 0.307,
+      "samples": [
+        "Pan-STARRS"
+      ],
+      "coverage": "ls_south"
+    },
+    {
+      "region": 159,
+      "ra": 27.565,
+      "dec": -0.887,
+      "radius_deg": 0.0,
+      "n_sn": 1,
+      "z_min": 0.157,
+      "z_max": 0.157,
+      "samples": [
+        "SDSS"
+      ],
+      "coverage": "ls_south"
+    },
+    {
+      "region": 150,
+      "ra": 321.347,
+      "dec": -1.034,
+      "radius_deg": 0.0,
+      "n_sn": 1,
+      "z_min": 0.292,
+      "z_max": 0.292,
+      "samples": [
+        "SDSS"
+      ],
+      "coverage": "ls_south"
+    },
+    {
+      "region": 57,
+      "ra": 244.451,
+      "dec": 54.633,
+      "radius_deg": 0.0,
+      "n_sn": 1,
+      "z_min": 0.308,
+      "z_max": 0.308,
+      "samples": [
+        "Pan-STARRS"
+      ],
+      "coverage": "ls_north"
+    },
+    {
+      "region": 56,
+      "ra": 184.138,
+      "dec": 45.962,
+      "radius_deg": 0.0,
+      "n_sn": 1,
+      "z_min": 0.546,
+      "z_max": 0.546,
+      "samples": [
+        "Pan-STARRS"
+      ],
+      "coverage": "ls_north"
+    },
+    {
+      "region": 55,
+      "ra": 214.033,
+      "dec": 51.732,
+      "radius_deg": 0.0,
+      "n_sn": 1,
+      "z_min": 0.438,
+      "z_max": 0.438,
+      "samples": [
+        "Pan-STARRS"
+      ],
+      "coverage": "ls_north"
+    },
+    {
+      "region": 154,
+      "ra": 331.1,
+      "dec": 0.691,
+      "radius_deg": 0.0,
+      "n_sn": 1,
+      "z_min": 0.213,
+      "z_max": 0.213,
+      "samples": [
+        "SDSS"
+      ],
+      "coverage": "ls_south"
+    },
+    {
+      "region": 53,
+      "ra": 130.22,
+      "dec": 45.632,
+      "radius_deg": 0.0,
+      "n_sn": 1,
+      "z_min": 0.294,
+      "z_max": 0.294,
+      "samples": [
+        "Pan-STARRS"
+      ],
+      "coverage": "ls_north"
+    },
+    {
+      "region": 157,
+      "ra": 317.588,
+      "dec": 0.933,
+      "radius_deg": 0.0,
+      "n_sn": 1,
+      "z_min": 0.225,
+      "z_max": 0.225,
+      "samples": [
+        "SDSS"
+      ],
+      "coverage": "ls_south"
+    },
+    {
+      "region": 158,
+      "ra": 350.692,
+      "dec": 0.533,
+      "radius_deg": 0.0,
+      "n_sn": 1,
+      "z_min": 0.147,
+      "z_max": 0.147,
+      "samples": [
+        "SDSS"
+      ],
+      "coverage": "ls_south"
+    },
+    {
+      "region": 52,
+      "ra": 151.309,
+      "dec": 1.701,
+      "radius_deg": 0.0,
+      "n_sn": 1,
+      "z_min": 0.479,
+      "z_max": 0.479,
+      "samples": [
+        "Pan-STARRS"
+      ],
+      "coverage": "ls_south"
+    },
+    {
+      "region": 170,
+      "ra": 342.111,
+      "dec": -0.435,
+      "radius_deg": 0.0,
+      "n_sn": 1,
+      "z_min": 0.329,
+      "z_max": 0.329,
+      "samples": [
+        "SDSS"
+      ],
+      "coverage": "ls_south"
+    },
+    {
+      "region": 161,
+      "ra": 318.199,
+      "dec": 0.916,
+      "radius_deg": 0.0,
+      "n_sn": 1,
+      "z_min": 0.145,
+      "z_max": 0.145,
+      "samples": [
+        "SDSS"
+      ],
+      "coverage": "ls_south"
+    },
+    {
+      "region": 162,
+      "ra": 53.595,
+      "dec": -1.123,
+      "radius_deg": 0.0,
+      "n_sn": 1,
+      "z_min": 0.132,
+      "z_max": 0.132,
+      "samples": [
+        "SDSS"
+      ],
+      "coverage": "ls_south"
+    },
+    {
+      "region": 163,
+      "ra": 336.833,
+      "dec": 1.031,
+      "radius_deg": 0.0,
+      "n_sn": 1,
+      "z_min": 0.149,
+      "z_max": 0.149,
+      "samples": [
+        "SDSS"
+      ],
+      "coverage": "ls_south"
+    },
+    {
+      "region": 50,
+      "ra": 163.284,
+      "dec": 57.201,
+      "radius_deg": 0.0,
+      "n_sn": 1,
+      "z_min": 0.361,
+      "z_max": 0.361,
+      "samples": [
+        "Pan-STARRS"
+      ],
+      "coverage": "ls_north"
+    },
+    {
+      "region": 166,
+      "ra": 31.83,
+      "dec": 1.252,
+      "radius_deg": 0.0,
+      "n_sn": 1,
+      "z_min": 0.174,
+      "z_max": 0.174,
+      "samples": [
+        "SDSS"
+      ],
+      "coverage": "ls_south"
+    },
+    {
+      "region": 167,
+      "ra": 49.049,
+      "dec": -0.601,
+      "radius_deg": 0.0,
+      "n_sn": 1,
+      "z_min": 0.18,
+      "z_max": 0.18,
+      "samples": [
+        "SDSS"
+      ],
+      "coverage": "ls_south"
+    },
+    {
+      "region": 48,
+      "ra": 185.138,
+      "dec": 46.666,
+      "radius_deg": 0.0,
+      "n_sn": 1,
+      "z_min": 0.133,
+      "z_max": 0.133,
+      "samples": [
+        "Pan-STARRS"
+      ],
+      "coverage": "ls_north"
+    },
+    {
+      "region": 169,
+      "ra": 336.716,
+      "dec": 0.506,
+      "radius_deg": 0.0,
+      "n_sn": 1,
+      "z_min": 0.106,
+      "z_max": 0.106,
+      "samples": [
+        "SDSS"
+      ],
+      "coverage": "ls_south"
+    },
+    {
+      "region": 143,
+      "ra": 345.025,
+      "dec": 0.538,
+      "radius_deg": 0.0,
+      "n_sn": 1,
+      "z_min": 0.179,
+      "z_max": 0.179,
+      "samples": [
+        "SDSS"
+      ],
+      "coverage": "ls_south"
+    }
+  ],
+  "forecast": {
+    "des_crosscheck_sigma": 4.0,
+    "union3_covered_sigma": 2.84,
+    "joint_sigma": 4.91,
+    "note": "DES-measured slope and randoms sigma_kappa(z); same estimator formula; DES cross-check should reproduce ~4"
+  }
+}

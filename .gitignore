@@ -32,3 +32,7 @@ notes/
 build/
 dist/
 !output/des_full/desi_impact.json
+data_union3/
+!output/union3/
+output/union3/*
+!output/union3/audit.json
