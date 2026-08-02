@@ -31,3 +31,4 @@ notes/
 .pytest_cache/
 build/
 dist/
+!output/des_full/desi_impact.json
