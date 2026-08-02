@@ -50,3 +50,7 @@ output/pantheon/*
 !output/pantheon/fit_summary.json
 !output/pantheon/gls_fit.json
 !output/union3/desi_leg.json
+!output/delta_sigma/
+output/delta_sigma/*
+!output/delta_sigma/closure_pred*.json
+!output/delta_sigma/mstar_vs_fastspecfit.json
