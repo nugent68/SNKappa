@@ -239,6 +239,7 @@ def run_region(row, sn, hm, est, rng, results, failures):
                               / (1.0 + row_sn.zHD))
         results.append({
             "CID": row_sn.CID, "sample": row_sn["sample"],
+            "row_index": int(row_sn.get("row_index", -1)),
             "region": int(row.region),
             "zHD": row_sn.zHD, "MU": row_sn.MU, "MUERR": row_sn.MUERR,
             "PROBIA": row_sn.PROBIA,
@@ -257,9 +258,24 @@ def run_region(row, sn, hm, est, rng, results, failures):
 
 
 def main():
+    global OUTDIR
+    import argparse
+    ap = argparse.ArgumentParser()
+    ap.add_argument("--hd", default=str(HD_CSV),
+                    help="input Hubble-diagram CSV (union3_prep/"
+                         "pantheon_prep schema)")
+    ap.add_argument("--outdir", default=str(OUTDIR))
+    ap.add_argument("--limit", type=int, default=0,
+                    help="process only the N largest regions (smoke test)")
+    args = ap.parse_args()
+    OUTDIR = Path(args.outdir)
+    stem = Path(args.hd).stem.replace("_hd", "")
     OUTDIR.mkdir(parents=True, exist_ok=True)
     rng = np.random.default_rng(20130901)
-    hd = pd.read_csv(HD_CSV)
+    hd = pd.read_csv(args.hd)
+    if "row_index" not in hd:
+        hd["row_index"] = np.arange(len(hd))
+    hd = hd.drop_duplicates("CID", keep="first")
     hd = hd[(hd.zHD > Z_MIN) & (hd.zHD < Z_SRC_MAX - 0.02)].reset_index(
         drop=True)
     n_deep = int((pd.read_csv(HD_CSV).zHD >= Z_SRC_MAX - 0.02).sum())
@@ -284,11 +300,6 @@ def main():
     est = make_estimator("nir1um_fsf", cosmo)
     log("shared HaloModel + estimator built")
 
-    import argparse
-    ap = argparse.ArgumentParser()
-    ap.add_argument("--limit", type=int, default=0,
-                    help="process only the N largest regions (smoke test)")
-    args = ap.parse_args()
     proc_iter = proc.sort_values("n_sn", ascending=False)
     if args.limit:
         proc_iter = proc_iter.head(args.limit)
@@ -315,8 +326,9 @@ def main():
     for zb, idx in res.groupby("zbin").groups.items():
         ww = 1.0 / res.loc[idx, "MUERR"] ** 2
         res.loc[idx, "hr"] -= np.average(res.loc[idx, "hr"], weights=ww)
-    res.to_csv(OUTDIR / "union3_kappa.csv", index=False)
-    log(f"saved {OUTDIR/'union3_kappa.csv'} ({len(res)} SNe; "
+    kappa_csv = OUTDIR / f"{stem}_kappa.csv"
+    res.to_csv(kappa_csv, index=False)
+    log(f"saved {kappa_csv} ({len(res)} SNe; "
         f"{len(failures)} regions failed)")
 
     # ---- fits (exclude clipped + cluster-targeted) ----------------------
@@ -332,9 +344,8 @@ def main():
         return [b, e, len(d)]
 
     log("=" * 64)
-    summary["slope_good"] = fit(good, "Union3 (field SNe)")
-    for s in ("SDSS", "Pan-STARRS", "SNLS", "ESSENCE", "DES3_Shallow",
-              "DES3_Deep"):
+    summary["slope_good"] = fit(good, f"{stem} (field SNe)")
+    for s in good["sample"].value_counts().head(6).index:
         d = good[good["sample"] == s]
         if len(d) > 30:
             summary[f"slope_{s}"] = fit(d, f"  {s}")
@@ -387,7 +398,7 @@ def main():
     # cross-survey check: same sightlines in the DES-SN5YR catalog
     des = pd.read_csv("output/des_full/des_all_kappa.csv")
     pairs = []
-    for _, r_ in good[good["sample"].str.startswith("DES3")].iterrows():
+    for _, r_ in good[good["sample"].str.startswith("DES")].iterrows():
         sep = angular_sep_arcsec(r_.HOST_RA, r_.HOST_DEC,
                                  des.HOST_RA.to_numpy(),
                                  des.HOST_DEC.to_numpy())
@@ -404,7 +415,7 @@ def main():
 
     # joint DES + Union3 (drop DES3 overlap + See-Change from Union3 side)
     desg = des[des.PROBIA > 0.9]
-    u3j = good[~good["sample"].str.startswith("DES3")]
+    u3j = good[~good["sample"].str.startswith("DES")]
     xj = np.concatenate([desg.kappa_ext, u3j.kappa_ext])
     yj = np.concatenate([desg.hr, u3j.hr])
     sj = np.concatenate([desg.MUERR, u3j.MUERR])

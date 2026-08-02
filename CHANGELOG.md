@@ -1,5 +1,33 @@
 # Changelog
 
+## 2026-08-02 — Pantheon+ capstone: GLS covariance, standardization test, DESI trio
+
+Pantheon+ (Scolnic et al. 2022) run through the generalized survey
+driver (`union3_full.py --hd/--outdir`; per-SN distances released, no
+Tripp needed; 907 sightlines, one genuinely-uncovered low-b region
+fails cleanly). Three capstone results:
+
+- **Full-covariance GLS slope** (new `fitting.gls_slope`, released
+  1701² stat+syst matrix): **−2.62 ± 0.79 (3.3σ)**, A = 1.21 ± 0.37 —
+  confirms the diagonal fit (−2.40 ± 0.62); errors grow only ~27%.
+  The "diagonal errors" caveat carried by all previous slopes retires:
+  calibration covariances neither create nor destroy the signal.
+- **Standardization independence at fixed κ**: 530 sightlines matched
+  to Union3 (κ correlation 0.993); slopes agree (−2.48 ± 0.66 vs
+  −2.76 ± 0.77) and the residual-difference regression is
+  **+0.08 ± 0.31** — the lensing signal is independent of the SN
+  standardization pipeline (SALT2/BBC vs Tripp-on-UNITY).
+- **DESI DR2 trio complete**: de-lensing shifts the evolving-DE
+  ΔΔχ² by +0.38 (DES leg, 4.19→4.24σ), +0.19 (Union3 leg,
+  3.76→3.79σ), −0.10 (Pantheon+ leg, 2.82→2.81σ). Lensing selection
+  does not materially modify the preference for ANY of the three SN
+  compilations.
+
+Standalone Pantheon+: slope −2.40 ± 0.63 (3.8σ), exact-prediction
+A = 1.08 ± 0.29, A_gal = 1.05 ± 0.49 / A_cl = 1.14 ± 0.36,
+permutation z = 2.86. Artifacts under `output/pantheon/` and
+`output/union3/desi_leg.json`; data in gitignored `data_pantheon/`.
+
 ## 2026-08-02 — Union3 predicted-κ measurement (first pass)
 
 Full survey-mode run on the Union3 compilation (Rubin et al. 2025, ApJ

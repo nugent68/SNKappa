@@ -75,3 +75,41 @@ def test_two_component_recovers_distinct_slopes():
     assert abs(b1 - (-2.0)) < 3 * e1
     assert abs(b2 - (-4.0)) < 3 * e2
     assert e1 < 1.0 and e2 < 2.5
+
+
+def test_gls_slope_correlated_noise():
+    """GLS must recover the slope AND the correct uncertainty under
+    block-correlated noise, where the diagonal fit's error is wrong;
+    with a diagonal matrix it must match the weighted fit exactly."""
+    import numpy as np
+    from snkappa.fitting import bootstrap_slope, gls_slope
+
+    rng = np.random.default_rng(9)
+    n, n_real = 400, 300
+    x = rng.normal(0, 0.01, n)
+    block = rng.integers(0, 20, n)          # 20 correlated survey blocks
+    sig = rng.uniform(0.1, 0.2, n)
+    C = np.diag(sig**2)
+    for bl in range(20):
+        m = np.flatnonzero(block == bl)
+        for i in m:
+            for j in m:
+                if i != j:
+                    C[i, j] = 0.5 * sig[i] * sig[j]
+    L = np.linalg.cholesky(C)
+    b_true = -2.0
+    ests, errs = [], []
+    for _ in range(n_real):
+        y = b_true * x + L @ rng.standard_normal(n)
+        b, e = gls_slope(x, y, C)
+        ests.append(b); errs.append(e)
+    ests = np.array(ests)
+    # unbiased and correctly calibrated error
+    assert abs(ests.mean() - b_true) < 3 * ests.std() / np.sqrt(n_real)
+    assert abs(np.mean(errs) / ests.std() - 1.0) < 0.15
+
+    # diagonal C reproduces the weighted (1/sigma) polyfit slope
+    y = b_true * x + rng.standard_normal(n) * sig
+    b_g, _ = gls_slope(x, y, np.diag(sig**2))
+    b_w = np.polyfit(x, y, 1, w=1.0 / sig)[0]
+    assert abs(b_g - b_w) < 1e-10

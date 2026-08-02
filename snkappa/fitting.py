@@ -20,6 +20,24 @@ def weighted_slope(x, y, sigma):
     return float(b), float(a)
 
 
+def gls_slope(x, y, C):
+    """Generalized least squares slope with intercept: y = b x + a,
+    Cov(y) = C (full matrix). Returns (b, sigma_b) from the parameter
+    covariance (X^T C^-1 X)^-1 via Cholesky solves. With C diagonal this
+    reproduces the weighted fit exactly; with the released SN stat+syst
+    covariance it is the fit the compilations' READMEs require."""
+    import scipy.linalg as sla
+    x = np.asarray(x, float); y = np.asarray(y, float)
+    C = np.asarray(C, float)
+    X = np.column_stack([x, np.ones_like(x)])
+    cf = sla.cho_factor(C, lower=True)
+    CiX = sla.cho_solve(cf, X)
+    A = X.T @ CiX
+    beta = np.linalg.solve(A, CiX.T @ y)
+    cov_p = np.linalg.inv(A)
+    return float(beta[0]), float(np.sqrt(cov_p[0, 0]))
+
+
 def two_component_slopes(x1, x2, y, sigma, rng, n_boot=2000):
     """Weighted fit y = b1*x1 + b2*x2 + c (rows scaled by 1/sigma, i.e.
     inverse-variance WLS); returns ((b1, err1), (b2, err2)) with bootstrap

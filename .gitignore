@@ -41,3 +41,12 @@ output/union3/*
 !output/union3/regions.csv
 !output/union3/fit_summary.json
 !output/union3/tripp_params.json
+data_pantheon/
+!output/pantheon/
+output/pantheon/*
+!output/pantheon/pantheon_hd.csv
+!output/pantheon/pantheon_kappa.csv
+!output/pantheon/regions.csv
+!output/pantheon/fit_summary.json
+!output/pantheon/gls_fit.json
+!output/union3/desi_leg.json
