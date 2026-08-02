@@ -1,5 +1,23 @@
 # Changelog
 
+Public record of how the analysis evolved, connecting every number in the
+manuscript to the commits and tracked artifacts that produced it. Code
+comments of the form `(TODO n.m)` refer to the review-checklist item
+numbers listed at the bottom of this file. NOTE: on 2026-08-02 the
+repository history was rewritten to excise DESI-internal measured
+DeltaSigma vectors inadvertently committed on 2026-07-10; commit hashes
+from that date forward changed (references below are the current ones).
+
+## 2026-08-02 — History scrub: DESI-internal ΔΣ vectors removed
+
+The closure JSONs had embedded the measured ds_meas/ds_err vectors of
+the DESI Lensing Without Borders v1.5 internal data products alongside
+our predictions — collaboration-internal data pending the DESI release.
+Tracked files replaced by prediction-only `closure_pred*.json`; the
+three original files removed from ALL history (git-filter-repo); cited
+hashes remapped. The derived closure ratios quoted in the manuscript
+remain subject to DESI publication-policy sign-off.
+
 ## 2026-08-02 — Pantheon+ capstone: GLS covariance, standardization test, DESI trio
 
 Pantheon+ (Scolnic et al. 2022) run through the generalized survey
@@ -55,11 +73,6 @@ from fits by design):
 Artifacts: `output/union3/` (hd, kappa catalog, regions, fit summary,
 Tripp params). Data: `data_union3/` (gitignored; MANIFEST.txt).
 
-Public record of how the analysis evolved, connecting every number in the
-manuscript to the commits and tracked artifacts that produced it. Code
-comments of the form `(TODO n.m)` refer to the review-checklist item
-numbers listed at the bottom of this file.
-
 ## 2026-08-01 — Measurement-improvement sprint (shear, robustness, moments, de-lensing)
 
 - **Shear + exact magnification**: tangential shear vector-summed
@@ -109,13 +122,13 @@ mock-based de-attenuation of the naive fit (0.79/0.68 ≈ 1.2). Estimator
 validated on synthetic latents at the observed kappa skewness (bias
 +2 ± 2% at skew 4.8). Artifacts: `output/des_full/latent_fit.json`.
 
-Also: two-component WLS amplitudes (2026-08-01, `073cd1b`):
+Also: two-component WLS amplitudes (2026-08-01, `0f7fac5`):
 A_gal = 0.85 ± 0.32, A_cl = 0.76 ± 0.27, components uncorrelated
 (r = 0.015); catalog gains kappa_gal_ext / kappa_cl_ext columns.
 
-## 2026-07-11 — Post-review reruns; all gates passed (`dc74d8b`)
+## 2026-07-11 — Post-review reruns; all gates passed (`01da651`)
 
-All published numbers regenerated after the `c652439` fixes:
+All published numbers regenerated after the `b0f3998` fixes:
 
 - Headline unchanged to quoted precision: slope dΔμ/dκ_ext = −1.71 ± 0.42,
   A = 0.786 ± 0.196 (the catalog-cut fix added only ~0.2% of galaxies per
@@ -130,7 +143,7 @@ All published numbers regenerated after the `c652439` fixes:
 - `output/des_full/attenuation.json` now tracked: λ_gal = 0.89; the paper
   adopts the mock-calibrated λ = 0.68 ± 0.09 → A_true ≈ 0.8–1.2.
 
-## 2026-07-10 — Cluster-tier excision + catalog fixes (`c652439`)
+## 2026-07-10 — Cluster-tier excision + catalog fixes (`b0f3998`)
 
 - The `--excise-host` robustness variant now also drops clusters with
   |z_cl − z_src| < 0.1(1+z_src): cluster-catalog redshift errors could
@@ -143,7 +156,7 @@ All published numbers regenerated after the `c652439` fixes:
   via z+W1).
 - DESI spec-z crossmatch resolves fiber collisions by distance.
 
-## 2026-07-10 — M*/L recalibration to the DESI mass scale (`da1ce3c`–`ce7fe02`)
+## 2026-07-10 — M*/L recalibration to the DESI mass scale (`da1ce3c`–`9eda5a9`)
 
 - Galaxy–galaxy lensing closure test (`scripts/delta_sigma_closure.py`):
   predicted ΔΣ for DESI DR1 BGS/LRG lens bins vs DES/KiDS/HSC/SDSS
