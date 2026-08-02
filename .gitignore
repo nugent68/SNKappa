@@ -36,3 +36,8 @@ data_union3/
 !output/union3/
 output/union3/*
 !output/union3/audit.json
+!output/union3/union3_hd.csv
+!output/union3/union3_kappa.csv
+!output/union3/regions.csv
+!output/union3/fit_summary.json
+!output/union3/tripp_params.json

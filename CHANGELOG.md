@@ -1,5 +1,32 @@
 # Changelog
 
+## 2026-08-02 — Union3 predicted-κ measurement (first pass)
+
+Full survey-mode run on the Union3 compilation (Rubin et al. 2025, ApJ
+986, 231 — the 3.8σ SN leg of DESI DR2), from the released UNITY inputs:
+Tripp-standardized residuals (`union3_prep.py`; α = 0.122, β = 2.57,
+per-sample σ_int), FoF survey regions (`snkappa/regions.py`; 212
+processed, 3 masked-edge singletons failed cleanly), cluster tier from
+the full local Wen & Han CDS table (VizieR-independent), z_src to 1.60.
+Results (1,213 field SNe; See-Change cluster-targeted sample excluded
+from fits by design):
+
+- slope dΔμ/dκ = **−2.10 ± 0.63 (3.4σ)** — beats the 2.8σ audit
+  forecast; exact-prediction fit A = 0.94 ± 0.29; two-component
+  A_gal = 0.67 ± 0.40, A_cl = 1.14 ± 0.38; permutation z = 2.45.
+  First predicted-κ lensing test of the PS1 (−3.83 ± 1.07, 3.6σ
+  standalone), SDSS, SNLS, and ESSENCE sightlines.
+- **Joint DES + Union3: A = 0.78 ± 0.17 (4.6σ)** (DES3 overlap removed
+  from the Union3 side).
+- **Cross-survey validation: κ correlation 0.994** on 109 DES3
+  sightlines predicted independently by both pipelines (different
+  catalogs fetches, z-grids, randoms).
+- See-Change (cluster-targeted): ⟨κ_ext⟩ = +0.0015 vs field +0.0004 —
+  elevated as selection predicts (modest because their targeting
+  clusters sit near the SN plane where lensing efficiency vanishes).
+Artifacts: `output/union3/` (hd, kappa catalog, regions, fit summary,
+Tripp params). Data: `data_union3/` (gitignored; MANIFEST.txt).
+
 Public record of how the analysis evolved, connecting every number in the
 manuscript to the commits and tracked artifacts that produced it. Code
 comments of the form `(TODO n.m)` refer to the review-checklist item

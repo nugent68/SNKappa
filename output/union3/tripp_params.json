@@ -1,0 +1,33 @@
+{
+  "alpha": 0.12158491898545198,
+  "beta": 2.5721733792660944,
+  "M": -19.046719597590275,
+  "gamma_mass_step": -0.01689969505131343,
+  "sig_int_by_sample": {
+    "Amanullah10": 0.01,
+    "CNIa02": 0.232,
+    "CSP": 0.12,
+    "CalanTololo": 0.103,
+    "CfA1": 0.107,
+    "CfA2": 0.136,
+    "CfA3": 0.16,
+    "CfA4": 0.249,
+    "DES3_Deep": 0.094,
+    "DES3_Shallow": 0.099,
+    "ESSENCE": 0.189,
+    "Foundation": 0.149,
+    "Knop03": 0.199,
+    "Krisciunas": 0.01,
+    "LOSS": 0.152,
+    "LSQ": 0.261,
+    "LSQ+LCO": 0.28,
+    "MCT": 0.301,
+    "NB99": 0.113,
+    "Pan-STARRS": 0.136,
+    "Riess07": 0.24,
+    "SDSS": 0.153,
+    "SNLS": 0.116,
+    "SuzukiRubin": 0.174,
+    "Tonry03": 0.01
+  }
+}
