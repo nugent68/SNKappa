@@ -58,3 +58,16 @@ data_boss_kids/
 !output/delta_sigma/boss_kids_meas.json
 !output/delta_sigma/boss_closure*.json
 !output/delta_sigma/desi_closure_summary.json
+!output/joint/
+output/joint/*
+!output/joint/joint_fit.json
+!output/union3/extra_stats.json
+!output/pantheon/extra_stats.json
+!output/union3/latent_fit.json
+!output/union3/latent_noise.csv
+!output/pantheon/latent_fit.json
+!output/pantheon/latent_noise.csv
+!output/figs_apj/
+output/figs_apj/*
+!output/figs_apj/paper_stats_apj.json
+!output/figs_apj/t1_top15.csv

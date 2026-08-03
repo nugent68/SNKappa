@@ -1,0 +1,53 @@
+{
+  "n_rows": 3564,
+  "n_unique": 2920,
+  "rows_by_compilation": {
+    "DES": 1450,
+    "PantheonP": 901,
+    "Union3": 1213
+  },
+  "shared_pairs": {
+    "DESxUnion3": 106,
+    "Union3xPantheonP": 529,
+    "DESxPantheonP": 112
+  },
+  "residual_corr": {
+    "DESxUnion3": 0.6975256984665782,
+    "Union3xPantheonP": 0.8768013044837607,
+    "DESxPantheonP": 0.8383764103939951
+  },
+  "joint_slope": [
+    -1.800156614802571,
+    0.35877578609601146
+  ],
+  "A_joint": [
+    0.829002757259805,
+    0.1652223553583793
+  ],
+  "joint_dmu_exact_A": [
+    0.7994106761487325,
+    0.15797460816968212
+  ],
+  "joint_two_component": {
+    "A_gal": [
+      0.8505363764491698,
+      0.25277200998150967
+    ],
+    "A_cl": [
+      0.8175454645688723,
+      0.22004429862557578
+    ]
+  },
+  "n_dedup": 2920,
+  "representative_sensitivity_slope_sd": 0.05246390051261801,
+  "stacked_gls_consistency": [
+    -1.8911605974538908,
+    0.3534568845732833
+  ],
+  "permutation": {
+    "n_perm": 2000,
+    "p_one_sided": 0.0005,
+    "null_sigma": 0.43275954553495016,
+    "z_equiv": 4.506211904209219
+  }
+}

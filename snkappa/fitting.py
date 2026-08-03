@@ -20,21 +20,29 @@ def weighted_slope(x, y, sigma):
     return float(b), float(a)
 
 
+def gls_coeffs(X, y, C, cho=None):
+    """Generalized least squares for an arbitrary design matrix X with
+    Cov(y) = C. Returns (beta, cov_beta). Pass a precomputed
+    scipy cho_factor via `cho` to reuse the factorization (e.g. inside
+    permutation loops)."""
+    import scipy.linalg as sla
+    X = np.asarray(X, float); y = np.asarray(y, float)
+    cf = sla.cho_factor(np.asarray(C, float), lower=True) \
+        if cho is None else cho
+    CiX = sla.cho_solve(cf, X)
+    A = X.T @ CiX
+    beta = np.linalg.solve(A, CiX.T @ y)
+    return beta, np.linalg.inv(A)
+
+
 def gls_slope(x, y, C):
     """Generalized least squares slope with intercept: y = b x + a,
     Cov(y) = C (full matrix). Returns (b, sigma_b) from the parameter
     covariance (X^T C^-1 X)^-1 via Cholesky solves. With C diagonal this
     reproduces the weighted fit exactly; with the released SN stat+syst
     covariance it is the fit the compilations' READMEs require."""
-    import scipy.linalg as sla
-    x = np.asarray(x, float); y = np.asarray(y, float)
-    C = np.asarray(C, float)
-    X = np.column_stack([x, np.ones_like(x)])
-    cf = sla.cho_factor(C, lower=True)
-    CiX = sla.cho_solve(cf, X)
-    A = X.T @ CiX
-    beta = np.linalg.solve(A, CiX.T @ y)
-    cov_p = np.linalg.inv(A)
+    x = np.asarray(x, float)
+    beta, cov_p = gls_coeffs(np.column_stack([x, np.ones_like(x)]), y, C)
     return float(beta[0]), float(np.sqrt(cov_p[0, 0]))
 
 

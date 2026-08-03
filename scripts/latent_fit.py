@@ -61,6 +61,83 @@ def rvar(a):
     return float((0.5 * (p84 - p16)) ** 2)
 
 
+def noise_for_sn(cfg, hm, est, df, members, cl, sn, rng, n_mc):
+    """Per-SN classical/Berkson noise variances (shared by the DES
+    field-group path and the Union3/Pantheon+ region path)."""
+    z_src = float(sn.zHD)
+    theta = angular_sep_arcsec(sn.HOST_RA, sn.HOST_DEC,
+                               df.ra.to_numpy(), df.dec.to_numpy())
+    in_ap = theta < des_full.APERTURE_ARCMIN * 60.0 + 30.0
+    df_ap = df[in_ap].reset_index(drop=True)
+    memb_ap = members[in_ap]
+    cfg.source.ra_src = float(sn.HOST_RA)
+    cfg.source.dec_src = float(sn.HOST_DEC)
+    cfg.source.z_src = z_src
+    cfg.montecarlo.n_mc = n_mc
+    eng = KappaEngine(cfg, cfg.cosmo, hm, est, df_ap)
+
+    cfg_cl = copy.deepcopy(cfg)
+    cfg_cl.halo_model.smhm_scatter_dex = 1e-4
+    cfg_cl.halo_model.c_scatter_dex = 1e-4
+    slo, shi = eng.phot_slo, eng.phot_shi
+    eng.phot_slo = np.full_like(slo, 1e-4)
+    eng.phot_shi = np.full_like(shi, 1e-4)
+    draws_cl = montecarlo.mc_kappa_raw(cfg_cl, eng, rng, memb_ap)
+    eng.phot_slo, eng.phot_shi = slo, shi
+    draws_tot = montecarlo.mc_kappa_raw(cfg, eng, rng, memb_ap)
+
+    cl_fg = cl[cl.z.to_numpy() < z_src - 0.02] if len(cl) else cl
+    nmc = min(n_mc, 48)
+    if len(cl_fg):
+        ck = clu.ClusterKappa(cfg, hm, cfg.cosmo, cl_fg)
+        cl_cl = np.array([ck.kappa_sum(
+            sn.HOST_RA, sn.HOST_DEC,
+            dlogm=rng.normal(0.0, cfg.clusters.mass_scatter_dex,
+                             len(ck.df))) for _ in range(nmc)])
+        cl_tot = ck.mc_kappa_sum(sn.HOST_RA, sn.HOST_DEC, rng, nmc)
+    else:
+        cl_cl = cl_tot = np.zeros(nmc)
+    return {"CID": sn.CID, "zHD": z_src,
+            "rvar_gal_cl": rvar(draws_cl), "rvar_gal_tot": rvar(draws_tot),
+            "rvar_cl_cl": rvar(cl_cl), "rvar_cl_tot": rvar(cl_tot),
+            "var_zp": (sn.rand_sig ** 2) / max(int(sn.n_rand_ok), 1)}
+
+
+def stage_noise_survey(args):
+    """Per-SN noise variances for a region-table survey (union3/pantheon),
+    mirroring stage_noise but looping the survey's regions.csv."""
+    import union3_full as uf
+
+    outdir = Path(f"output/{args.survey}")
+    res = pd.read_csv(outdir / f"{args.survey}_kappa.csv")
+    reg = pd.read_csv(outdir / "regions.csv").set_index("region")
+    rng = np.random.default_rng(27182)
+    cosmo = uf.make_cfg((0.0, 0.0), 1.0, 200).cosmo
+    hm = HaloModel(uf.HaloModelConfig(), cosmo, uf.Z_SRC_MAX)
+    est = make_estimator("nir1um_fsf", cosmo)
+    rows = []
+    for rid, grp in res.groupby("region"):
+        rrow = reg.loc[rid]
+        cfg0 = uf.make_cfg((rrow.ra, rrow.dec),
+                           max(rrow.radius_deg + 0.25, 0.45), 200)
+        tap = TapClient(cfg0.data.tap_url, cfg0.data.cache_dir)
+        df = catalog.clean_and_merge(cfg0,
+                                     *catalog.fetch_regional(cfg0, tap))
+        cl = (uf.local_clusters((rrow.ra, rrow.dec),
+                                catalog.region_radius_deg(cfg0))
+              if uf.WH_LOCAL.exists() else
+              pd.DataFrame(columns=["name", "ra", "dec", "z", "m200"]))
+        members = (clu.assign_members(cfg0, df, cl, hm) if len(cl)
+                   else np.zeros(len(df), dtype=bool))
+        for _, sn in grp.iterrows():
+            rows.append(noise_for_sn(cfg0, hm, est, df, members, cl,
+                                     sn, rng, args.n_mc))
+        if len(rows) % 200 < len(grp):
+            log(f"  {args.survey}: {len(rows)}/{len(res)} SNe")
+    pd.DataFrame(rows).to_csv(outdir / "latent_noise.csv", index=False)
+    log(f"saved {outdir / 'latent_noise.csv'} ({len(rows)} SNe)")
+
+
 def stage_noise(args):
     res = pd.read_csv("output/des_full/des_all_kappa.csv")
     rng = np.random.default_rng(27182)
@@ -149,14 +226,30 @@ def stage_noise(args):
     log(f"saved {NOISE_CSV}")
 
 
+def survey_paths(survey):
+    """(kappa_csv, noise_csv, fit_json) for a survey."""
+    if survey == "des":
+        return (Path("output/des_full/des_all_kappa.csv"), NOISE_CSV,
+                FIT_JSON)
+    o = Path(f"output/{survey}")
+    return (o / f"{survey}_kappa.csv", o / "latent_noise.csv",
+            o / "latent_fit.json")
+
+
 def load_merged(csv_path="output/des_full/des_all_kappa.csv",
-                prob_cut=0.9):
-    """Catalog merged with the per-SN noise table (P(Ia) cut applied)."""
+                prob_cut=0.9, noise_csv=None):
+    """Catalog merged with the per-SN noise table; P(Ia) cut plus the
+    clipped / cluster-targeted exclusions where those columns exist."""
     res = pd.read_csv(csv_path)
-    noise = pd.read_csv(NOISE_CSV)
+    noise = pd.read_csv(noise_csv if noise_csv is not None else NOISE_CSV)
     d = res.merge(noise[["CID", "rvar_gal_cl", "rvar_gal_tot",
                          "rvar_cl_cl", "rvar_cl_tot", "var_zp"]], on="CID")
-    return d[d.PROBIA > prob_cut].reset_index(drop=True)
+    d = d[d.PROBIA > prob_cut]
+    if "clipped" in d:
+        d = d[~d.clipped.astype(bool)]
+    if "cluster_targeted" in d:
+        d = d[~d.cluster_targeted.astype(bool)]
+    return d.reset_index(drop=True)
 
 
 def prep_arrays(d, afid, delensed_weights=False):
@@ -188,9 +281,10 @@ def prep_arrays(d, afid, delensed_weights=False):
 
 
 def stage_fit(args):
-    d = load_merged()
+    kcsv, ncsv, fjson = survey_paths(args.survey)
+    d = load_merged(kcsv, noise_csv=ncsv)
     rng = np.random.default_rng(31415)
-    log(f"fitting {len(d)} SNe (P(Ia)>0.9) with per-SN noise variances")
+    log(f"fitting {len(d)} {args.survey} SNe with per-SN noise variances")
     x, y, zbin, s2_cl, s2_bk, sig2_y, rb = prep_arrays(d, args.afid)
     s2_all = s2_cl + s2_bk
 
@@ -234,8 +328,8 @@ def stage_fit(args):
                     "SMHM/c intrinsic scatter, miscentering; residual "
                     "only); alpha profiled, flat prior on A; errors = "
                     "posterior std (+) bootstrap re-estimating tau_b")}
-    FIT_JSON.write_text(json.dumps(out, indent=2, default=float))
-    log(f"saved {FIT_JSON}")
+    fjson.write_text(json.dumps(out, indent=2, default=float))
+    log(f"saved {fjson}")
 
 
 def _quick_A(d, afid, delensed_weights=False):
@@ -316,6 +410,8 @@ def main():
                     help="permutation null + jackknife + variant rows "
                          "for the latent A")
     ap.add_argument("--n-perm", type=int, default=2000)
+    ap.add_argument("--survey", default="des",
+                    choices=("des", "union3", "pantheon"))
     ap.add_argument("--n-mc", type=int, default=64)
     ap.add_argument("--limit", type=int, default=0,
                     help="stage 1: max SNe per group (0 = all; for timing)")
@@ -323,8 +419,13 @@ def main():
     ap.add_argument("--afid", type=float, default=0.79)
     args = ap.parse_args()
     if args.noise:
-        stage_noise(args)
+        if args.survey == "des":
+            stage_noise(args)
+        else:
+            stage_noise_survey(args)
     elif args.robustness:
+        if args.survey != "des":
+            raise SystemExit("--robustness is the DES variant suite")
         stage_robustness(args)
     else:
         stage_fit(args)
