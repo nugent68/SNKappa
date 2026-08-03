@@ -449,8 +449,64 @@
   "mean_s2_berkson": 1.603134600290962e-05,
   "note": "empirical-Bayes EIV fit (snkappa.latent): Gaussian per-z-bin latent prior; per-SN MC noise split into classical (M* measurement, richness mass, zero point; drives shrinkage) and Berkson (photo-z p(z), SMHM/c intrinsic scatter, miscentering; residual only); alpha profiled, flat prior on A; errors = posterior std (+) bootstrap re-estimating tau_b"
  },
- "latent_union3": null,
- "latent_pantheon": null,
+ "latent_union3": {
+  "n_sn": 1213,
+  "afid": 0.79,
+  "n_boot": 200,
+  "single": {
+   "A": 0.6446855883380683,
+   "A_err_post": 0.620915426224231,
+   "A_err_boot": 0.5088126027780994,
+   "A_err": 0.8027616279251534,
+   "mean_reliability": 0.9128649850025288
+  },
+  "single_all_classical_bracket": {
+   "A": 0.7038441928442472,
+   "A_err_post": 0.7728094126178222,
+   "A_err_boot": 0.0,
+   "A_err": 0.7728094126178222,
+   "mean_reliability": 0.8137103354102254
+  },
+  "two_component": {
+   "A_gal": 0.39269177035820413,
+   "A_gal_err": 0.8102745746656738,
+   "A_cl": 0.8426308170714341,
+   "A_cl_err": 1.1659194718198327,
+   "corr": 0.0034642328339231218
+  },
+  "mean_s2_classical": 1.5207277187844524e-05,
+  "mean_s2_berkson": 1.4735207033137779e-05,
+  "note": "empirical-Bayes EIV fit (snkappa.latent): Gaussian per-z-bin latent prior; per-SN MC noise split into classical (M* measurement, richness mass, zero point; drives shrinkage) and Berkson (photo-z p(z), SMHM/c intrinsic scatter, miscentering; residual only); alpha profiled, flat prior on A; errors = posterior std (+) bootstrap re-estimating tau_b"
+ },
+ "latent_pantheon": {
+  "n_sn": 901,
+  "afid": 0.79,
+  "n_boot": 200,
+  "single": {
+   "A": 0.775205128000886,
+   "A_err_post": 0.7472279196217972,
+   "A_err_boot": 0.28761404892248793,
+   "A_err": 0.8006693481081353,
+   "mean_reliability": 0.9289222376439393
+  },
+  "single_all_classical_bracket": {
+   "A": 1.0947622990055104,
+   "A_err_post": 1.0001676130928883,
+   "A_err_boot": 0.0,
+   "A_err": 1.0001676130928883,
+   "mean_reliability": 0.7988957142205549
+  },
+  "two_component": {
+   "A_gal": 0.9545682992661231,
+   "A_gal_err": 1.0217618817026226,
+   "A_cl": 0.7208320067071268,
+   "A_cl_err": 0.9685517978846805,
+   "corr": 0.0034094724734205746
+  },
+  "mean_s2_classical": 9.996479602743335e-06,
+  "mean_s2_berkson": 1.5199535836531577e-05,
+  "note": "empirical-Bayes EIV fit (snkappa.latent): Gaussian per-z-bin latent prior; per-SN MC noise split into classical (M* measurement, richness mass, zero point; drives shrinkage) and Berkson (photo-z p(z), SMHM/c intrinsic scatter, miscentering; residual only); alpha profiled, flat prior on A; errors = posterior std (+) bootstrap re-estimating tau_b"
+ },
  "union3_extra": {
   "slope": -2.095938775558843,
   "block_bootstrap": {
@@ -1528,6 +1584,16 @@
    "label": "DES latent EIV",
    "A": 1.3833930658145235,
    "err": 0.5437007897859407
+  },
+  {
+   "label": "U3 latent EIV",
+   "A": 0.6446855883380683,
+   "err": 0.8027616279251534
+  },
+  {
+   "label": "P+ latent EIV",
+   "A": 0.775205128000886,
+   "err": 0.8006693481081353
   },
   {
    "label": "JOINT (2920 sightlines)",
