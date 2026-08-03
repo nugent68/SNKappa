@@ -8,6 +8,20 @@ repository history was rewritten to excise DESI-internal measured
 DeltaSigma vectors inadvertently committed on 2026-07-10; commit hashes
 from that date forward changed (references below are the current ones).
 
+## 2026-08-02 — Validation (v) re-anchored on a fully public closure
+
+Measured ΔΣ for BOSS DR12 LOWZ/CMASS lenses with the public KiDS-Legacy
+DR5 shear catalog (`boss_kids_measure.py`, dsigma recipe, 100-field
+jackknife; little-h conventions converted explicitly) and closed the
+halo chain over the identical lenses (`boss_closure.py`):
+A_1h = 0.94 ± 0.04 / 1.07 ± 0.06 (LOWZ z 0.15–0.43) and 1.18 ± 0.05 /
+1.16 ± 0.06 (CMASS z 0.43–0.70) for the fiducial chain; legacy constant
+M*/L gives 1.9–2.1 (the mass-scale diagnosis now stands on public data
+alone); naive SMHM inversion 0.55–0.62 (excluded). Matches the
+DESI-internal LWB pattern; the manuscript's validation (v) now cites
+only public, end-to-end reproducible inputs and the DESI
+publication-policy dependency is removed.
+
 ## 2026-08-02 — History scrub: DESI-internal ΔΣ vectors removed
 
 The closure JSONs had embedded the measured ds_meas/ds_err vectors of
