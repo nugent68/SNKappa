@@ -71,3 +71,11 @@ output/joint/*
 output/figs_apj/*
 !output/figs_apj/paper_stats_apj.json
 !output/figs_apj/t1_top15.csv
+data_nir/
+!output/nir_video/
+output/nir_video/*
+!output/nir_video/*.json
+!output/nir_video/*.csv
+!output/nir_video/union3/
+!output/nir_video/pantheon/
+6a4fed807812a81aaad977bb/

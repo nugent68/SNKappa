@@ -34,6 +34,11 @@ from .kappa import angular_sep_arcsec, sigma_crit_msun_mpc2
 ARCSEC_PER_RAD = 206264.806
 R500_OVER_R200 = 0.66   # NFW c200 ~ 5
 
+# bands forwarded to the stellar-mass estimator when present in the catalog
+# (y/j/h/ks are the deep-NIR columns attached by snkappa.nir in the
+# VIDEO/UltraVISTA fields; absent columns are simply skipped)
+MAG_BANDS = ("g", "r", "i", "z", "y", "j", "h", "ks", "w1")
+
 
 class BatchEngine:
     """Halo tables built once; Sigma_crit / photo-z truncation set per z_src.
@@ -68,7 +73,7 @@ class BatchEngine:
         self.s_z = s.z_spec.to_numpy(dtype=float)
         ib = hm.zbin_index(self.s_z)
         mags = {b: s[f"mag_{b}"].to_numpy(float)
-                for b in ("g", "r", "i", "z", "w1") if f"mag_{b}" in s}
+                for b in MAG_BANDS if f"mag_{b}" in s}
         logms = est.logmstar(mags, hm.zbins[ib])
         rhos, rs, tau = hm.halo_params(logms, ib)
         self.s_ib = ib
@@ -84,7 +89,7 @@ class BatchEngine:
         self.p_ths = np.empty((n, zc.size), np.float32)
         self.p_tau = np.empty((n, zc.size), np.float32)
         magp = {b: p[f"mag_{b}"].to_numpy(float)
-                for b in ("g", "r", "i", "z", "w1") if f"mag_{b}" in p}
+                for b in MAG_BANDS if f"mag_{b}" in p}
         for j, zcj in enumerate(zc):
             lm = est.logmstar(magp, np.full(n, zcj))
             rhos, rs, tau = hm.halo_params(lm, np.full(n, izc[j]))

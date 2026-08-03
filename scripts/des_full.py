@@ -183,6 +183,11 @@ def main():
         if args.no_specz:
             zpix = zpix.iloc[0:0]     # variant 1.3: pretend DESI never existed
         df = catalog.clean_and_merge(cfg, df_raw, zpix)
+        if args.mstar_method.startswith("nir_direct"):
+            from snkappa.nir import attach_nir
+            df = attach_nir(df)
+            log(f"  deep-NIR photometry attached: "
+                f"{df.attrs['n_nir_matched']} of {len(df)} galaxies")
         n_spec = int(df.z_spec.notna().sum())
         log(f"  catalog: {len(df)} galaxies ({n_spec} spec-z)")
         cl = clu.fetch_clusters(cfg, lambda u: TapClient(u, cfg.data.cache_dir))
@@ -279,6 +284,13 @@ def main():
         def interp(arr, i, t):
             return (1 - t) * arr[i, 0] + t * (arr[i, 1] if t > 0 else 0.0)
 
+        # deep-NIR availability per galaxy (frac_nir bookkeeping)
+        has_nir = np.zeros(len(df), dtype=bool)
+        for b in ("y", "j", "h", "ks"):
+            if f"mag_{b}" in df:
+                has_nir |= np.isfinite(df[f"mag_{b}"].to_numpy(float))
+        gal_ra = df.ra.to_numpy(); gal_dec = df.dec.to_numpy()
+
         for i, row in sn.iterrows():
             t = t_int[i]
             lo, hi = k_lo[i], k_hi[i]
@@ -320,6 +332,10 @@ def main():
                 "n_rand_ok": int(rra.size),
                 "area_frac": afrac, "area_flag": afrac < AREA_FLAG_MIN,
                 "cl_dz_min_2am": cl_dz,
+                "frac_nir": float(has_nir[
+                    angular_sep_arcsec(row.HOST_RA, row.HOST_DEC,
+                                       gal_ra, gal_dec) < r_out].mean()
+                    if len(df) else 0.0),
                 "n_spec_region": n_spec})
 
     res = pd.DataFrame(results)

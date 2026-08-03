@@ -120,6 +120,9 @@ def make_cfg(center, annulus_outer, n_rand):
     )
 
 
+MSTAR_METHOD = ["nir1um_fsf"]   # set from --mstar-method in main
+
+
 def run_region(row, sn, hm, est, rng, results, failures):
     center = (row.ra, row.dec)
     rad = row.radius_deg
@@ -127,6 +130,11 @@ def run_region(row, sn, hm, est, rng, results, failures):
     cfg = make_cfg(center, max(rad + 0.25, 0.45), n_rand)
     tap = TapClient(cfg.data.tap_url, cfg.data.cache_dir)
     df = catalog.clean_and_merge(cfg, *catalog.fetch_regional(cfg, tap))
+    if MSTAR_METHOD[0].startswith("nir_direct"):
+        from snkappa.nir import attach_nir
+        df = attach_nir(df)
+        log(f"  region {row.region}: deep-NIR attached "
+            f"({df.attrs['n_nir_matched']}/{len(df)})")
     if WH_LOCAL.exists():
         cl = local_clusters(center, catalog.region_radius_deg(cfg))
         cl_ok = True
@@ -215,6 +223,12 @@ def run_region(row, sn, hm, est, rng, results, failures):
     def interp(arr, i, t):
         return (1 - t) * arr[i, 0] + t * (arr[i, 1] if t > 0 else 0.0)
 
+    # deep-NIR availability per galaxy (frac_nir bookkeeping)
+    has_nir = np.zeros(len(df), dtype=bool)
+    for b in ("y", "j", "h", "ks"):
+        if f"mag_{b}" in df:
+            has_nir |= np.isfinite(df[f"mag_{b}"].to_numpy(float))
+
     for i in range(n_sn):
         row_sn = sn.iloc[i]
         t = t_int[i]; lo, hi = k_lo[i], k_hi[i]
@@ -254,7 +268,11 @@ def run_region(row, sn, hm, est, rng, results, failures):
             "dmu_pred": dmu_raw - zp_dmu,
             "zbin": ZSRC_CENTERS[lo if t < 0.5 else hi],
             "rand_mean": zp, "rand_sig": sig, "n_rand_ok": int(rra.size),
-            "area_frac": afrac, "area_flag": afrac < AREA_FLAG_MIN})
+            "area_frac": afrac, "area_flag": afrac < AREA_FLAG_MIN,
+            "frac_nir": float(has_nir[
+                angular_sep_arcsec(row_sn.HOST_RA, row_sn.HOST_DEC,
+                                   df.ra.to_numpy(), df.dec.to_numpy())
+                < r_out].mean() if len(df) else 0.0)})
 
 
 def main():
@@ -267,7 +285,14 @@ def main():
     ap.add_argument("--outdir", default=str(OUTDIR))
     ap.add_argument("--limit", type=int, default=0,
                     help="process only the N largest regions (smoke test)")
+    ap.add_argument("--mstar-method", default="nir1um_fsf",
+                    help="stellar-mass estimator (nir_direct_fsf attaches "
+                         "deep-NIR photometry from data_nir/)")
+    ap.add_argument("--regions", default="",
+                    help="comma-separated region ids to process "
+                         "(default: all)")
     args = ap.parse_args()
+    MSTAR_METHOD[0] = args.mstar_method
     OUTDIR = Path(args.outdir)
     stem = Path(args.hd).stem.replace("_hd", "")
     OUTDIR.mkdir(parents=True, exist_ok=True)
@@ -297,10 +322,14 @@ def main():
 
     cosmo = make_cfg((0.0, 0.0), 1.0, 200).cosmo
     hm = HaloModel(HaloModelConfig(), cosmo, Z_SRC_MAX)
-    est = make_estimator("nir1um_fsf", cosmo)
+    est = make_estimator(args.mstar_method, cosmo)
     log("shared HaloModel + estimator built")
 
     proc_iter = proc.sort_values("n_sn", ascending=False)
+    if args.regions:
+        ids = {int(x) for x in args.regions.split(",")}
+        proc_iter = proc_iter[proc_iter.region.isin(ids)]
+        log(f"--regions filter: {len(proc_iter)} regions selected")
     if args.limit:
         proc_iter = proc_iter.head(args.limit)
 

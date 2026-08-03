@@ -1,5 +1,41 @@
 # Changelog
 
+## 2026-08-03 — Deep-NIR mass upgrade: VIDEO DR5 + UltraVISTA (COSMOS2020)
+
+The rest-1 µm estimator no longer interpolates across the 1.6 µm bump
+where deep NIR photometry exists. Public data only, laptop-only run.
+- **Data** (`nir_fetch.py` → gitignored `data_nir/`, audit tracked):
+  VIDEO DR5 ZYJHKs (ESO TAP, AB — verified empirically) for XMM-LSS/
+  CDFS/ES1 + COSMOS2020 Classic UltraVISTA YJHKs (VizieR). Footprints
+  hold 52%/35%/32% of the DES/U3/P+ weighted signal; LS-foreground
+  match completeness 97.7–98.1% (VIDEO), 93.9% (COSMOS; bright-star
+  mask holes — hybrid fallback covers them).
+- **Estimator** (`snkappa/stellar.py` `NirDirect`/`NirDirectFSF`,
+  `snkappa/nir.py`, `mstar_method: nir_direct_fsf`): bracketing-band
+  ladder z/Y/J/H/Ks/W1 at (1+z) µm; exact `nir1um_fsf` fallback
+  without NIR; FSF mass scale transferred via a dedicated sigmoid
+  recal (`snkappa/data/nir_direct_fsf_recal.json`, 19,430 DESI-overlap
+  galaxies). 8 new unit tests (51 total).
+- **Validation** (`nir_validate.py` → `output/nir_video/
+  mstar_validation.json`): removes **0.095 dex of scatter in
+  quadrature** vs independent CIGALE masses (0.118 vs COSMOS2020
+  LePhare); foreground z 0.8–1.1 NMAD 0.48→0.38.
+- **κ reruns** (`des_full.py --groups X,C,E --variant nir`,
+  `union3_full.py --mstar-method/--regions`, new `frac_nir` column):
+  DES X/C/E 1,334 SNe, U3 373, P+ 315; cross-pipeline DES3 corr
+  0.99; out-of-footprint sightlines unchanged (corr 0.997).
+- **Improvement** (`nir_improvement.py` → `improvement.json`):
+  exact-Δμ amplitudes shift toward unity in all three samples
+  (DES 0.889→0.907, U3 0.900→0.933, P+ 0.706→0.741); classical
+  latent noise ×0.70 (×0.55 in-footprint); the old predictions carry
+  excess mass-error variance b_new_on_old = 0.92/0.96/0.94 (galaxy
+  tier alone 0.69/0.89/0.81) on fully-covered sightlines —
+  correlated-error attenuation the independent-jitter MC cannot see,
+  empirically corroborating the mock λ_mock = 0.68 < analytic 0.89.
+  Gains are accuracy (smaller attenuation correction), not statistical
+  precision (SN-scatter limited). Euclid Y/J/H extends this
+  footprint-wide. Manuscript untouched pending PI review.
+
 ## 2026-08-02 — Unified ApJ analysis: joint amplitude across three compilations
 
 New for the full-length ApJ paper (sn_lensing_apj.tex on Overleaf):

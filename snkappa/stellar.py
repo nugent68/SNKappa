@@ -186,6 +186,143 @@ class Nir1umFSF(Nir1um):
         return np.clip(m, LOGM_MIN, LOGM_MAX)
 
 
+class NirDirect(Nir1um):
+    """Rest-frame 1 um mass with the deep-NIR band ladder (VIDEO/UltraVISTA).
+
+    Same physics as Nir1um, but the observed wavelength of rest 1 um,
+    lambda_t = (1+z) um, is interpolated between the two nearest AVAILABLE
+    bands of the ladder z/Y/J/H/Ks/W1 instead of always spanning the full
+    z <-> W1 baseline. At z = 0.1-1.15 the bracketing pair is typically
+    J <-> H or H <-> Ks -- a ~0.4-0.9 um baseline that no longer straddles
+    the rest-1.6 um bump, removing the dominant interpolation error of the
+    two-point method. Galaxies without deep-NIR photometry (outside the
+    VIDEO/UltraVISTA footprints, or in mask holes) automatically reduce to
+    the exact Nir1um z <-> W1 behavior; galaxies without W1 fall back to
+    Taylor2011 as before.
+    """
+
+    # observed effective wavelengths (um): LS z, VISTA Y/J/H/Ks, WISE W1.
+    # VIDEO's own Z band is ignored -- LS z covers the same wavelength and
+    # keeping one z avoids column collisions.
+    LADDER = (("z", 0.92), ("y", 1.02), ("j", 1.25),
+              ("h", 1.65), ("ks", 2.15), ("w1", 3.4))
+
+    def _interp_1um(self, mags, z):
+        """(m_t, used_nir): apparent AB mag at (1+z) um via bracketing-band
+        power-law interpolation, and whether a deep-NIR band entered."""
+        m_z, z = np.broadcast_arrays(np.asarray(mags["z"], dtype=float),
+                                     np.asarray(z, dtype=float))
+        m_z = np.atleast_1d(m_z); z = np.atleast_1d(z)
+        lam_t = np.clip(1.0 * (1.0 + z), self.LAM_Z, self.LAM_W1)
+
+        n = m_z.shape[0]
+        band_mags, band_lams = [], []
+        for b, lam in self.LADDER:
+            m = np.asarray(mags.get(b, np.nan), dtype=float)
+            band_mags.append(np.broadcast_to(m, m_z.shape).astype(float))
+            band_lams.append(lam)
+        band_mags = np.vstack(band_mags)          # (n_band, N)
+        avail = np.isfinite(band_mags)
+
+        lo_lam = np.full(n, -np.inf); lo_idx = np.zeros(n, dtype=int)
+        hi_lam = np.full(n, np.inf); hi_idx = np.zeros(n, dtype=int)
+        has_lo = np.zeros(n, dtype=bool); has_hi = np.zeros(n, dtype=bool)
+        for k, lam in enumerate(band_lams):
+            sel = avail[k] & (lam <= lam_t + 1e-9) & (lam > lo_lam)
+            lo_lam[sel] = lam; lo_idx[sel] = k; has_lo[sel] = True
+            sel = avail[k] & (lam >= lam_t - 1e-9) & (lam < hi_lam)
+            hi_lam[sel] = lam; hi_idx[sel] = k; has_hi[sel] = True
+
+        rows = np.arange(n)
+        m_lo = band_mags[lo_idx, rows]
+        m_hi = band_mags[hi_idx, rows]
+        same = has_lo & has_hi & (lo_idx == hi_idx)
+        with np.errstate(divide="ignore", invalid="ignore"):
+            frac = np.log(lam_t / lo_lam) / np.log(hi_lam / lo_lam)
+            m_t = np.where(same, m_lo, m_lo + frac * (m_hi - m_lo))
+        m_t = np.where(has_lo & has_hi, m_t, np.nan)
+        nir_bands = {1, 2, 3, 4}  # ladder indices of y/j/h/ks
+        used_nir = (np.isin(lo_idx, list(nir_bands)) & has_lo) \
+            | (np.isin(hi_idx, list(nir_bands)) & has_hi & ~same)
+        used_nir &= np.isfinite(m_t)
+        return m_t, used_nir
+
+    def logmstar_flagged(self, mags, z):
+        """(logM*, used_nir) -- the flag drives per-galaxy recalibration
+        choice in NirDirectFSF and the frac_nir bookkeeping in drivers."""
+        z = np.asarray(z, dtype=float)
+        m_t, used_nir = self._interp_1um(mags, z)
+        zb = np.broadcast_to(z, m_t.shape)
+        dm = self.cosmo.distmod(np.clip(zb, 1e-3, None)).value
+        m_abs = m_t - dm + 2.5 * np.log10(1.0 + zb)
+        logm_nir = (np.log10(self.ML_1UM)
+                    - 0.4 * (m_abs - self.MSUN_1UM_AB))
+        logm = np.where(np.isfinite(logm_nir), logm_nir,
+                        self._taylor.logmstar(mags, zb))
+        return np.clip(logm, LOGM_MIN, LOGM_MAX), used_nir
+
+    def logmstar(self, mags, z):
+        return self.logmstar_flagged(mags, z)[0]
+
+
+class _RecalTable:
+    """Sigmoid mass-scale recalibration table (same family as Nir1umFSF)."""
+
+    def __init__(self, path):
+        import json
+        t = json.loads(path.read_text())
+        self.c0 = float(t["c0"]); self.m0 = float(t["m0"])
+        self.w = float(t["w"])
+        self.zn = np.asarray(t["z_nodes"], dtype=float)
+        self.an = np.asarray(t["a_nodes"], dtype=float)
+
+    def delta(self, m, z):
+        a = np.interp(np.clip(z, self.zn[0], self.zn[-1]), self.zn, self.an)
+        return self.c0 + a / (1.0 + np.exp(-(m - self.m0) / self.w))
+
+    def apply(self, raw, z):
+        m = raw
+        for _ in range(3):
+            m = raw + self.delta(m, z)
+        return m
+
+
+class NirDirectFSF(NirDirect):
+    """NirDirect recalibrated to the DESI DR1 FastSpecFit mass scale.
+
+    Two recalibration tables, chosen per galaxy: deep-NIR-interpolated
+    galaxies use the ladder-specific table (nir_direct_fsf_recal.json,
+    built by scripts/nir_validate.py from the XMM-LSS + COSMOS DESI
+    overlap); z <-> W1 fallback galaxies use the original Nir1umFSF table,
+    so outside the deep-NIR footprints this estimator is EXACTLY
+    nir1um_fsf. Until the NIR table is built, NIR galaxies also use the
+    original table (flagged via .has_nir_table).
+    """
+
+    def __init__(self, cosmo, table_path=None, nir_table_path=None):
+        super().__init__(cosmo)
+        from pathlib import Path
+        base = Path(__file__).parent / "data"
+        self._recal_w1 = _RecalTable(
+            Path(table_path) if table_path
+            else base / "nir1um_fsf_recal.json")
+        p_nir = (Path(nir_table_path) if nir_table_path
+                 else base / "nir_direct_fsf_recal.json")
+        self.has_nir_table = p_nir.exists()
+        self._recal_nir = _RecalTable(p_nir) if self.has_nir_table \
+            else self._recal_w1
+
+    def logmstar_flagged(self, mags, z):
+        raw, used_nir = super().logmstar_flagged(mags, z)
+        z = np.broadcast_to(np.asarray(z, dtype=float), raw.shape)
+        m = np.where(used_nir, self._recal_nir.apply(raw, z),
+                     self._recal_w1.apply(raw, z))
+        return np.clip(m, LOGM_MIN, LOGM_MAX), used_nir
+
+    def logmstar(self, mags, z):
+        return self.logmstar_flagged(mags, z)[0]
+
+
 def make_estimator(name: str, cosmo) -> StellarMassEstimator:
     if name == "taylor2011":
         return Taylor2011(cosmo)
@@ -195,4 +332,8 @@ def make_estimator(name: str, cosmo) -> StellarMassEstimator:
         return Nir1um(cosmo)
     if name == "nir1um_fsf":
         return Nir1umFSF(cosmo)
+    if name == "nir_direct":
+        return NirDirect(cosmo)
+    if name == "nir_direct_fsf":
+        return NirDirectFSF(cosmo)
     raise ValueError(f"Unknown mstar_method: {name}")
