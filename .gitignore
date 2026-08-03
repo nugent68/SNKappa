@@ -57,3 +57,4 @@ output/delta_sigma/*
 data_boss_kids/
 !output/delta_sigma/boss_kids_meas.json
 !output/delta_sigma/boss_closure*.json
+!output/delta_sigma/desi_closure_summary.json

@@ -1,0 +1,225 @@
+{
+ "provenance": "DESI DR1 Lensing Without Borders v1.5 measured DeltaSigma (Heydenreich et al. 2025, arXiv:2506.21677), used in advance of public release by permission of S. Heydenreich / DESI Lensing WG; one-halo amplitude ratios only -- raw vectors not distributed. Prediction: SNKappa halo chain (scripts/delta_sigma_closure.py, run 2026-07-10 on NERSC).",
+ "fiducial_nir1um_fsf": [
+  {
+   "sample": "BGS_BRIGHT",
+   "zmin": 0.1,
+   "zmax": 0.2,
+   "logms_med": 10.407,
+   "logmh_med": 11.969,
+   "A_1h": {
+    "DES": [
+     1.078,
+     0.073
+    ],
+    "KiDS": [
+     1.021,
+     0.066
+    ],
+    "HSCY3": [
+     0.971,
+     0.033
+    ],
+    "SDSS": [
+     0.958,
+     0.044
+    ]
+   }
+  },
+  {
+   "sample": "BGS_BRIGHT",
+   "zmin": 0.2,
+   "zmax": 0.3,
+   "logms_med": 10.831,
+   "logmh_med": 12.48,
+   "A_1h": {
+    "DES": [
+     1.031,
+     0.051
+    ],
+    "KiDS": [
+     0.892,
+     0.049
+    ],
+    "HSCY3": [
+     0.941,
+     0.024
+    ],
+    "SDSS": [
+     0.916,
+     0.047
+    ]
+   }
+  },
+  {
+   "sample": "BGS_BRIGHT",
+   "zmin": 0.3,
+   "zmax": 0.4,
+   "logms_med": 11.042,
+   "logmh_med": 12.794,
+   "A_1h": {
+    "DES": [
+     1.012,
+     0.052
+    ],
+    "KiDS": [
+     0.909,
+     0.048
+    ],
+    "HSCY3": [
+     1.021,
+     0.023
+    ],
+    "SDSS": [
+     0.76,
+     0.061
+    ]
+   }
+  },
+  {
+   "sample": "LRG",
+   "zmin": 0.4,
+   "zmax": 0.6,
+   "logms_med": 11.165,
+   "logmh_med": 12.955,
+   "A_1h": {
+    "DES": [
+     1.205,
+     0.08
+    ],
+    "KiDS": [
+     1.115,
+     0.048
+    ],
+    "HSCY3": [
+     1.193,
+     0.021
+    ]
+   }
+  },
+  {
+   "sample": "LRG",
+   "zmin": 0.6,
+   "zmax": 0.8,
+   "logms_med": 11.153,
+   "logmh_med": 12.889,
+   "A_1h": {
+    "HSCY3": [
+     1.43,
+     0.033
+    ]
+   }
+  }
+ ],
+ "prerecal_constant_ML": [
+  {
+   "sample": "BGS_BRIGHT",
+   "zmin": 0.1,
+   "zmax": 0.2,
+   "logms_med": 10.272,
+   "logmh_med": 11.849,
+   "A_1h": {
+    "DES": [
+     1.896,
+     0.133
+    ],
+    "KiDS": [
+     1.81,
+     0.12
+    ],
+    "HSCY3": [
+     1.695,
+     0.059
+    ],
+    "SDSS": [
+     1.697,
+     0.08
+    ]
+   }
+  },
+  {
+   "sample": "BGS_BRIGHT",
+   "zmin": 0.2,
+   "zmax": 0.3,
+   "logms_med": 10.581,
+   "logmh_med": 12.146,
+   "A_1h": {
+    "DES": [
+     1.788,
+     0.101
+    ],
+    "KiDS": [
+     1.602,
+     0.097
+    ],
+    "HSCY3": [
+     1.607,
+     0.046
+    ],
+    "SDSS": [
+     1.523,
+     0.095
+    ]
+   }
+  },
+  {
+   "sample": "BGS_BRIGHT",
+   "zmin": 0.3,
+   "zmax": 0.4,
+   "logms_med": 10.779,
+   "logmh_med": 12.392,
+   "A_1h": {
+    "DES": [
+     1.889,
+     0.1
+    ],
+    "KiDS": [
+     1.662,
+     0.089
+    ],
+    "HSCY3": [
+     1.903,
+     0.043
+    ],
+    "SDSS": [
+     1.38,
+     0.115
+    ]
+   }
+  },
+  {
+   "sample": "LRG",
+   "zmin": 0.4,
+   "zmax": 0.6,
+   "logms_med": 10.918,
+   "logmh_med": 12.574,
+   "A_1h": {
+    "DES": [
+     1.992,
+     0.144
+    ],
+    "KiDS": [
+     1.824,
+     0.087
+    ],
+    "HSCY3": [
+     1.931,
+     0.037
+    ]
+   }
+  },
+  {
+   "sample": "LRG",
+   "zmin": 0.6,
+   "zmax": 0.8,
+   "logms_med": 10.961,
+   "logmh_med": 12.613,
+   "A_1h": {
+    "HSCY3": [
+     2.009,
+     0.05
+    ]
+   }
+  }
+ ]
+}
