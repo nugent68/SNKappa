@@ -54,3 +54,6 @@ output/pantheon/*
 output/delta_sigma/*
 !output/delta_sigma/closure_pred*.json
 !output/delta_sigma/mstar_vs_fastspecfit.json
+data_boss_kids/
+!output/delta_sigma/boss_kids_meas.json
+!output/delta_sigma/boss_closure*.json
