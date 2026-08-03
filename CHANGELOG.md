@@ -1,5 +1,23 @@
 # Changelog
 
+## 2026-08-02 — Unified ApJ analysis: joint amplitude across three compilations
+
+New for the full-length ApJ paper (sn_lensing_apj.tex on Overleaf):
+- **Joint fit** (`joint_fit.py`): 2,920 unique sightlines across
+  DES-SN5YR/Union3/Pantheon+ (747 shared pairs, empirical residual
+  correlations 0.70–0.88); maximal-independent WLS primary:
+  **A = 0.83 ± 0.17 (5.0σ, permutation z = 4.5)**; exact-Δμ 0.80 ±
+  0.16; two-tier A_gal = 0.85 ± 0.25 / A_cl = 0.82 ± 0.22. A naive
+  stacked GLS with empirical pair covariance is documented as
+  pathological (difference modes dominate at ρ~0.9); floored-covariance
+  GLS kept as consistency (−1.89 vs −1.80).
+- **Latent EIV everywhere** (`latent_fit.py --survey`, `joint_latent.py`):
+  U3 0.65 ± 0.80, P+ 0.78 ± 0.80, and the joint attenuation-free
+  **A_latent = 1.19 ± 0.40**.
+- Stats parity (`compilation_stats.py`): block bootstraps (0.69 both)
+  and drop-any-sample jackknives for U3/P+.
+- `make_figs_apj.py`: F1–F7 + consolidated `paper_stats_apj.json`.
+
 Public record of how the analysis evolved, connecting every number in the
 manuscript to the commits and tracked artifacts that produced it. Code
 comments of the form `(TODO n.m)` refer to the review-checklist item
