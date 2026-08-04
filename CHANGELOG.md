@@ -1,5 +1,31 @@
 # Changelog
 
+## 2026-08-04 — Deep-NIR masses adopted as fiducial; FrankenBlast 8-band campaign
+
+The VIDEO/UltraVISTA `nir_direct_fsf` estimator is now the fiducial for
+all three compilations (exact fallback outside the deep-NIR footprints,
+so only the NIR fields change). Full driver reruns regenerated every
+catalog and summary; latent noise tables carry the per-galaxy reduced
+sigma in the NIR fields.
+- **New headline**: JOINT A = 0.824 ± 0.175 (4.7σ; permutation
+  z = 4.35), joint latent 1.173 ± 0.439; per-compilation slopes
+  −1.73/−2.14/−2.47. The 5.0σ→4.7σ easing is the honest direction:
+  the cleaner masses removed spurious prediction variance.
+- **FrankenBlast 8-band campaign** (Perlmutter; scripts/frankenblast/):
+  6,935/6,943 top-κ contributors fit with the redshift-conditioned SBI
+  model (see 2026-08-03 entry and README for the zfix discovery, the
+  unbounded z-free retry loop, and operational traps). Massive-end
+  verdict: NirDirectFSF − FB = −0.19 dex, mass-INDEPENDENT (±0.05 over
+  logM* 9–13; NMAD 0.07 at the top) — the 5-band +0.42 dex bias is
+  cured; offset is inter-code zero-point territory (CIGALE −0.16,
+  LePhare −0.06). Photo-z→mass response measured from 998 ±σ_z refits:
+  σ_M(photz) median 0.085 dex, κ-weighted 0.103 (fb_masses.csv carries
+  per-galaxy totals).
+- **FB-mass variant** (`--fb-masses`, `BatchEngine logms_override`):
+  swapping the independent FB masses into the κ prediction moves the
+  NIR-field exact-Δμ amplitude 0.907→0.895 (~1%) and no slope by more
+  than 0.4σ — the mass-scale systematic on A is directly bounded.
+
 ## 2026-08-03 — Deep-NIR mass upgrade: VIDEO DR5 + UltraVISTA (COSMOS2020)
 
 The rest-1 µm estimator no longer interpolates across the 1.6 µm bump

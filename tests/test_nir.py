@@ -135,3 +135,42 @@ def test_attach_nir_extinction(tmp_path):
     out = attach_nir(df, data_dir=tmp_path)
     ebv = -2.5 * np.log10(mwt) / R_LS_Z
     assert out["mag_j"].iloc[0] == pytest.approx(19.5 - R_NIR["j"] * ebv)
+
+
+def test_batch_engine_logms_override():
+    """External masses replace the estimator per galaxy; NaN rows keep
+    the estimator; kappa responds monotonically to a mass boost."""
+    from types import SimpleNamespace
+    from snkappa.batch import BatchEngine
+    from snkappa.halos import HaloModel
+    from snkappa.config import HaloModelConfig
+    rng = np.random.default_rng(3)
+    n = 40
+    df = pd.DataFrame({
+        "ra": 10.0 + rng.uniform(-0.02, 0.02, n),
+        "dec": -44.0 + rng.uniform(-0.02, 0.02, n),
+        "z_spec": np.where(rng.uniform(size=n) < 0.5,
+                           rng.uniform(0.1, 0.5, n), np.nan),
+        "zp_med": rng.uniform(0.1, 0.6, n),
+        "zp_std": np.full(n, 0.05),
+        "zp_l68": None, "zp_u68": None,
+        "mag_g": rng.uniform(19, 22, n),
+        "mag_z": rng.uniform(18, 21, n),
+        "mag_w1": rng.uniform(17, 20, n),
+        "ls_id": np.arange(n)})
+    df["zp_l68"] = df.zp_med - 0.05
+    df["zp_u68"] = df.zp_med + 0.05
+    cosmo = COSMO
+    cfg = SimpleNamespace(halo_model=HaloModelConfig(), cosmo=cosmo)
+    hm = HaloModel(HaloModelConfig(), cosmo, 1.15)
+    est = Nir1um(COSMO)
+    zc = np.arange(0.05, 1.1, 0.1)
+    base = BatchEngine(cfg, df, hm, est, zc, 3.0)
+    boost = np.full(n, np.nan)
+    boost[:10] = 11.8            # crank 10 galaxies to cluster scale
+    big = BatchEngine(cfg, df, hm, est, zc, 3.0, logms_override=boost)
+    base.set_zsrc(cosmo, 0.8)
+    big.set_zsrc(cosmo, 0.8)
+    k0 = base.kappa_gal(10.0, -44.0, 300.0)
+    k1 = big.kappa_gal(10.0, -44.0, 300.0)
+    assert k1 > k0 > 0

@@ -56,12 +56,17 @@ class BatchEngine:
     """
 
     def __init__(self, cfg, df, hm, est, zc_grid, r_in_arcsec=3.0,
-                 require_w1=False):
+                 require_w1=False, logms_override=None):
         self.hm = hm
         self.zc = np.asarray(zc_grid, dtype=float)
         self.r_in = float(r_in_arcsec)
+        if logms_override is None:
+            logms_override = np.full(len(df), np.nan)
+        logms_override = np.asarray(logms_override, dtype=float)
         if require_w1 and "mag_w1" in df:
-            df = df[np.isfinite(df["mag_w1"])].reset_index(drop=True)
+            keep = np.isfinite(df["mag_w1"].to_numpy(float))
+            df = df[keep].reset_index(drop=True)
+            logms_override = logms_override[keep]
         self.n_gal = len(df)
         self.all_ra = df.ra.to_numpy()
         self.all_dec = df.dec.to_numpy()
@@ -69,12 +74,20 @@ class BatchEngine:
         spec = df.z_spec.notna().to_numpy()
         s = df[spec]
         p = df[~spec]
+        o_s = logms_override[spec]
+        o_p = logms_override[~spec]
         self.s_ra = s.ra.to_numpy(); self.s_dec = s.dec.to_numpy()
         self.s_z = s.z_spec.to_numpy(dtype=float)
         ib = hm.zbin_index(self.s_z)
         mags = {b: s[f"mag_{b}"].to_numpy(float)
                 for b in MAG_BANDS if f"mag_{b}" in s}
         logms = est.logmstar(mags, hm.zbins[ib])
+        # per-galaxy external masses (e.g. FrankenBlast posteriors)
+        # replace the estimator where provided; the override is a mass
+        # at the galaxy's own z_best and is held constant across the
+        # photo-z marginalization grid below (the measured mass-z
+        # response is well below the estimator scatter over one sigma_z)
+        logms = np.where(np.isfinite(o_s), o_s, logms)
         rhos, rs, tau = hm.halo_params(logms, ib)
         self.s_ib = ib
         self.s_amp0 = rhos * rs
@@ -92,6 +105,7 @@ class BatchEngine:
                 for b in MAG_BANDS if f"mag_{b}" in p}
         for j, zcj in enumerate(zc):
             lm = est.logmstar(magp, np.full(n, zcj))
+            lm = np.where(np.isfinite(o_p), o_p, lm)
             rhos, rs, tau = hm.halo_params(lm, np.full(n, izc[j]))
             self.p_amp0[:, j] = rhos * rs
             self.p_ths[:, j] = rs / hm.da[izc[j]] * ARCSEC_PER_RAD

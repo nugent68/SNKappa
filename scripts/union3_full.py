@@ -121,6 +121,7 @@ def make_cfg(center, annulus_outer, n_rand):
 
 
 MSTAR_METHOD = ["nir1um_fsf"]   # set from --mstar-method in main
+FB_MASSES = [""]                # set from --fb-masses in main
 
 
 def run_region(row, sn, hm, est, rng, results, failures):
@@ -151,7 +152,13 @@ def run_region(row, sn, hm, est, rng, results, failures):
     members = clu.assign_members(cfg, df, cl, hm) if len(cl) else \
         np.zeros(len(df), dtype=bool)
     df = df[~members].reset_index(drop=True)
-    eng = BatchEngine(cfg, df, hm, est, ZC, R_IN)
+    lms_o = None
+    if FB_MASSES[0]:
+        from des_full import fb_override
+        lms_o = fb_override(FB_MASSES[0], df)
+        log(f"  region {row.region}: FB mass override "
+            f"{int(np.isfinite(lms_o).sum())} galaxies")
+    eng = BatchEngine(cfg, df, hm, est, ZC, R_IN, logms_override=lms_o)
     clf = ClusterField(cl, hm) if len(cl) else None
 
     rr = np.sqrt(rng.uniform(0, 1, n_rand)) * max(rad - 0.1, 0.35)
@@ -291,8 +298,11 @@ def main():
     ap.add_argument("--regions", default="",
                     help="comma-separated region ids to process "
                          "(default: all)")
+    ap.add_argument("--fb-masses", default="",
+                    help="fb_masses.csv: per-galaxy logM* override")
     args = ap.parse_args()
     MSTAR_METHOD[0] = args.mstar_method
+    FB_MASSES[0] = args.fb_masses
     OUTDIR = Path(args.outdir)
     stem = Path(args.hd).stem.replace("_hd", "")
     OUTDIR.mkdir(parents=True, exist_ok=True)

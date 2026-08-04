@@ -1,0 +1,61 @@
+{
+  "variant": "fbmass",
+  "args": {
+    "variant": "fbmass",
+    "excise_host": false,
+    "no_specz": false,
+    "require_w1": false,
+    "smhm_inverse": "posterior",
+    "logmh_max": 13.8,
+    "mstar_offset": 0.0,
+    "mstar_method": "nir_direct_fsf",
+    "n_rand": 500,
+    "groups": "X,C,E",
+    "fb_masses": "output/nir_video/fb_masses.csv"
+  },
+  "n_all": 1334,
+  "slope_all": [
+    -2.061146628140226,
+    0.4115409122216625
+  ],
+  "n_good": 1226,
+  "slope_good": [
+    -2.0289929229705237,
+    0.4321160308387947
+  ],
+  "slope_XS": [
+    -1.5624250449222807,
+    0.8298435406461377
+  ],
+  "slope_CE": [
+    -2.2007745696587553,
+    0.5044435089830684
+  ],
+  "two_component": {
+    "slope_gal": [
+      -1.9628812057438403,
+      0.7508163418857133
+    ],
+    "slope_cl": [
+      -2.063385738585444,
+      0.5593778691840574
+    ],
+    "A_gal": [
+      0.9039402007327891,
+      0.34576370328047296
+    ],
+    "A_cl": [
+      0.9502242485526707,
+      0.25760302858679685
+    ],
+    "sigma_kappa_gal": 0.006420539338966957,
+    "sigma_kappa_cl": 0.008765813221545985
+  },
+  "slope_dmu_exact": [
+    0.8953616167189504,
+    0.1896981770797934
+  ],
+  "sigma_dmu_pred": 0.02478044899832719,
+  "mean_gamma": 0.009209247584699718,
+  "n_dmu_clipped": 0
+}

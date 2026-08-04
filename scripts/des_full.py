@@ -110,7 +110,18 @@ def parse_args():
                         "nir1um = legacy constant M*/L)")
     p.add_argument("--n-rand", type=int, default=500)
     p.add_argument("--groups", default="X,S,C,E")
+    p.add_argument("--fb-masses", default="",
+                   help="fb_masses.csv (FrankenBlast campaign): override "
+                        "per-galaxy logM* by ls_id where fitted")
     return p.parse_args()
+
+
+def fb_override(path, df):
+    """Per-df-row logM* override array from the FB mass catalog."""
+    fb = pd.read_csv(path, dtype={"ls_id": str})
+    m = dict(zip(fb.ls_id, fb.logm_p50))
+    arr = df.ls_id.astype(np.int64).astype(str).map(m).to_numpy(float)
+    return arr
 
 
 def read_snana(path):
@@ -203,8 +214,13 @@ def main():
                 def logmstar(self, mags, z):
                     return self.base.logmstar(mags, z) + self.off
             est = _Offset(est, args.mstar_offset)
+        lms_o = fb_override(args.fb_masses, df) if args.fb_masses else None
+        if lms_o is not None:
+            log(f"  FB mass override: {int(np.isfinite(lms_o).sum())} "
+                f"galaxies")
         eng = BatchEngine(cfg, df, hm, est, ZC, R_IN,
-                          require_w1=args.require_w1)
+                          require_w1=args.require_w1,
+                          logms_override=lms_o)
         clf = ClusterField(cl, hm,
                            mass_scatter_dex=cfg.clusters.mass_scatter_dex,
                            miscenter_frac_r500=cfg.clusters.miscenter_frac_r500,

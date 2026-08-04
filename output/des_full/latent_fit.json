@@ -3,27 +3,27 @@
   "afid": 0.79,
   "n_boot": 200,
   "single": {
-    "A": 1.3833930658145235,
-    "A_err_post": 0.3709663470723401,
-    "A_err_boot": 0.3974852426866434,
-    "A_err": 0.5437007897859407,
-    "mean_reliability": 0.8870641383433401
+    "A": 1.4547792177632137,
+    "A_err_post": 0.4108904142321893,
+    "A_err_boot": 0.45020932047242906,
+    "A_err": 0.6095238836568642,
+    "mean_reliability": 0.8835830933812263
   },
   "single_all_classical_bracket": {
-    "A": 1.7783981938921936,
-    "A_err_post": 0.4693339412428552,
+    "A": 1.8712099036275094,
+    "A_err_post": 0.4950284814881765,
     "A_err_boot": 0.0,
-    "A_err": 0.4693339412428552,
-    "mean_reliability": 0.8015578735491069
+    "A_err": 0.4950284814881765,
+    "mean_reliability": 0.7950955700257529
   },
   "two_component": {
-    "A_gal": 1.548895183769209,
-    "A_gal_err": 0.6708766425699536,
-    "A_cl": 1.6770223118648115,
-    "A_cl_err": 0.8472151914461838,
-    "corr": -0.0777327392022761
+    "A_gal": 1.8310167215716528,
+    "A_gal_err": 0.765369803541717,
+    "A_cl": 1.560156118870122,
+    "A_cl_err": 0.8598419393076799,
+    "corr": -0.07326663678880946
   },
-  "mean_s2_classical": 2.800736201234609e-05,
-  "mean_s2_berkson": 1.603134600290962e-05,
+  "mean_s2_classical": 2.6774115565404026e-05,
+  "mean_s2_berkson": 2.060573761846957e-05,
   "note": "empirical-Bayes EIV fit (snkappa.latent): Gaussian per-z-bin latent prior; per-SN MC noise split into classical (M* measurement, richness mass, zero point; drives shrinkage) and Berkson (photo-z p(z), SMHM/c intrinsic scatter, miscentering; residual only); alpha profiled, flat prior on A; errors = posterior std (+) bootstrap re-estimating tau_b"
 }
