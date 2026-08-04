@@ -67,6 +67,42 @@ Findings worth not rediscovering:
   collapse to delta-function posteriors, and miss a known spec-z
   (0.225 → 0.377).
 
+## Running it: use the debug queue
+
+The regular queue gave a 2-node allocation that had not started after
+an hour; the debug queue (max 30 min, 8 nodes, 2 concurrent jobs)
+started within ~2 minutes and swept 94% of 6,943 galaxies in about an
+hour of wall time. `node_runner_zfix_chunk.sh` bounds each job to a
+global row range (`KFB_START`/`KFB_END`) so the list can be split
+across several short jobs; `build_todo.py` + `zfix_mop.sh` then re-run
+whatever no chunk finished, with the longest cap a 30-minute wall
+allows (1700 s).
+
+Sweep result: 6,552/6,943 fitted, median 369 s, p90 441 s.
+
+Two operational gotchas:
+
+- The shell fallback that logs a hard timeout (`echo ... >> $sumcsv`)
+  creates the file WITHOUT a header if it fires first, so a naive
+  `csv.DictReader` silently reads that galaxy as column names. The
+  mop-up runner writes a header up front; readers should still sniff
+  the first line (see `build_todo.py`).
+- Do not poll job completion with `! squeue | grep -q <name>`: a
+  transient empty `squeue` is indistinguishable from "job finished"
+  and will report a running job as done with zero results. Poll
+  `sacct` for a terminal state instead.
+
+## Two-engine catalog: cross-calibrate before merging
+
+Galaxies the emulator cannot fit even with z conditioned go to direct
+prospector (`node_runner_pros_tier2.sh`). That makes the mass catalog
+heterogeneous, and because the tier boundary tracks brightness (hence
+kappa), any FB<->prospector offset would imprint as a spurious kappa
+trend. `build_xcal.py` + `pros_xcal.sh` fit 60 FB-successful galaxies,
+stratified in logM*, with BOTH engines so the offset can be measured,
+tested for mass dependence, and corrected -- or reported as a
+systematic. Do not merge the tiers without it.
+
 ## Caveat carried into the analysis
 
 Fixing a photo-z rather than marginalizing over it understates σ(logM*)
