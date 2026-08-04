@@ -54,16 +54,19 @@ def nmad(x):
 
 
 def load_summaries(d):
-    frames = []
-    for f in glob.glob(f"{d}/summary_zfix_n*_w*.csv"):
-        try:
-            frames.append(pd.read_csv(f))
-        except Exception:
-            continue
-    if not frames:
+    from fb_photoz_sensitivity import rows   # robust to header traps
+    rec = []
+    for f in glob.glob(f"{d}/summary_zfix_*.csv"):
+        for r in rows(f):
+            if r.get("status") == "ok" and r.get("logmass_p50"):
+                rec.append(r)
+    if not rec:
         raise SystemExit(f"no summaries found under {d}")
-    s = pd.concat(frames, ignore_index=True)
-    s = s[s.status == "ok"].copy()
+    s = pd.DataFrame(rec)
+    for c in ("logmass_p16", "logmass_p50", "logmass_p84", "zred_p50",
+              "runtime_s"):
+        if c in s:
+            s[c] = pd.to_numeric(s[c], errors="coerce")
     s["ls_id"] = s.ls_id.astype(str)
     # a galaxy can appear twice if a worker retried; keep the first
     return s.drop_duplicates("ls_id", keep="first")
@@ -100,9 +103,10 @@ def main():
     ap.add_argument("--summaries", default="data_nir/summaries_zfix")
     args = ap.parse_args()
 
+    import sys as _sys
+    _sys.path.insert(0, str(Path(__file__).resolve().parent))
     s = load_summaries(args.summaries)
-    tg = pd.read_csv(TARGETS)
-    tg["ls_id"] = tg.ls_id.astype(str)
+    tg = pd.read_csv(TARGETS, dtype={"ls_id": str})
     m = s.merge(tg, on="ls_id", suffixes=("_fb", ""))
     m = m.rename(columns={"logmass_p50": "fb_logm",
                           "logmass_p16": "fb_p16",
@@ -156,6 +160,37 @@ def main():
             "note": ("kappa_sum-weighted mean of (ours - FB); the "
                      "unweighted median understates the influence of "
                      "the few halos that dominate the prediction")}
+
+    # FB <-> direct-prospector cross-calibration (60 stratified
+    # FB-successful galaxies fit by both engines): arbitrates whether
+    # the offset against our estimator is FB's scale or ours
+    xg = glob.glob("data_nir/summaries_pros_tier2/summary_pros_xcal_*.csv")
+    if xg:
+        px = {}
+        for f in xg:
+            try:
+                for r in pd.read_csv(f).to_dict("records"):
+                    if r.get("status") == "ok":
+                        px[str(r["ls_id"])] = float(r["logmass_p50"])
+            except Exception:
+                continue
+        xc = good[good.ls_id.isin(px)].copy()
+        if len(xc) >= 10:
+            xc["pros"] = xc.ls_id.map(px)
+            dfp = xc.fb_logm - xc.pros          # FB minus prospector
+            lo_half = xc.fb_logm < xc.fb_logm.median()
+            out["xcal_fb_vs_prospector"] = {
+                "n": int(len(xc)),
+                "median_fb_minus_pros": float(np.median(dfp)),
+                "nmad": nmad(dfp),
+                "low_mass_half": float(np.median(dfp[lo_half])),
+                "high_mass_half": float(np.median(dfp[~lo_half])),
+                "note": ("~0 => the emulator reproduces the direct fit "
+                         "and the offset vs our estimator is a real "
+                         "scale difference; nonzero => part of the "
+                         "offset is emulator error")}
+            print(f"xcal FB-prospector: {np.median(dfp):+.3f} dex "
+                  f"(NMAD {nmad(dfp):.3f}, n={len(xc)})")
 
     # place the FB scale among the references already measured
     val = Path("output/nir_video/mstar_validation.json")

@@ -1,0 +1,118 @@
+{
+  "n_fits": 6935,
+  "n_compared": 6934,
+  "overall": {
+    "label": "all",
+    "n": 6934,
+    "median_nirdirect_minus_fb": -0.18599364130399287,
+    "nmad_nirdirect": 0.16093537913396733,
+    "median_nir1um_minus_fb": -0.1713762300159578,
+    "nmad_nir1um": 0.1686976399611515,
+    "median_fb_logm": 10.395112752324792
+  },
+  "median_fb_posterior_halfwidth": 0.15113425254821733,
+  "bins_logm": [
+    {
+      "label": "fb_logM 9.0-10.0",
+      "n": 1921,
+      "median_nirdirect_minus_fb": -0.1589633323640438,
+      "nmad_nirdirect": 0.16840240466542097,
+      "median_nir1um_minus_fb": -0.13449058518514612,
+      "nmad_nir1um": 0.18236364519807782,
+      "median_fb_logm": 9.585419228698068
+    },
+    {
+      "label": "fb_logM 10.0-10.5",
+      "n": 1456,
+      "median_nirdirect_minus_fb": -0.259892467429669,
+      "nmad_nirdirect": 0.14945757746010938,
+      "median_nir1um_minus_fb": -0.2552529648752424,
+      "nmad_nir1um": 0.17785325340454144,
+      "median_fb_logm": 10.252013363439332
+    },
+    {
+      "label": "fb_logM 10.5-11.0",
+      "n": 1829,
+      "median_nirdirect_minus_fb": -0.2139794448668848,
+      "nmad_nirdirect": 0.15477474558782942,
+      "median_nir1um_minus_fb": -0.1976988608429764,
+      "nmad_nir1um": 0.17700033106270205,
+      "median_fb_logm": 10.757893915811987
+    },
+    {
+      "label": "fb_logM 11.0-11.5",
+      "n": 1217,
+      "median_nirdirect_minus_fb": -0.1590176792953777,
+      "nmad_nirdirect": 0.11648149429317914,
+      "median_nir1um_minus_fb": -0.15946046896926092,
+      "nmad_nir1um": 0.10024350089353823,
+      "median_fb_logm": 11.161734327250384
+    },
+    {
+      "label": "fb_logM 11.5-13.0",
+      "n": 75,
+      "median_nirdirect_minus_fb": -0.15384621822618527,
+      "nmad_nirdirect": 0.06963070171633265,
+      "median_nir1um_minus_fb": -0.14199274890458824,
+      "nmad_nir1um": 0.06955403939163934,
+      "median_fb_logm": 11.562163045574115
+    }
+  ],
+  "bins_z": [
+    {
+      "label": "z 0.05-0.3",
+      "n": 3392,
+      "median_nirdirect_minus_fb": -0.17889797747501213,
+      "nmad_nirdirect": 0.1704936413980785,
+      "median_nir1um_minus_fb": -0.1666119757022484,
+      "nmad_nir1um": 0.16597794937671798,
+      "median_fb_logm": 10.35618045173242
+    },
+    {
+      "label": "z 0.3-0.5",
+      "n": 2100,
+      "median_nirdirect_minus_fb": -0.2001599149965143,
+      "nmad_nirdirect": 0.14947225830948127,
+      "median_nir1um_minus_fb": -0.18833900850413698,
+      "nmad_nir1um": 0.17547653806821606,
+      "median_fb_logm": 10.452687476798255
+    },
+    {
+      "label": "z 0.5-0.8",
+      "n": 1096,
+      "median_nirdirect_minus_fb": -0.1717142173574029,
+      "nmad_nirdirect": 0.15886752547916522,
+      "median_nir1um_minus_fb": -0.15171820363139243,
+      "nmad_nir1um": 0.17290753584173396,
+      "median_fb_logm": 10.519866806845496
+    },
+    {
+      "label": "z 0.8-1.2",
+      "n": 147,
+      "median_nirdirect_minus_fb": -0.11919544832313633,
+      "nmad_nirdirect": 0.1757033248998121,
+      "median_nir1um_minus_fb": -0.0776368203782738,
+      "nmad_nir1um": 0.2746469403062197,
+      "median_fb_logm": 10.562027283961894
+    }
+  ],
+  "spec_z_only": {
+    "label": "DESI spec-z subset",
+    "n": 1182,
+    "median_nirdirect_minus_fb": -0.1898118427312534,
+    "nmad_nirdirect": 0.15157166871647168,
+    "median_nir1um_minus_fb": -0.1747048776573603,
+    "nmad_nir1um": 0.14442418909532767,
+    "median_fb_logm": 10.731249877544004
+  },
+  "kappa_weighted": {
+    "mean_offset_nirdirect": -0.13111566266000474,
+    "mean_offset_nir1um": -0.1185727683348938,
+    "note": "kappa_sum-weighted mean of (ours - FB); the unweighted median understates the influence of the few halos that dominate the prediction"
+  },
+  "reference_context": {
+    "nirdirect_minus_cigale_median": -0.1558326988488936,
+    "nirdirect_minus_lephare_median": -0.06114238320555376,
+    "note": "if NirDirectFSF sits below FB by a similar amount as it sits below CIGALE/LePhare, the offset is a zero-point of our estimator, not an FB artifact"
+  }
+}
