@@ -1,0 +1,61 @@
+{
+  "variant": "fsfmass",
+  "args": {
+    "variant": "fsfmass",
+    "excise_host": false,
+    "no_specz": false,
+    "require_w1": false,
+    "smhm_inverse": "posterior",
+    "logmh_max": 13.8,
+    "mstar_offset": 0.0,
+    "mstar_method": "nir_direct_fsf",
+    "n_rand": 500,
+    "groups": "X,S,C,E",
+    "fb_masses": "data_nir/fsf_masses_override.csv"
+  },
+  "n_all": 1572,
+  "slope_all": [
+    -1.7280781194092734,
+    0.45509583016820937
+  ],
+  "n_good": 1450,
+  "slope_good": [
+    -1.6798331993294249,
+    0.45073911462272515
+  ],
+  "slope_XS": [
+    -0.43553300519728166,
+    0.8403127112243245
+  ],
+  "slope_CE": [
+    -2.2714788329513036,
+    0.5292897350362357
+  ],
+  "two_component": {
+    "slope_gal": [
+      -1.7663411171159984,
+      0.8452305283696829
+    ],
+    "slope_cl": [
+      -1.6477989487869338,
+      0.5752607374235597
+    ],
+    "A_gal": [
+      0.8134301450827497,
+      0.3892430429535026
+    ],
+    "A_cl": [
+      0.7588394591456107,
+      0.2649173597152501
+    ],
+    "sigma_kappa_gal": 0.005104700407999383,
+    "sigma_kappa_cl": 0.008382598371911154
+  },
+  "slope_dmu_exact": [
+    0.744721495218478,
+    0.20646133698143596
+  ],
+  "sigma_dmu_pred": 0.02223027180312509,
+  "mean_gamma": 0.008266340917913317,
+  "n_dmu_clipped": 0
+}

@@ -1,0 +1,98 @@
+{
+  "n_all": 1232,
+  "n_good": 1213,
+  "n_deep_excluded": 6,
+  "failures": [
+    {
+      "region": 264,
+      "n_sn": 66,
+      "error": "no valid randoms (masked/edge region: median aperture count 0)"
+    },
+    {
+      "region": 135,
+      "n_sn": 2,
+      "error": "no valid randoms (masked/edge region: median aperture count 0)"
+    },
+    {
+      "region": 271,
+      "n_sn": 1,
+      "error": "no valid randoms (masked/edge region: median aperture count 0)"
+    }
+  ],
+  "slope_good": [
+    -2.0390986197020324,
+    0.6380248796887328,
+    1213
+  ],
+  "slope_SDSS": [
+    -0.6690090682548503,
+    2.268492405213536,
+    320
+  ],
+  "slope_Pan-STARRS": [
+    -3.729717619047869,
+    1.0386464166000817,
+    290
+  ],
+  "slope_SNLS": [
+    -0.2012110364552096,
+    0.9294885782210325,
+    170
+  ],
+  "slope_ESSENCE": [
+    3.2197392384040087,
+    3.8567611759218496,
+    170
+  ],
+  "slope_DES3_Shallow": [
+    -3.309288846443477,
+    1.4675197058996874,
+    154
+  ],
+  "slope_DES3_Deep": [
+    -1.0270490028521808,
+    2.856067209114293,
+    50
+  ],
+  "slope_dmu_exact": [
+    0.9125182305677616,
+    0.291000380383814
+  ],
+  "two_component": {
+    "A_gal": [
+      0.6015667451167394,
+      0.41582157628259125
+    ],
+    "A_cl": [
+      1.1408617673260335,
+      0.382525672269625
+    ]
+  },
+  "permutation": {
+    "p_one_sided": 0.0075,
+    "null_sigma": 0.8970708461749811,
+    "z_equiv": 2.402920693349059
+  },
+  "see_change": {
+    "n": 12,
+    "mean_kappa_ext": 0.0007232098091662768,
+    "field_mean": 0.00036303077169940964,
+    "field_p84": 0.0028871608656184235
+  },
+  "cross_survey_check": {
+    "n_matched": 109,
+    "corr": 0.9928132499222775
+  },
+  "joint_with_des": {
+    "slope": [
+      -1.653906307371444,
+      0.38610858372032403
+    ],
+    "n": 2459,
+    "A": [
+      0.7616520017124632,
+      0.17780957383029233
+    ]
+  },
+  "n_dmu_clipped": 0
+}

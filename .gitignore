@@ -83,3 +83,7 @@ output/nir_video/*
 !output/nir_video/union3_fbmass/fit_summary.json
 !output/nir_video/pantheon_fbmass/
 !output/nir_video/pantheon_fbmass/fit_summary.json
+!output/nir_video/union3_fsfmass/
+!output/nir_video/union3_fsfmass/fit_summary.json
+!output/nir_video/pantheon_fsfmass/
+!output/nir_video/pantheon_fsfmass/fit_summary.json
