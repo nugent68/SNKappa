@@ -110,9 +110,24 @@
     "mean_offset_nir1um": -0.1185727683348938,
     "note": "kappa_sum-weighted mean of (ours - FB); the unweighted median understates the influence of the few halos that dominate the prediction"
   },
+  "xcal_fb_vs_prospector": {
+    "n": 47,
+    "median_fb_minus_pros": -0.31613724690870626,
+    "nmad": 0.1724904687178513,
+    "low_mass_half": -0.18012823799342748,
+    "high_mass_half": -0.3436276771234237,
+    "note": "~0 => the emulator reproduces the direct fit and the offset vs our estimator is a real scale difference; nonzero => part of the offset is emulator error"
+  },
   "reference_context": {
     "nirdirect_minus_cigale_median": -0.1558326988488936,
     "nirdirect_minus_lephare_median": -0.06114238320555376,
     "note": "if NirDirectFSF sits below FB by a similar amount as it sits below CIGALE/LePhare, the offset is a zero-point of our estimator, not an FB artifact"
+  },
+  "xcal_fb_vs_prospector_screened": {
+    "n": 47,
+    "n_healthy": 31,
+    "fb_minus_pros_median_healthy": -0.2486541025810407,
+    "fb_minus_pros_nmad_healthy": 0.26161790111513517,
+    "note": "healthy = prospector posterior half-width > 0.05 dex (collapsed = truncated dynesty, biased); ls_id must be read as str (float64 mangles 17-digit ids)"
   }
 }
